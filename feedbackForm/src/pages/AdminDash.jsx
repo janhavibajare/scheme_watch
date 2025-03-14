@@ -265,6 +265,7 @@ function AdminDash() {
       { label: "Taluka", key: "taluka" },
       { label: "School UDISE Number", key: "schoolUdiseNumber" },
       { label: "पालकाचे संपूर्ण नाव", key: "parentName" },
+      { label: "शाळेचे नाव", key: "schoolName" }, 
       { label: "Child 1", key: "child1" },
       { label: "इयत्ता व तुकडी", key: "child1Sec" },
       { label: "Child 2", key: "child2" },
@@ -311,7 +312,9 @@ function AdminDash() {
     }
     const fieldMappings = [
       { label: "School Name", key: "schoolName" },
-      { label: "Taluka/District", key: "district" },
+      { label: "UDISENo", key: "udiseNo" },
+      { label: "Taluka", key: "taluka" },
+      { label: "District", key: "district" },
       { label: "Feedback", key: "voiceInput" },
     ];
     const excelData = [];
@@ -737,6 +740,7 @@ function AdminDash() {
                         <th>Taluka</th>
                         <th>Udise Number</th>
                         <th>पालकाचे नाव</th>
+                        <th>शाळेचे नाव</th>
                         <th>पाल्याांचे नाव 1</th>
                         <th>इयत्ता व तुकडी</th>
                         <th>पाल्याांचे नाव 2</th>
@@ -767,6 +771,7 @@ function AdminDash() {
                             <td>{parent.taluka || "N/A"}</td>
                             <td>{parent.schoolUdiseNumber || "N/A"}</td>
                             <td>{parent.parentName || "N/A"}</td>
+                            <td>{parent.schoolName || "N/A"}</td>
                             <td>{parent.child1 || "N/A"}</td>
                             <td>{parent.child1Sec || "N/A"}</td>
                             <td>{parent.child2 || "N/A"}</td>
@@ -857,7 +862,9 @@ function AdminDash() {
                       <tr>
                         <th>#</th>
                         <th>शाळेचे नाव</th>
-                        <th>तालुका/जिल्हा</th>
+                        <th>UDISE क्रमांक</th>
+                        <th>तालुका</th>
+                        <th>जिल्हा</th>
                         <th>Feedback</th>
                         <th>Actions</th>
                       </tr>
@@ -868,6 +875,8 @@ function AdminDash() {
                           <tr key={observer.id}>
                             <td>{index + 1}</td>
                             <td>{observer.schoolName || "N/A"}</td>
+                            <td>{observer.udiseNo || "N/A"}</td>
+                            <td>{observer.taluka || "N/A"}</td>
                             <td>{observer.district || "N/A"}</td>
                             <td>{observer.voiceInput || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>

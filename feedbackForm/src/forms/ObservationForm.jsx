@@ -6,7 +6,9 @@ import { useNavigate } from "react-router-dom";
 const ObservationForm = () => {
   const navigate = useNavigate();
   const [schoolName, setSchoolName] = useState("");
+  const [udiseNo, setUdiseNo] = useState(""); // Added UDISE No state
   const [district, setDistrict] = useState("");
+  const [taluka, setTaluka] = useState("");
   const [voiceInput, setVoiceInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -37,16 +39,20 @@ const ObservationForm = () => {
     try {
       await addDoc(collection(db, "Observation_Form"), {
         schoolName,
+        udiseNo,
         district,
+        taluka,
         voiceInput,
         timestamp: new Date(),
       });
 
-      navigate("/dashboard")
+      navigate("/dashboard");
 
       setMessage("Data submitted successfully!");
       setSchoolName("");
+      setUdiseNo("");
       setDistrict("");
+      setTaluka("");
       setVoiceInput("");
     } catch (error) {
       setMessage("Error submitting data. Please try again.");
@@ -62,32 +68,64 @@ const ObservationForm = () => {
       </h2>
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="school-name" className="form-label fw-bold">
-            शाळेचे नाव:
-          </label>
-          <input
-            type="text"
-            id="school-name"
-            className="form-control"
-            value={schoolName}
-            onChange={(e) => setSchoolName(e.target.value)}
-            required
-          />
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label htmlFor="school-name" className="form-label fw-bold">
+              शाळेचे नाव:
+            </label>
+            <input
+              type="text"
+              id="school-name"
+              className="form-control"
+              value={schoolName}
+              onChange={(e) => setSchoolName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label htmlFor="udise-no" className="form-label fw-bold">
+              UDISE क्रमांक:
+            </label>
+            <input
+              type="text"
+              id="udise-no"
+              className="form-control"
+              value={udiseNo}
+              onChange={(e) => setUdiseNo(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="district" className="form-label fw-bold">
-            तालुका/जिल्हा:
-          </label>
-          <input
-            type="text"
-            id="district"
-            className="form-control"
-            value={district}
-            onChange={(e) => setDistrict(e.target.value)}
-            required
-          />
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label htmlFor="taluka" className="form-label fw-bold">
+              तालुका:
+            </label>
+            <input
+              type="text"
+              id="taluka"
+              className="form-control"
+              value={taluka}
+              onChange={(e) => setTaluka(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label htmlFor="district" className="form-label fw-bold">
+              जिल्हा:
+            </label>
+            <input
+              type="text"
+              id="district"
+              className="form-control"
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <p className="mt-3 text-justify">
