@@ -8,15 +8,19 @@ import {
   deleteDoc,
   onSnapshot,
   updateDoc,
-  setDoc, // Added setDoc
+  setDoc,
 } from "firebase/firestore";
 import * as XLSX from "xlsx";
 import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { Tooltip } from "react-tooltip";
+import { Doughnut } from "react-chartjs-2";
+import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from "chart.js";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
 import MidDayMealLogo from "../images/Mid_day_logo.png";
+
+ChartJS.register(ArcElement, ChartTooltip, Legend);
 
 function AdminDash() {
   const [userDetails, setUserDetails] = useState(null);
@@ -45,7 +49,6 @@ function AdminDash() {
   const [isInactiveUsersOpen, setIsInactiveUsersOpen] = useState(true);
   const [isRegisteredUsersOpen, setIsRegisteredUsersOpen] = useState(true);
 
-  // Updated useEffect with modular syntax
   useEffect(() => {
     const fetchUserData = async () => {
       const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -56,11 +59,7 @@ function AdminDash() {
             if (docSnap.exists()) {
               const userData = docSnap.data();
               setUserDetails(userData);
-
-              await updateDoc(docRef, {
-                lastLogin: new Date().toISOString(),
-              });
-
+              await updateDoc(docRef, { lastLogin: new Date().toISOString() });
               const activeUserRef = doc(db, "activeUsers", user.uid);
               await setDoc(activeUserRef, {
                 email: user.email,
@@ -82,10 +81,7 @@ function AdminDash() {
 
   useEffect(() => {
     const unsubscribe = onSnapshot(collection(db, "activeUsers"), (snapshot) => {
-      const activeUserList = snapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+      const activeUserList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setAllActiveUsers(activeUserList);
       const researchOfficers = activeUserList.filter((user) => user.role === "Research Officer");
       setActiveResearchOfficers(researchOfficers);
@@ -99,18 +95,13 @@ function AdminDash() {
     const fetchData = async () => {
       try {
         const allUsersSnap = await getDocs(collection(db, "Users"));
-        const activeUsersSnap = await getDocs(collection(db, "activeUsers"));
         const allUsers = allUsersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
         setUserData(allUsers);
-
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const inactive = allUsers.filter((user) => {
           const lastLogin = user.lastLogin ? new Date(user.lastLogin) : null;
-          return (
-            user.role === "Research Officer" &&
-            (!lastLogin || lastLogin < thirtyDaysAgo)
-          );
+          return user.role === "Research Officer" && (!lastLogin || lastLogin < thirtyDaysAgo);
         });
         setInactiveResearchOfficers(inactive);
       } catch (error) {
@@ -125,9 +116,7 @@ function AdminDash() {
   async function handleLogout() {
     try {
       const currentUser = auth.currentUser;
-      if (currentUser) {
-        await deleteDoc(doc(db, "activeUsers", currentUser.uid));
-      }
+      if (currentUser) await deleteDoc(doc(db, "activeUsers", currentUser.uid));
       await auth.signOut();
       navigate("/login");
       toast.success("Logged out successfully!");
@@ -141,10 +130,8 @@ function AdminDash() {
       await deleteDoc(doc(db, "Users", uid));
       await deleteDoc(doc(db, "activeUsers", uid));
       toast.success("User removed successfully!");
-      const updatedInactive = inactiveResearchOfficers.filter((user) => user.id !== uid);
-      setInactiveResearchOfficers(updatedInactive);
-      const updatedAllUsers = userData.filter((user) => user.id !== uid);
-      setUserData(updatedAllUsers);
+      setInactiveResearchOfficers((prev) => prev.filter((user) => user.id !== uid));
+      setUserData((prev) => prev.filter((user) => user.id !== uid));
     } catch (error) {
       toast.error("Error removing user: " + error.message);
     }
@@ -159,9 +146,7 @@ function AdminDash() {
         const bDate = bValue ? new Date(bValue) : new Date(0);
         return direction === "asc" ? aDate - bDate : bDate - aDate;
       }
-      return direction === "asc"
-        ? aValue.localeCompare(bValue)
-        : bValue.localeCompare(aValue);
+      return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     });
   };
 
@@ -170,65 +155,35 @@ function AdminDash() {
     setSortConfig({ field, direction });
   };
 
-  const downloadActiveResearchOfficersExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(activeResearchOfficers);
+  const downloadExcel = (data, filename, sheetName) => {
+    const ws = XLSX.utils.json_to_sheet(data);
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Active Research Officers");
-    XLSX.writeFile(wb, "active_research_officers.xlsx");
+    XLSX.utils.book_append_sheet(wb, ws, sheetName);
+    XLSX.writeFile(wb, `${filename}.xlsx`);
   };
 
-  const downloadAllActiveUsersExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(allActiveUsers);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "All Active Users");
-    XLSX.writeFile(wb, "all_active_users.xlsx");
+  const fetchParentData = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Parent_Form"));
+      const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setParentData(data);
+    } catch (error) {
+      toast.error("Error fetching parent data: " + error.message);
+    }
   };
 
-  const downloadInactiveResearchOfficersExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(inactiveResearchOfficers);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Inactive Research Officers");
-    XLSX.writeFile(wb, "inactive_research_officers.xlsx");
+  const fetchObserveData = async () => {
+    try {
+      const querySnapshot = await getDocs(collection(db, "Observation_Form"));
+      const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      setObserveData(data);
+    } catch (error) {
+      toast.error("Error fetching observation data: " + error.message);
+    }
   };
 
-  const downloadExcel = () => {
-    const ws = XLSX.utils.json_to_sheet(userData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "All Registered Users");
-    XLSX.writeFile(wb, "all_registered_users.xlsx");
-  };
-
-  useEffect(() => {
-    const fetchParentData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "Parent_Form"));
-        const data = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setParentData(data);
-      } catch (error) {
-        toast.error("Error fetching parent data: " + error.message);
-      }
-    };
-    fetchParentData();
-  }, []);
-
-  useEffect(() => {
-    const fetchObserveData = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "Observation_Form"));
-        const data = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        setObserveData(data);
-      } catch (error) {
-        toast.error("Error fetching observation data: " + error.message);
-      }
-    };
-    fetchObserveData();
-  }, []);
+  useEffect(() => { fetchParentData(); }, []);
+  useEffect(() => { fetchObserveData(); }, []);
 
   const handleParentDelete = async (id) => {
     try {
@@ -250,21 +205,19 @@ function AdminDash() {
     }
   };
 
-  const updateParentForm = async (id) => navigate(`/update_parent_form/${id}`);
-  const updateObservationForm = async (id) => navigate(`/update_observation_form/${id}`);
+  const updateParentForm = (id) => navigate(`/update_parent_form/${id}`);
+  const updateObservationForm = (id) => navigate(`/update_observation_form/${id}`);
   const addParentEntry = () => navigate("/parent_form");
   const addObservationEntry = () => navigate("/observation_form");
 
   const downloadParentExcel = () => {
-    if (parentData.length === 0) {
-      toast.warn("No parent data available to download!");
-      return;
-    }
+    if (parentData.length === 0) return toast.warn("No parent data available to download!");
     const fieldMappings = [
       { label: "District", key: "district" },
       { label: "Taluka", key: "taluka" },
       { label: "School UDISE Number", key: "schoolUdiseNumber" },
       { label: "पालकाचे संपूर्ण नाव", key: "parentName" },
+      { label: "शाळेचे नाव", key: "schoolName" },
       { label: "Child 1", key: "child1" },
       { label: "इयत्ता व तुकडी", key: "child1Sec" },
       { label: "Child 2", key: "child2" },
@@ -281,7 +234,7 @@ function AdminDash() {
       { label: "नियमित शाळेत जाण्यामध्ये सुधारणा झाली का?", key: "attendence" },
       { label: "वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार योजनेचा प्रभाव", key: "impactOfNutritionScheme" },
       { label: "दुपारच्या उपस्थितीवर जेवणाचा प्रभाव", key: "effectOnAfternoonAttendence" },
-      { label: "मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव तुम्हाला कसा वाटतो ?", key: "effectOfNutritionDietPlan" },
+      { label: "मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव", key: "effectOfNutritionDietPlan" },
       { label: "योजनेमध्ये सुधारणा करण्यासाठी सूचना", key: "improvementSuggestions" },
     ];
     const excelData = [];
@@ -294,8 +247,7 @@ function AdminDash() {
     const ws = XLSX.utils.aoa_to_sheet(excelData);
     fieldMappings.forEach((field, index) => {
       const cellRef = `A${index + 1}`;
-      if (!ws[cellRef]) return;
-      ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+      if (ws[cellRef]) ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
     });
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
@@ -305,13 +257,12 @@ function AdminDash() {
   };
 
   const downloadObservationExcel = () => {
-    if (observeData.length === 0) {
-      toast.warn("No observation data available to download!");
-      return;
-    }
+    if (observeData.length === 0) return toast.warn("No observation data available to download!");
     const fieldMappings = [
       { label: "School Name", key: "schoolName" },
-      { label: "Taluka/District", key: "district" },
+      { label: "UDISENo", key: "udiseNo" },
+      { label: "Taluka", key: "taluka" },
+      { label: "District", key: "district" },
       { label: "Feedback", key: "voiceInput" },
     ];
     const excelData = [];
@@ -324,8 +275,7 @@ function AdminDash() {
     const ws = XLSX.utils.aoa_to_sheet(excelData);
     fieldMappings.forEach((field, index) => {
       const cellRef = `A${index + 1}`;
-      if (!ws[cellRef]) return;
-      ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+      if (ws[cellRef]) ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
     });
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
@@ -342,6 +292,25 @@ function AdminDash() {
     );
     const sorted = sortData(filtered, sortConfig.field, sortConfig.direction);
     return sorted.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+  };
+
+  const chartData = {
+    labels: ["Active ROs", "Active Users", "Inactive ROs", "Registered Users"],
+    datasets: [{
+      data: [activeResearchOfficers.length, allActiveUsers.length, inactiveResearchOfficers.length, userData.length],
+      backgroundColor: ["#007bff", "#28a745", "#dc3545", "#ffc107"],
+      hoverOffset: 4,
+    }],
+  };
+
+  const chartOptions = {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { position: "top" },
+      title: { display: true, text: "User Statistics" },
+    },
+    layout: { padding: 10 },
   };
 
   return (
@@ -364,6 +333,16 @@ function AdminDash() {
           <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
         </div>
       </nav>
+
+      <div className="row mt-4 justify-content-center">
+        <div className="col-lg-11 col-md-12 mb-4">
+          <div className="card shadow">
+            <div className="card-body" style={{ height: "300px" }}>
+              <Doughnut data={chartData} options={chartOptions} />
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
@@ -396,22 +375,10 @@ function AdminDash() {
                       onChange={(e) => setResearchOfficerSearch(e.target.value)}
                     />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={downloadActiveResearchOfficersExcel}>Export to Excel</button>
-                      <button
-                        className="btn btn-outline-primary me-2"
-                        onClick={() => setResearchOfficerPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={researchOfficerPage === 1}
-                      >
-                        Previous
-                      </button>
+                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(activeResearchOfficers, "active_research_officers", "Active Research Officers")}>Export to Excel</button>
+                      <button className="btn btn-outline-primary me-2" onClick={() => setResearchOfficerPage((prev) => Math.max(prev - 1, 1))} disabled={researchOfficerPage === 1}>Previous</button>
                       <span>Page {researchOfficerPage}</span>
-                      <button
-                        className="btn btn-outline-primary ms-2"
-                        onClick={() => setResearchOfficerPage((prev) => prev + 1)}
-                        disabled={researchOfficerPage * itemsPerPage >= activeResearchOfficers.length}
-                      >
-                        Next
-                      </button>
+                      <button className="btn btn-outline-primary ms-2" onClick={() => setResearchOfficerPage((prev) => prev + 1)} disabled={researchOfficerPage * itemsPerPage >= activeResearchOfficers.length}>Next</button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -434,17 +401,7 @@ function AdminDash() {
                             filterAndPaginate(activeResearchOfficers, researchOfficerSearch, researchOfficerPage).map((user, index) => (
                               <tr key={user.id}>
                                 <td>{(researchOfficerPage - 1) * itemsPerPage + index + 1}</td>
-                                <td>
-                                  <span
-                                    style={{
-                                      display: "inline-block",
-                                      width: "10px",
-                                      height: "10px",
-                                      borderRadius: "50%",
-                                      backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red",
-                                    }}
-                                  />
-                                </td>
+                                <td><span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red" }} /></td>
                                 <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
@@ -452,9 +409,7 @@ function AdminDash() {
                               </tr>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="6" className="text-center">No Research Officers currently logged in</td>
-                            </tr>
+                            <tr><td colSpan="6" className="text-center">No Research Officers currently logged in</td></tr>
                           )}
                         </tbody>
                       </table>
@@ -477,30 +432,12 @@ function AdminDash() {
               {isActiveUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input
-                      type="text"
-                      className="form-control w-25"
-                      placeholder="Search by email or name..."
-                      value={activeUsersSearch}
-                      onChange={(e) => setActiveUsersSearch(e.target.value)}
-                    />
+                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={activeUsersSearch} onChange={(e) => setActiveUsersSearch(e.target.value)} />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={downloadAllActiveUsersExcel}>Export to Excel</button>
-                      <button
-                        className="btn btn-outline-primary me-2"
-                        onClick={() => setActiveUsersPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={activeUsersPage === 1}
-                      >
-                        Previous
-                      </button>
+                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(allActiveUsers, "all_active_users", "All Active Users")}>Export to Excel</button>
+                      <button className="btn btn-outline-primary me-2" onClick={() => setActiveUsersPage((prev) => Math.max(prev - 1, 1))} disabled={activeUsersPage === 1}>Previous</button>
                       <span>Page {activeUsersPage}</span>
-                      <button
-                        className="btn btn-outline-primary ms-2"
-                        onClick={() => setActiveUsersPage((prev) => prev + 1)}
-                        disabled={activeUsersPage * itemsPerPage >= allActiveUsers.length}
-                      >
-                        Next
-                      </button>
+                      <button className="btn btn-outline-primary ms-2" onClick={() => setActiveUsersPage((prev) => prev + 1)} disabled={activeUsersPage * itemsPerPage >= allActiveUsers.length}>Next</button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -524,17 +461,7 @@ function AdminDash() {
                             filterAndPaginate(allActiveUsers, activeUsersSearch, activeUsersPage).map((user, index) => (
                               <tr key={user.id}>
                                 <td>{(activeUsersPage - 1) * itemsPerPage + index + 1}</td>
-                                <td>
-                                  <span
-                                    style={{
-                                      display: "inline-block",
-                                      width: "10px",
-                                      height: "10px",
-                                      borderRadius: "50%",
-                                      backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red",
-                                    }}
-                                  />
-                                </td>
+                                <td><span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red" }} /></td>
                                 <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
@@ -543,9 +470,7 @@ function AdminDash() {
                               </tr>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="7" className="text-center">No users currently logged in</td>
-                            </tr>
+                            <tr><td colSpan="7" className="text-center">No users currently logged in</td></tr>
                           )}
                         </tbody>
                       </table>
@@ -568,30 +493,12 @@ function AdminDash() {
               {isInactiveUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input
-                      type="text"
-                      className="form-control w-25"
-                      placeholder="Search by email or name..."
-                      value={inactiveUsersSearch}
-                      onChange={(e) => setInactiveUsersSearch(e.target.value)}
-                    />
+                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={inactiveUsersSearch} onChange={(e) => setInactiveUsersSearch(e.target.value)} />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={downloadInactiveResearchOfficersExcel}>Export to Excel</button>
-                      <button
-                        className="btn btn-outline-primary me-2"
-                        onClick={() => setInactiveUsersPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={inactiveUsersPage === 1}
-                      >
-                        Previous
-                      </button>
+                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(inactiveResearchOfficers, "inactive_research_officers", "Inactive Research Officers")}>Export to Excel</button>
+                      <button className="btn btn-outline-primary me-2" onClick={() => setInactiveUsersPage((prev) => Math.max(prev - 1, 1))} disabled={inactiveUsersPage === 1}>Previous</button>
                       <span>Page {inactiveUsersPage}</span>
-                      <button
-                        className="btn btn-outline-primary ms-2"
-                        onClick={() => setInactiveUsersPage((prev) => prev + 1)}
-                        disabled={inactiveUsersPage * itemsPerPage >= inactiveResearchOfficers.length}
-                      >
-                        Next
-                      </button>
+                      <button className="btn btn-outline-primary ms-2" onClick={() => setInactiveUsersPage((prev) => prev + 1)} disabled={inactiveUsersPage * itemsPerPage >= inactiveResearchOfficers.length}>Next</button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -618,15 +525,11 @@ function AdminDash() {
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
                                 <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
-                                <td>
-                                  <button className="btn btn-danger btn-sm" onClick={() => handleRemoveUser(user.id)}>Remove</button>
-                                </td>
+                                <td><button className="btn btn-danger btn-sm" onClick={() => handleRemoveUser(user.id)}>Remove</button></td>
                               </tr>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="6" className="text-center">No inactive Research Officers</td>
-                            </tr>
+                            <tr><td colSpan="6" className="text-center">No inactive Research Officers</td></tr>
                           )}
                         </tbody>
                       </table>
@@ -649,30 +552,12 @@ function AdminDash() {
               {isRegisteredUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input
-                      type="text"
-                      className="form-control w-25"
-                      placeholder="Search by email or name..."
-                      value={registeredUsersSearch}
-                      onChange={(e) => setRegisteredUsersSearch(e.target.value)}
-                    />
+                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={registeredUsersSearch} onChange={(e) => setRegisteredUsersSearch(e.target.value)} />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={downloadExcel}>Export to Excel</button>
-                      <button
-                        className="btn btn-outline-primary me-2"
-                        onClick={() => setRegisteredUsersPage((prev) => Math.max(prev - 1, 1))}
-                        disabled={registeredUsersPage === 1}
-                      >
-                        Previous
-                      </button>
+                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(userData, "all_registered_users", "All Registered Users")}>Export to Excel</button>
+                      <button className="btn btn-outline-primary me-2" onClick={() => setRegisteredUsersPage((prev) => Math.max(prev - 1, 1))} disabled={registeredUsersPage === 1}>Previous</button>
                       <span>Page {registeredUsersPage}</span>
-                      <button
-                        className="btn btn-outline-primary ms-2"
-                        onClick={() => setRegisteredUsersPage((prev) => prev + 1)}
-                        disabled={registeredUsersPage * itemsPerPage >= userData.length}
-                      >
-                        Next
-                      </button>
+                      <button className="btn btn-outline-primary ms-2" onClick={() => setRegisteredUsersPage((prev) => prev + 1)} disabled={registeredUsersPage * itemsPerPage >= userData.length}>Next</button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -701,9 +586,7 @@ function AdminDash() {
                               </tr>
                             ))
                           ) : (
-                            <tr>
-                              <td colSpan="5" className="text-center">No data available</td>
-                            </tr>
+                            <tr><td colSpan="5" className="text-center">No data available</td></tr>
                           )}
                         </tbody>
                       </table>
@@ -737,6 +620,7 @@ function AdminDash() {
                         <th>Taluka</th>
                         <th>Udise Number</th>
                         <th>पालकाचे नाव</th>
+                        <th>शाळेचे नाव</th>
                         <th>पाल्याांचे नाव 1</th>
                         <th>इयत्ता व तुकडी</th>
                         <th>पाल्याांचे नाव 2</th>
@@ -744,17 +628,17 @@ function AdminDash() {
                         <th>पालकाची शैक्षणिक पात्रता</th>
                         <th>पालकाचा निवासाचा संपूर्ण पत्ता</th>
                         <th>मुलांना दररोज शाळेत पाठवतात का?</th>
-                        <th>नसल्यास कारण नमूद करयायात यावे</th>
-                        <th>मुलांचे/ मुलींचे वजन वाढले का?</th>
+                        <th>नसल्यास कारण</th>
+                        <th>मुलांचे/मुलींचे वजन वाढले का?</th>
                         <th>वारंवार आजारी पडयायाचे प्रमाण कमी झाले का?</th>
                         <th>अभ्यासातील प्रगती चागंली झाली का?</th>
                         <th>अभ्यासातील एकाग्रता वाढली का?</th>
                         <th>मुला-मुलींचे पोषण चागंले होत आहे का?</th>
                         <th>नियमित शाळेत जाण्यामध्ये सुधारणा झाली का?</th>
-                        <th>वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार योजनेचा प्रभाव</th>
+                        <th>शालेय पोषण आहार योजनेचा प्रभाव</th>
                         <th>दुपारच्या उपस्थितीवर जेवणाचा प्रभाव</th>
-                        <th>मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव</th>
-                        <th>योजनेमध्ये सुधारणा करण्यासाठीच्या सूचना</th>
+                        <th>सामाजिकीकरण प्रक्रियेवर प्रभाव</th>
+                        <th>सुधारणा सूचना</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -767,6 +651,7 @@ function AdminDash() {
                             <td>{parent.taluka || "N/A"}</td>
                             <td>{parent.schoolUdiseNumber || "N/A"}</td>
                             <td>{parent.parentName || "N/A"}</td>
+                            <td>{parent.schoolName || "N/A"}</td>
                             <td>{parent.child1 || "N/A"}</td>
                             <td>{parent.child1Sec || "N/A"}</td>
                             <td>{parent.child2 || "N/A"}</td>
@@ -786,7 +671,7 @@ function AdminDash() {
                             <td>{parent.effectOfNutritionDietPlan || "N/A"}</td>
                             <td>{parent.improvementSuggestions || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
-                              <div className="d-flex justify-content-center align-items-center gap-2">
+                              <div className="d-flex justify-content-center gap-2">
                                 <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateParentForm(parent.id)}>Edit</button>
                                 <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleParentDelete(parent.id)}>Delete</button>
                               </div>
@@ -794,9 +679,7 @@ function AdminDash() {
                           </tr>
                         ))
                       ) : (
-                        <tr>
-                          <td colSpan="24" className="text-center">No data available</td>
-                        </tr>
+                        <tr><td colSpan="25" className="text-center">No data available</td></tr>
                       )}
                     </tbody>
                   </table>
@@ -857,7 +740,9 @@ function AdminDash() {
                       <tr>
                         <th>#</th>
                         <th>शाळेचे नाव</th>
-                        <th>तालुका/जिल्हा</th>
+                        <th>UDISE क्रमांक</th>
+                        <th>तालुका</th>
+                        <th>जिल्हा</th>
                         <th>Feedback</th>
                         <th>Actions</th>
                       </tr>
@@ -868,10 +753,12 @@ function AdminDash() {
                           <tr key={observer.id}>
                             <td>{index + 1}</td>
                             <td>{observer.schoolName || "N/A"}</td>
+                            <td>{observer.udiseNo || "N/A"}</td>
+                            <td>{observer.taluka || "N/A"}</td>
                             <td>{observer.district || "N/A"}</td>
                             <td>{observer.voiceInput || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
-                              <div className="d-flex justify-content-center align-items-center gap-2">
+                              <div className="d-flex justify-content-center gap-2">
                                 <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateObservationForm(observer.id)}>Edit</button>
                                 <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleObservationDelete(observer.id)}>Delete</button>
                               </div>
@@ -879,9 +766,7 @@ function AdminDash() {
                           </tr>
                         ))
                       ) : (
-                        <tr>
-                          <td colSpan="5" className="text-center">No data available</td>
-                        </tr>
+                        <tr><td colSpan="7" className="text-center">No data available</td></tr>
                       )}
                     </tbody>
                   </table>
