@@ -1,18 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { db } from "../components/Firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { useNavigate, useParams } from "react-router-dom";
+import { collection, addDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
-const UpdateObserveForm = () => {
-  const { id } = useParams();
+const ObservationForm = () => {
   const navigate = useNavigate();
-
-  const [formData, setFormData] = useState({
-    schoolName: "",
-    district: "",
-    voiceInput: "",
-  });
-
+  const [schoolName, setSchoolName] = useState("");
+  const [udiseNo, setUdiseNo] = useState(""); // Added UDISE No state
+  const [district, setDistrict] = useState("");
+  const [taluka, setTaluka] = useState("");
+  const [voiceInput, setVoiceInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
@@ -25,10 +22,7 @@ const UpdateObserveForm = () => {
       recognition.start();
 
       recognition.onresult = (e) => {
-        setFormData((prevData) => ({
-          ...prevData,
-          voiceInput: e.results[0][0].transcript,
-        }));
+        setVoiceInput(e.results[0][0].transcript);
         recognition.stop();
       };
 
@@ -38,50 +32,30 @@ const UpdateObserveForm = () => {
     }
   };
 
-  const fetchObservation = async () => {
-    try {
-      setLoading(true);
-      const response = await getDoc(doc(db, "Observation_Form", id));
-      if (response.exists()) {
-        const data = response.data();
-        setFormData({
-          schoolName: data.schoolName || "",
-          district: data.district || "",
-          voiceInput: data.voiceInput || "",
-        });
-        
-      } else {
-        console.log("No such document found.");
-        setMessage("No record found.");
-      }
-    } catch (error) {
-      console.error("Error fetching document:", error.message);
-      setMessage("Error fetching data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchObservation();
-  }, [id]);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const docRef = doc(db, "Observation_Form", id);
-      await updateDoc(docRef, {
-        ...formData,
+      await addDoc(collection(db, "Observation_Form"), {
+        schoolName,
+        udiseNo,
+        district,
+        taluka,
+        voiceInput,
         timestamp: new Date(),
       });
+
       navigate("/dashboard");
 
-      setMessage("Data updated successfully!");
+      setMessage("Data submitted successfully!");
+      setSchoolName("");
+      setUdiseNo("");
+      setDistrict("");
+      setTaluka("");
+      setVoiceInput("");
     } catch (error) {
-      console.error("Error updating document:", error.message);
-      setMessage("Error updating data. Please try again.");
+      setMessage("Error submitting data. Please try again.");
     }
 
     setLoading(false);
@@ -90,40 +64,68 @@ const UpdateObserveForm = () => {
   return (
     <div className="container mt-4 p-4 border rounded bg-white">
       <h2 className="text-center border-bottom pb-2">
-        प्रधानमंत्री पोषण शक्ती निर्माण योजना(Update)
+        प्रधानमंत्री पोषण शक्ती निर्माण योजना
       </h2>
 
       <form onSubmit={handleSubmit}>
-        <div className="mb-3">
-          <label htmlFor="school-name" className="form-label fw-bold">
-            शाळेचे नाव:
-          </label>
-          <input
-            type="text"
-            id="school-name"
-            className="form-control"
-            value={formData.schoolName}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, schoolName: e.target.value }))
-            }
-            required
-          />
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label htmlFor="school-name" className="form-label fw-bold">
+              शाळेचे नाव:
+            </label>
+            <input
+              type="text"
+              id="school-name"
+              className="form-control"
+              value={schoolName}
+              onChange={(e) => setSchoolName(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label htmlFor="udise-no" className="form-label fw-bold">
+              UDISE क्रमांक:
+            </label>
+            <input
+              type="text"
+              id="udise-no"
+              className="form-control"
+              value={udiseNo}
+              onChange={(e) => setUdiseNo(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
-        <div className="mb-3">
-          <label htmlFor="district" className="form-label fw-bold">
-            तालुका/जिल्हा:
-          </label>
-          <input
-            type="text"
-            id="district"
-            className="form-control"
-            value={formData.district}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, district: e.target.value }))
-            }
-            required
-          />
+        <div className="row mb-3">
+          <div className="col-md-6">
+            <label htmlFor="taluka" className="form-label fw-bold">
+              तालुका:
+            </label>
+            <input
+              type="text"
+              id="taluka"
+              className="form-control"
+              value={taluka}
+              onChange={(e) => setTaluka(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="col-md-6">
+            <label htmlFor="district" className="form-label fw-bold">
+              जिल्हा:
+            </label>
+            <input
+              type="text"
+              id="district"
+              className="form-control"
+              value={district}
+              onChange={(e) => setDistrict(e.target.value)}
+              required
+            />
+          </div>
         </div>
 
         <p className="mt-3 text-justify">
@@ -138,10 +140,8 @@ const UpdateObserveForm = () => {
             className="form-control"
             rows="4"
             placeholder="Voice input will appear here..."
-            value={formData.voiceInput}
-            onChange={(e) =>
-              setFormData((prev) => ({ ...prev, voiceInput: e.target.value }))
-            }
+            value={voiceInput}
+            onChange={(e) => setVoiceInput(e.target.value)}
           ></textarea>
           <button
             type="button"
@@ -158,7 +158,7 @@ const UpdateObserveForm = () => {
             className="btn btn-primary mt-3"
             disabled={loading}
           >
-            {loading ? "Updating..." : "Update"}
+            {loading ? "Submitting..." : "Submit"}
           </button>
         </div>
 
@@ -168,4 +168,4 @@ const UpdateObserveForm = () => {
   );
 };
 
-export default UpdateObserveForm;
+export default ObservationForm;

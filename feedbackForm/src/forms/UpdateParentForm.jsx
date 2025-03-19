@@ -12,6 +12,7 @@ const UpdateParentForm = () => {
     taluka: "",
     schoolUdiseNumber: "",
     parentName: "",
+    schoolName: "",
     child1: "",
     child1Sec: "",
     child2: "",
@@ -84,6 +85,7 @@ const UpdateParentForm = () => {
         taluka: "",
         schoolUdiseNumber: "",
         parentName: "",
+        schoolName: "",
         child1: "",
         child1Sec: "",
         child2: "",
@@ -176,23 +178,41 @@ const UpdateParentForm = () => {
               </select>
             </div>
           </div>
+
           <div className="row mb-2">
-            {/* 1 ROW*/}
-            <div className="form-group">
-              <label htmlFor="parentName" className="fw-semibold">
-                १.पालकाचे संपूर्ण नाव
-              </label>
-              <input
-                type="text"
-                className="form-control"
-                id="parentName"
-                name="parentName"
-                value={formData.parentName}
-                onChange={handleChange}
-                required
-              />
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="parentName" className="fw-semibold">
+                  १. पालकाचे संपूर्ण नाव
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="parentName"
+                  name="parentName"
+                  value={formData.parentName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
             </div>
-            {/* ROW */}
+
+            <div className="col-md-6">
+              <div className="form-group">
+                <label htmlFor="schoolName" className="fw-semibold">
+                  १.१ शाळेचे नाव
+                </label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="schoolName"
+                  name="schoolName"
+                  value={formData.schoolName}
+                  onChange={handleChange}
+                  required
+                />
+              </div>
+            </div>
           </div>
           <div className="row mb-2">
             <h6 className="fw-semibold">
