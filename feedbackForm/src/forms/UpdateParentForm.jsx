@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../components/Firebase";
-import { collection, addDoc, getDoc, doc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const UpdateParentForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(true);
 
   const [formData, setFormData] = useState({
     district: "",
@@ -34,21 +37,42 @@ const UpdateParentForm = () => {
   });
 
   const districts = ["Pune", "Mumbai", "Nagpur"];
-
-  // Taluka options based on selected district
   const talukaOptions = {
     Pune: ["Haveli", "Mulshi", "Baramati", "Junnar"],
     Mumbai: ["Andheri", "Bandra", "Dadar", "Borivali"],
     Nagpur: ["Kamptee", "Hingna", "Katol", "Umred"],
   };
-
   const schoolUdiseNumbers = ["12345678", "87654321", "11223344"];
 
+  // Fetch parent data from Firestore
+  const fetchParent = async () => {
+    try {
+      setLoading(true);
+      const docRef = doc(db, "Parent_Form", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setFormData(docSnap.data()); // Populate form with fetched data
+      } else {
+        toast.error("No such parent form found!");
+        navigate("/admin_dashboard"); // Redirect if doc doesn’t exist
+      }
+    } catch (error) {
+      toast.error("Error fetching parent data: " + error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
+    fetchParent();
+  }, [id]);
+
+  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "district") {
-      setFormData({ ...formData, district: value, taluka: "" });
+      setFormData({ ...formData, district: value, taluka: "" }); // Reset taluka when district changes
     } else {
       setFormData((prevData) => ({
         ...prevData,
@@ -57,68 +81,41 @@ const UpdateParentForm = () => {
     }
   };
 
-  const fetchParent = async () => {
-    try {
-      const response = await getDoc(doc(db, "Parent_Form", id));
-      if (response.exists()) setFormData(response.data());
-      else console.log("No such Document are found....");
-    } catch (error) {
-      console.log(error.message());
-    }
-  };
-
-  useEffect(()=>{
-    fetchParent()
-  },[id])
-
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      // Add the form data to a collection in Firestore
-      const docRef = await updateDoc(doc(db, "Parent_Form",id), formData);
-      console.log(docRef);
-      navigate("/dashboard");
-      alert("Form update successfully");
-      // Optionally, reset the form data if needed
-      setFormData({
-        district: "",
-        taluka: "",
-        schoolUdiseNumber: "",
-        parentName: "",
-        schoolName: "",
-        child1: "",
-        child1Sec: "",
-        child2: "",
-        child2Sec: "",
-        parentEducation: "",
-        address: "",
-        sendChildDaily: "",
-        reason: "",
-        weightGain: "",
-        sickFrequency: "",
-        studyProgress: "",
-        concentration: "",
-        nutrition: "",
-        attendence: "",
-        impactOfNutritionScheme: "",
-        effectOnAfternoonAttendence: "",
-        effectOfNutritionDietPlan: "",
-        improvementSuggestions: "",
-      });
+      const docRef = doc(db, "Parent_Form", id);
+      await updateDoc(docRef, formData);
+      toast.success("Form updated successfully!");
+      navigate("/admin_dashboard"); // Redirect to admin dashboard
     } catch (error) {
-      console.error("Error submitting form data: ", error);
-      alert("Error submitting form data");
+      toast.error("Error updating form: " + error.message);
+      console.error("Error updating form: ", error);
+    } finally {
+      setLoading(false);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="container shadow p-3 mb-5 bg-body-tertiary rounded mt-4">
         <h2 className="text-center mb-3">
-          <b>पालकांचा अभिप्राय प्रश्नावली(Update Parent Form)</b>
+          <b>पालकांचा अभिप्राय प्रश्नावली (Update Parent Form)</b>
         </h2>
         <form className="fs-6" onSubmit={handleSubmit}>
-        <div className="row mb-3">
+          <div className="row mb-3">
             {/* District Dropdown */}
             <div className="col-md-4">
               <label className="form-label">District</label>
@@ -214,9 +211,10 @@ const UpdateParentForm = () => {
               </div>
             </div>
           </div>
+
           <div className="row mb-2">
             <h6 className="fw-semibold">
-              २.सदर शाळेत शिकत असलेल्या पाल्यांचे नावे
+              २. सदर शाळेत शिकत असलेल्या पाल्यांचे नावे
             </h6>
             <div className="col-md-6">
               <div className="form-group">
@@ -230,8 +228,7 @@ const UpdateParentForm = () => {
                   onChange={handleChange}
                   required
                 />
-
-                <label htmlFor="parentName" className="fw-semibold">
+                <label htmlFor="child1Sec" className="fw-semibold">
                   इयत्ता व तुकडी
                 </label>
                 <input
@@ -256,8 +253,7 @@ const UpdateParentForm = () => {
                   value={formData.child2}
                   onChange={handleChange}
                 />
-
-                <label htmlFor="parentName" className="fw-semibold">
+                <label htmlFor="child2Sec" className="fw-semibold">
                   इयत्ता व तुकडी
                 </label>
                 <input
@@ -271,12 +267,12 @@ const UpdateParentForm = () => {
               </div>
             </div>
           </div>
+
           <div className="row mb-2">
-            {/* 2 ROW*/}
             <div className="col-md-4">
               <div className="form-group">
-                <label htmlFor="education" className="fw-semibold">
-                  3.पालकाची शैक्षणिक पात्रता
+                <label htmlFor="parentEducation" className="fw-semibold">
+                  3. पालकाची शैक्षणिक पात्रता
                 </label>
                 <input
                   type="text"
@@ -291,8 +287,8 @@ const UpdateParentForm = () => {
             </div>
             <div className="col-md-4">
               <div className="form-group">
-                <label htmlFor="parentAddress" className="fw-semibold">
-                  ४.पालकाचा निवासाचा संपूर्ण पत्ता
+                <label htmlFor="address" className="fw-semibold">
+                  ४. पालकाचा निवासाचा संपूर्ण पत्ता
                 </label>
                 <textarea
                   className="form-control"
@@ -302,13 +298,13 @@ const UpdateParentForm = () => {
                   value={formData.address}
                   onChange={handleChange}
                   required
-                ></textarea>
+                />
               </div>
             </div>
             <div className="col-md-4">
               <div className="form-group">
                 <label className="fw-semibold">
-                  ५.मुलांना दररोज शाळेत पाठवतात का?
+                  ५. मुलांना दररोज शाळेत पाठवतात का?
                 </label>
                 <div>
                   <div className="form-check form-check-inline">
@@ -318,6 +314,7 @@ const UpdateParentForm = () => {
                       name="sendChildDaily"
                       id="sendChildDailyYes"
                       value="1"
+                      checked={formData.sendChildDaily === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -335,6 +332,7 @@ const UpdateParentForm = () => {
                       name="sendChildDaily"
                       id="sendChildDailyNo"
                       value="0"
+                      checked={formData.sendChildDaily === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -350,11 +348,10 @@ const UpdateParentForm = () => {
             </div>
           </div>
 
-          {/* Row 3 */}
           <div className="row mb-2">
             <div className="form-group">
               <label className="fw-semibold">
-                ५.१ नसल्यास कारण नमूद करयायात यावेः
+                ५.१ नसल्यास कारण नमूद करयायात यावेः
               </label>
               <textarea
                 className="form-control"
@@ -364,13 +361,12 @@ const UpdateParentForm = () => {
                 value={formData.reason}
                 onChange={handleChange}
                 required
-              ></textarea>
+              />
             </div>
           </div>
 
-          {/* Row 4 */}
           <div className="row mb-2">
-            <h6 className="fw-semibold">६.मुलांवर पोषण आहाराचा प्रभाव</h6>
+            <h6 className="fw-semibold">६. मुलांवर पोषण आहाराचा प्रभाव</h6>
             <div className="col-md-4">
               <div className="form-group">
                 <label className="fw-semibold">
@@ -384,6 +380,7 @@ const UpdateParentForm = () => {
                       name="weightGain"
                       id="weightGainYes"
                       value="1"
+                      checked={formData.weightGain === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -398,6 +395,7 @@ const UpdateParentForm = () => {
                       name="weightGain"
                       id="weightGainNo"
                       value="0"
+                      checked={formData.weightGain === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -421,6 +419,7 @@ const UpdateParentForm = () => {
                       name="sickFrequency"
                       id="sickFrequencyYes"
                       value="1"
+                      checked={formData.sickFrequency === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -438,6 +437,7 @@ const UpdateParentForm = () => {
                       name="sickFrequency"
                       id="sickFrequencyNo"
                       value="0"
+                      checked={formData.sickFrequency === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -464,6 +464,7 @@ const UpdateParentForm = () => {
                       name="studyProgress"
                       id="studyProgressYes"
                       value="1"
+                      checked={formData.studyProgress === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -481,6 +482,7 @@ const UpdateParentForm = () => {
                       name="studyProgress"
                       id="studyProgressNo"
                       value="0"
+                      checked={formData.studyProgress === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -495,7 +497,7 @@ const UpdateParentForm = () => {
               </div>
             </div>
           </div>
-          {/* 5 ROW*/}
+
           <div className="row mb-2">
             <div className="col-md-4">
               <div className="form-group">
@@ -510,6 +512,7 @@ const UpdateParentForm = () => {
                       name="concentration"
                       id="concentrationYes"
                       value="1"
+                      checked={formData.concentration === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -527,6 +530,7 @@ const UpdateParentForm = () => {
                       name="concentration"
                       id="concentrationNo"
                       value="0"
+                      checked={formData.concentration === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -553,6 +557,7 @@ const UpdateParentForm = () => {
                       name="nutrition"
                       id="nutritionYes"
                       value="1"
+                      checked={formData.nutrition === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -567,6 +572,7 @@ const UpdateParentForm = () => {
                       name="nutrition"
                       id="nutritionNo"
                       value="0"
+                      checked={formData.nutrition === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -590,6 +596,7 @@ const UpdateParentForm = () => {
                       name="attendence"
                       id="attendenceYes"
                       value="1"
+                      checked={formData.attendence === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -604,6 +611,7 @@ const UpdateParentForm = () => {
                       name="attendence"
                       id="attendenceNo"
                       value="0"
+                      checked={formData.attendence === "0"}
                       onChange={handleChange}
                       required
                     />
@@ -615,12 +623,12 @@ const UpdateParentForm = () => {
               </div>
             </div>
           </div>
-          {/* 6 ROW*/}
+
           <div className="row mb-2">
             <div className="col-md-4">
               <div className="form-group">
                 <label className="fw-semibold">
-                  ७.वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार
+                  ७. वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार
                   योजनेचा प्रभाव
                 </label>
                 <div>
@@ -631,6 +639,9 @@ const UpdateParentForm = () => {
                       name="impactOfNutritionScheme"
                       id="attendSchoolRegularly"
                       value="नियमितपणे शाळेत जाणे"
+                      checked={
+                        formData.impactOfNutritionScheme === "नियमितपणे शाळेत जाणे"
+                      }
                       onChange={handleChange}
                       required
                     />
@@ -648,6 +659,7 @@ const UpdateParentForm = () => {
                       name="impactOfNutritionScheme"
                       id="sometimesGoing"
                       value="कधीकधी जाणे"
+                      checked={formData.impactOfNutritionScheme === "कधीकधी जाणे"}
                       onChange={handleChange}
                       required
                     />
@@ -665,6 +677,9 @@ const UpdateParentForm = () => {
                       name="impactOfNutritionScheme"
                       id="justGoForTheDiet"
                       value="फक्त आहारासाठी जाणे"
+                      checked={
+                        formData.impactOfNutritionScheme === "फक्त आहारासाठी जाणे"
+                      }
                       onChange={handleChange}
                       required
                     />
@@ -681,12 +696,13 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="impactOfNutritionScheme"
                       id="notGoing"
-                      value="जात नाही"
+                      value="जात नाही"
+                      checked={formData.impactOfNutritionScheme === "जात नाही"}
                       onChange={handleChange}
                       required
                     />
                     <label className="form-check-label" htmlFor="notGoing">
-                      जात नाही
+                      जात नाही
                     </label>
                   </div>
                 </div>
@@ -695,7 +711,7 @@ const UpdateParentForm = () => {
             <div className="col-md-4">
               <div className="form-group">
                 <label className="fw-semibold">
-                  ८.दुपारच्या उपस्थितीवर जेवणाचा प्रभाव
+                  ८. दुपारच्या उपस्थितीवर जेवणाचा प्रभाव
                 </label>
                 <div>
                   <div className="form-check">
@@ -705,6 +721,7 @@ const UpdateParentForm = () => {
                       name="effectOnAfternoonAttendence"
                       id="increase1"
                       value="वाढलेली"
+                      checked={formData.effectOnAfternoonAttendence === "वाढलेली"}
                       onChange={handleChange}
                       required
                     />
@@ -718,12 +735,15 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOnAfternoonAttendence"
                       id="noEffect1"
-                      value="कोणताही परिणाम नाही"
+                      value="कोणताही परिणाम नाही"
+                      checked={
+                        formData.effectOnAfternoonAttendence === "कोणताही परिणाम नाही"
+                      }
                       onChange={handleChange}
                       required
                     />
                     <label className="form-check-label" htmlFor="noEffect1">
-                      कोणताही परिणाम नाही
+                      कोणताही परिणाम नाही
                     </label>
                   </div>
                   <div className="form-check">
@@ -733,6 +753,7 @@ const UpdateParentForm = () => {
                       name="effectOnAfternoonAttendence"
                       id="decrease1"
                       value="कमी"
+                      checked={formData.effectOnAfternoonAttendence === "कमी"}
                       onChange={handleChange}
                       required
                     />
@@ -746,8 +767,8 @@ const UpdateParentForm = () => {
             <div className="col-md-4">
               <div className="form-group">
                 <label className="fw-semibold">
-                  ९.मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव
-                  तुम्हाला कसा वाटतो ?
+                  ९. मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव
+                  तुम्हाला कसा वाटतो?
                 </label>
                 <div>
                   <div className="form-check">
@@ -757,6 +778,7 @@ const UpdateParentForm = () => {
                       name="effectOfNutritionDietPlan"
                       id="increase2"
                       value="वाढलेली"
+                      checked={formData.effectOfNutritionDietPlan === "वाढलेली"}
                       onChange={handleChange}
                       required
                     />
@@ -770,12 +792,15 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOfNutritionDietPlan"
                       id="noEffect2"
-                      value="कोणताही परिणाम नाही"
+                      value="कोणताही परिणाम नाही"
+                      checked={
+                        formData.effectOfNutritionDietPlan === "कोणताही परिणाम नाही"
+                      }
                       onChange={handleChange}
                       required
                     />
                     <label className="form-check-label" htmlFor="noEffect2">
-                      कोणताही परिणाम नाही
+                      कोणताही परिणाम नाही
                     </label>
                   </div>
                   <div className="form-check">
@@ -785,6 +810,7 @@ const UpdateParentForm = () => {
                       name="effectOfNutritionDietPlan"
                       id="decrease2"
                       value="कमी"
+                      checked={formData.effectOfNutritionDietPlan === "कमी"}
                       onChange={handleChange}
                       required
                     />
@@ -797,12 +823,11 @@ const UpdateParentForm = () => {
             </div>
           </div>
 
-          {/* Row 7 */}
           <div className="row mb-2">
             <div className="col-md-12">
               <div className="form-group">
                 <label className="fw-semibold">
-                  १०.योजनेमध्ये सुधारणा करण्यासाठी सूचना
+                  १०. योजनेमध्ये सुधारणा करण्यासाठी सूचना
                 </label>
                 <textarea
                   className="form-control"
@@ -811,21 +836,37 @@ const UpdateParentForm = () => {
                   name="improvementSuggestions"
                   value={formData.improvementSuggestions}
                   onChange={handleChange}
-                ></textarea>
+                />
               </div>
             </div>
           </div>
 
-          {/* Submit Button */}
           <div className="row mt-4">
             <div className="col text-center">
-              <button type="submit" className="btn btn-primary">
-                Update
+              <button
+                type="submit"
+                className="btn btn-primary me-2"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="spinner-border spinner-border-sm" />
+                ) : (
+                  "Update"
+                )}
+              </button>
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => navigate("/admin_dashboard")}
+                disabled={loading}
+              >
+                Cancel
               </button>
             </div>
           </div>
         </form>
       </div>
+      <ToastContainer position="top-right" autoClose={3000} />
     </>
   );
 };
