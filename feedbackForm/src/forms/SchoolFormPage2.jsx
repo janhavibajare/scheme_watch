@@ -62,7 +62,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="cookingAgency">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="cookingAgency">
                     २. अन्न शिजवणाऱ्या यंत्रणा :- शाळा स्तरावर बचतगटामार्फत इतर
                   </label>
                   <textarea
@@ -114,7 +114,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="cookHelperCount">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="cookHelperCount">
                     ५. आहार शिजवणाऱ्या यंत्रणा संस्थेमार्फत आहार वितरीत करण्यासाठी शाळा स्तरावर नियमितपणे उपस्थित राहणाऱ्या स्वयंपाकी मदतनीस संख्या :-
                   </label>
                   <textarea
@@ -128,7 +128,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="isCookedAtSchool">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="isCookedAtSchool">
                     ६. आहार शाळेमध्ये शिजवला जातो काय?
                   </label>
                   <textarea
@@ -165,7 +165,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 3 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="hasWeighingScale">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasWeighingScale">
                     ७. शाळेमध्ये वजनकाटा उपलब्ध आहे काय?
                   </label>
                   <select
@@ -182,7 +182,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasRiceWeighed">
+                  <label className="d-block text-start" style={{ marginBottom: "7px" }} htmlFor="hasRiceWeighed">
                     ७.१. असल्यास आहार शिजवण्यासाठी वि‌द्यार्थ्यांच्या प्रमाणात तांदूळ व धान्यादी वस्तू वजन करून वापरल्या जातात काय?
                   </label>
                   <select
@@ -237,7 +237,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 4 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="teacherPresentDuringDistribution">
+                  <label className="d-block text-start" style={{ marginBottom: "30px" }} htmlFor="teacherPresentDuringDistribution">
                     १०. विद्यार्थ्यांना आहार वितरीत करतेवेळी शिक्षक उपस्थित असतात का?
                   </label>
                   <select
@@ -249,6 +249,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     required
                   >
                     <option value="">निवडा</option>
+
                     <option value="1">होय</option>
                     <option value="0">नाही</option>
                   </select>
@@ -271,7 +272,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="supplementaryDiet">
+                  <label className="d-block text-start" style={{ marginBottom: "7px" }} htmlFor="supplementaryDiet">
                     १२. आहार शिजवणाऱ्या यंत्रणा/संस्थेमार्फत आठवड्यातून एकदा पूरक आहार दिला जातो काय?
                   </label>
                   <select
@@ -288,7 +289,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="supplementaryDietDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "30px" }} htmlFor="supplementaryDietDetails">
                     १२.१ तपशील थोडक्यात नमूद करावाः
                   </label>
                   <textarea
@@ -305,7 +306,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 5 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="sampleStored">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="sampleStored">
                     १३. आहाराचा नमुना बंद डब्यात ठेवून पुढील दिवसांपर्यंत जतन केला जातो काय?
                   </label>
                   <select
@@ -339,7 +340,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="headmasterFoodOpinion">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="headmasterFoodOpinion">
                     १५. आहार शिजवणान्या यंत्रणा/संस्थेमार्फत पुरवठा होत असलेल्या आहाराबाबत (वजन/दर्जा/गुणवत्ता) याब‌द्दल शाळेच्या मुख्याध्यापक यांचा थोडक्यात अभिप्रायः-
                   </label>
                   <textarea
@@ -373,7 +374,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 6 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="basicFacilitiesAvailable">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="basicFacilitiesAvailable">
                     १७. पायाभूत सुविधा उपलब्ध आहेत का?
                   </label>
                   <select
@@ -390,7 +391,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="basicFacilitiesDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="basicFacilitiesDetails">
                     १७.१ असल्यास थोडक्यात नमूद करावीः-
                   </label>
                   <textarea
@@ -403,7 +404,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="diningArrangement">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="diningArrangement">
                     १८. विद्यार्थ्यांना भोजन व्यवस्था असल्यास स्थिती थोडक्यात नमूद करावी-
                   </label>
                   <textarea
@@ -416,7 +417,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="followsGovtRecipe">
+                  <label className="d-block text-start" style={{ marginBottom: "6px" }} htmlFor="followsGovtRecipe">
                     १९. शासनाने दिनांक ११ जून, २०२४ च्या निर्णया‌द्वारे निश्चित करून दिलेल्या पाककृतीनुसार आहाराचा लाभ देण्यात येत आहे काय?
                   </label>
                   <select
@@ -437,7 +438,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 7 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="eggsBananasRegular">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="eggsBananasRegular">
                     २०. अंडी/केळीचा लाभ वि‌द्यार्थ्यांना नियमित देण्यात येत आहे काय?
                   </label>
                   <select
@@ -471,7 +472,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="labTestMonthly">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="labTestMonthly">
                     २२. शिजविलेल्या आहाराची दरमहा प्रयोगशाळा तपासणी करण्यात येते काय?
                   </label>
                   <select
@@ -509,7 +510,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 8 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="smcParentVisits">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="smcParentVisits">
                     २४. शालेय व्यवस्थापन समिती/माता-पालक संघ यांनी शालेय पोषण आहार संबंधात शाळेला भेटी दिल्या आहेत काय?
                   </label>
                   <select
@@ -543,7 +544,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="dailyTasteEntries">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="dailyTasteEntries">
                     २५.१ असल्यास दैनंदिन नोंदी घेण्यात येतात का?
                   </label>
                   <select
@@ -581,7 +582,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 9 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="stockDiscrepancyDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "10px" }} htmlFor="stockDiscrepancyDetails">
                     २६.१ नसल्यास तफावतीचा तपशील नमूद करावा:-
                   </label>
                   <textarea
@@ -628,7 +629,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="meetingCount2024_25">
+                  <label className="d-block text-start" style={{ marginBottom: "10px" }} htmlFor="meetingCount2024_25">
                     २८.१ असल्यास सन २०२४-२५ या कालावधीत झालेल्या बैठकांची संख्या नमूद करावीः-
                   </label>
                   <textarea
@@ -645,7 +646,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 10 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="emptySacksReturned">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="emptySacksReturned">
                     २९. तांदुळाच्या रिकाम्या गोण्या पुढील पुरवठ्‌यावेळी वर्गीकरण करून पुरवठादारास दिल्या आहेत काय?
                   </label>
                   <select
@@ -679,7 +680,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="sackTransferCount">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="sackTransferCount">
                     २९.२ हस्तांतरित केलेल्या गोण्यांची संख्या नमूद करण्यात यावी.
                   </label>
                   <textarea
@@ -692,7 +693,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="currentFoodMaterials">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="currentFoodMaterials">
                     ३०. सद्यस्थितीमध्ये शाळेत दिल्या जाणाऱ्या आहारात वापरण्यात येत असलेल्या धान्य व इतर साहित्याचा थोड्यक्यात तपशील नमूद करण्यात यावा
                   </label>
                   <textarea
@@ -709,7 +710,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 11 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="snehTithiProgram">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="snehTithiProgram">
                     ३१. स्नेहभोजन/तिथीभोजन कार्यक्रम राबवले आहेत काय?
                   </label>
                   <select
@@ -726,7 +727,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="snehTithiProgramDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="snehTithiProgramDetails">
                     ३१.१ असल्यास वर्षनिहाय तपशील नमूद करण्यात यावा
                   </label>
                   <textarea
@@ -739,7 +740,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="corruptionDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="corruptionDetails">
                     ३२. योजनेत काही भ्रष्टाचार/अनियमितता/अपहार आढळला असल्यास सविस्तर माहिती द्या?:-
                   </label>
                   <textarea
@@ -752,7 +753,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="corruptionActionDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="corruptionActionDetails">
                     ३२.१ याबाबत कोणत्या प्रकारची कारवाई करण्यात आली त्याब‌द्दल थोडक्यात माहिती नमूद करावी.:-
                   </label>
                   <textarea
@@ -769,7 +770,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 12 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="fieldOfficerVisits">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="fieldOfficerVisits">
                     ३३. क्षेत्रीय अधिकाऱ्यांच्या भेटी झालेल्या आहेत काय?
                   </label>
                   <select
@@ -786,7 +787,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="fieldOfficerVisitDetails">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="fieldOfficerVisitDetails">
                     ३३.१ असल्यास वर्षनिहाय तपशील देण्यात यावा. (२०२२ ते २०२४):-
                   </label>
                   <textarea
@@ -799,7 +800,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "18px" }} htmlFor="schemeSuggestions">
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="schemeSuggestions">
                     ३४. योजनेच्या अंमलबजावणी/सनियंत्रणाबाबत सूचना अथवा शिफारशी याबाबत थोडक्यात तपशील नमूद करण्यात यावा
                   </label>
                   <textarea
