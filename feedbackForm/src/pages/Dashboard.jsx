@@ -83,7 +83,7 @@ const Dashboard = () => {
           <div className="d-flex align-items-center">
             <Link className="navbar-brand d-flex align-items-center" to="/">
               <img src={Mid_day_logo} alt="Mid Day Meal Logo" style={{ height: "40px", marginRight: "10px" }} />
-              Dashboard
+              Home
             </Link>
             <ul className="navbar-nav d-flex flex-row">
               <li className="nav-item mx-2">
