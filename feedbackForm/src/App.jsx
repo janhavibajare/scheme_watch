@@ -10,7 +10,6 @@ import {
 
 import Login from "./pages/Login";
 import SignUp from "./pages/Register";
-
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState } from "react";
@@ -29,6 +28,7 @@ import { db } from "./components/Firebase";
 import UpdateParentForm from "./forms/UpdateParentForm";
 import UpdateObserveForm from "./forms/UpdateObserveForm";
 import SchoolForm from "./forms/SchoolForm";
+import UpdateSchoolForm from "./forms/UpdateSchoolForm"; // Added import
 
 function App() {
   const [user, setUser] = useState(null);
@@ -48,6 +48,7 @@ function App() {
       }
     });
   }, []);
+
   return (
     <AuthProvider>
       <Router>
@@ -64,14 +65,18 @@ function App() {
             path="/update_parent_form/:id"
             element={<UpdateParentForm />}
           />
-
-
-
           <Route
             path="/update_Observation_form/:id"
             element={<UpdateObserveForm />}
           />
-
+          <Route
+            path="/update_school_form/:id" // Added route
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <UpdateSchoolForm />
+              </ProtectedRoute>
+            }
+          />
           <Route
             path="/admin_dashboard"
             element={
