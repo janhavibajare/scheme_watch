@@ -15,7 +15,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import { Tooltip } from "react-tooltip";
 import { Doughnut } from "react-chartjs-2";
-import { Chart as ChartJS, ArcElement, Tooltip as ChartTooltip, Legend } from "chart.js";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip as ChartTooltip,
+  Legend,
+} from "chart.js";
 import "react-toastify/dist/ReactToastify.css";
 import "react-tooltip/dist/react-tooltip.css";
 import MidDayMealLogo from "../images/Mid_day_logo.png";
@@ -44,7 +49,10 @@ function AdminDash() {
   const [inactiveUsersSearch, setInactiveUsersSearch] = useState("");
   const [registeredUsersSearch, setRegisteredUsersSearch] = useState("");
 
-  const [sortConfig, setSortConfig] = useState({ field: "lastActive", direction: "desc" });
+  const [sortConfig, setSortConfig] = useState({
+    field: "lastActive",
+    direction: "desc",
+  });
   const [isResearchOfficersOpen, setIsResearchOfficersOpen] = useState(true);
   const [isActiveUsersOpen, setIsActiveUsersOpen] = useState(true);
   const [isInactiveUsersOpen, setIsInactiveUsersOpen] = useState(true);
@@ -62,13 +70,17 @@ function AdminDash() {
               setUserDetails(userData);
               await updateDoc(docRef, { lastLogin: new Date().toISOString() });
               const activeUserRef = doc(db, "activeUsers", user.uid);
-              await setDoc(activeUserRef, {
-                email: user.email,
-                firstName: userData.firstName || "N/A",
-                lastName: userData.lastName || "N/A",
-                role: userData.role || "N/A",
-                lastActive: new Date().toISOString(),
-              }, { merge: true });
+              await setDoc(
+                activeUserRef,
+                {
+                  email: user.email,
+                  firstName: userData.firstName || "N/A",
+                  lastName: userData.lastName || "N/A",
+                  role: userData.role || "N/A",
+                  lastActive: new Date().toISOString(),
+                },
+                { merge: true }
+              );
             }
           } catch (error) {
             toast.error("Error updating user data: " + error.message);
@@ -81,14 +93,23 @@ function AdminDash() {
   }, []);
 
   useEffect(() => {
-    const unsubscribe = onSnapshot(collection(db, "activeUsers"), (snapshot) => {
-      const activeUserList = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setAllActiveUsers(activeUserList);
-      const researchOfficers = activeUserList.filter((user) => user.role === "Research Officer");
-      setActiveResearchOfficers(researchOfficers);
-    }, (error) => {
-      toast.error("Error fetching active users: " + error.message);
-    });
+    const unsubscribe = onSnapshot(
+      collection(db, "activeUsers"),
+      (snapshot) => {
+        const activeUserList = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        setAllActiveUsers(activeUserList);
+        const researchOfficers = activeUserList.filter(
+          (user) => user.role === "Research Officer"
+        );
+        setActiveResearchOfficers(researchOfficers);
+      },
+      (error) => {
+        toast.error("Error fetching active users: " + error.message);
+      }
+    );
     return () => unsubscribe();
   }, []);
 
@@ -96,13 +117,19 @@ function AdminDash() {
     const fetchData = async () => {
       try {
         const allUsersSnap = await getDocs(collection(db, "Users"));
-        const allUsers = allUsersSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+        const allUsers = allUsersSnap.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         setUserData(allUsers);
         const thirtyDaysAgo = new Date();
         thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
         const inactive = allUsers.filter((user) => {
           const lastLogin = user.lastLogin ? new Date(user.lastLogin) : null;
-          return user.role === "Research Officer" && (!lastLogin || lastLogin < thirtyDaysAgo);
+          return (
+            user.role === "Research Officer" &&
+            (!lastLogin || lastLogin < thirtyDaysAgo)
+          );
         });
         setInactiveResearchOfficers(inactive);
       } catch (error) {
@@ -117,14 +144,19 @@ function AdminDash() {
   const fetchSchoolData = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "School_Forms"));
-      const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setSchoolData(data);
     } catch (error) {
       toast.error("Error fetching school data: " + error.message);
     }
   };
 
-  useEffect(() => { fetchSchoolData(); }, []);
+  useEffect(() => {
+    fetchSchoolData();
+  }, []);
 
   async function handleLogout() {
     try {
@@ -143,7 +175,9 @@ function AdminDash() {
       await deleteDoc(doc(db, "Users", uid));
       await deleteDoc(doc(db, "activeUsers", uid));
       toast.success("User removed successfully!");
-      setInactiveResearchOfficers((prev) => prev.filter((user) => user.id !== uid));
+      setInactiveResearchOfficers((prev) =>
+        prev.filter((user) => user.id !== uid)
+      );
       setUserData((prev) => prev.filter((user) => user.id !== uid));
     } catch (error) {
       toast.error("Error removing user: " + error.message);
@@ -169,12 +203,17 @@ function AdminDash() {
         const bDate = bValue ? new Date(bValue) : new Date(0);
         return direction === "asc" ? aDate - bDate : bDate - aDate;
       }
-      return direction === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+      return direction === "asc"
+        ? aValue.localeCompare(bValue)
+        : bValue.localeCompare(aValue);
     });
   };
 
   const handleSort = (field) => {
-    const direction = sortConfig.field === field && sortConfig.direction === "asc" ? "desc" : "asc";
+    const direction =
+      sortConfig.field === field && sortConfig.direction === "asc"
+        ? "desc"
+        : "asc";
     setSortConfig({ field, direction });
   };
 
@@ -188,7 +227,10 @@ function AdminDash() {
   const fetchParentData = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Parent_Form"));
-      const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setParentData(data);
     } catch (error) {
       toast.error("Error fetching parent data: " + error.message);
@@ -198,15 +240,22 @@ function AdminDash() {
   const fetchObserveData = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, "Observation_Form"));
-      const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
       setObserveData(data);
     } catch (error) {
       toast.error("Error fetching observation data: " + error.message);
     }
   };
 
-  useEffect(() => { fetchParentData(); }, []);
-  useEffect(() => { fetchObserveData(); }, []);
+  useEffect(() => {
+    fetchParentData();
+  }, []);
+  useEffect(() => {
+    fetchObserveData();
+  }, []);
 
   const handleParentDelete = async (id) => {
     try {
@@ -229,14 +278,16 @@ function AdminDash() {
   };
 
   const updateParentForm = (id) => navigate(`/update_parent_form/${id}`);
-  const updateObservationForm = (id) => navigate(`/update_observation_form/${id}`);
+  const updateObservationForm = (id) =>
+    navigate(`/update_observation_form/${id}`);
   const updateSchoolForm = (id) => navigate(`/update_school_form/${id}`);
   const addParentEntry = () => navigate("/parent_form");
   const addObservationEntry = () => navigate("/observation_form");
   const addSchoolEntry = () => navigate("/school_form");
 
   const downloadParentExcel = () => {
-    if (parentData.length === 0) return toast.warn("No parent data available to download!");
+    if (parentData.length === 0)
+      return toast.warn("No parent data available to download!");
     const fieldMappings = [
       { label: "District", key: "district" },
       { label: "Taluka", key: "taluka" },
@@ -252,15 +303,31 @@ function AdminDash() {
       { label: "मुलांना दररोज शाळेत पाठवतात का?", key: "sendChildDaily" },
       { label: "नसल्यास कारण नमूद करयायात यावेः", key: "reason" },
       { label: "मुलांचे/ मुलींचे वजन वाढले का?", key: "weightGain" },
-      { label: "वारंवार आजारी पडयायाचे प्रमाण कमी झाले का?", key: "sickFrequency" },
+      {
+        label: "वारंवार आजारी पडयायाचे प्रमाण कमी झाले का?",
+        key: "sickFrequency",
+      },
       { label: "अभ्यासातील प्रगती चागंली झाली का?", key: "studyProgress" },
       { label: "अभ्यासातील एकाग्रता वाढली का?", key: "concentration" },
       { label: "मुला-मुलींचे पोषण चागंले होत आहे का?", key: "nutrition" },
       { label: "नियमित शाळेत जाण्यामध्ये सुधारणा झाली का?", key: "attendence" },
-      { label: "वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार योजनेचा प्रभाव", key: "impactOfNutritionScheme" },
-      { label: "दुपारच्या उपस्थितीवर जेवणाचा प्रभाव", key: "effectOnAfternoonAttendence" },
-      { label: "मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव", key: "effectOfNutritionDietPlan" },
-      { label: "योजनेमध्ये सुधारणा करण्यासाठी सूचना", key: "improvementSuggestions" },
+      {
+        label:
+          "वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार योजनेचा प्रभाव",
+        key: "impactOfNutritionScheme",
+      },
+      {
+        label: "दुपारच्या उपस्थितीवर जेवणाचा प्रभाव",
+        key: "effectOnAfternoonAttendence",
+      },
+      {
+        label: "मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव",
+        key: "effectOfNutritionDietPlan",
+      },
+      {
+        label: "योजनेमध्ये सुधारणा करण्यासाठी सूचना",
+        key: "improvementSuggestions",
+      },
     ];
     const excelData = [];
     parentData.forEach((record, index) => {
@@ -272,7 +339,11 @@ function AdminDash() {
     const ws = XLSX.utils.aoa_to_sheet(excelData);
     fieldMappings.forEach((field, index) => {
       const cellRef = `A${index + 1}`;
-      if (ws[cellRef]) ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+      if (ws[cellRef])
+        ws[cellRef].s = {
+          font: { bold: true },
+          alignment: { horizontal: "center", vertical: "center" },
+        };
     });
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
@@ -282,7 +353,8 @@ function AdminDash() {
   };
 
   const downloadObservationExcel = () => {
-    if (observeData.length === 0) return toast.warn("No observation data available to download!");
+    if (observeData.length === 0)
+      return toast.warn("No observation data available to download!");
     const fieldMappings = [
       { label: "School Name", key: "schoolName" },
       { label: "UDISENo", key: "udiseNo" },
@@ -300,7 +372,11 @@ function AdminDash() {
     const ws = XLSX.utils.aoa_to_sheet(excelData);
     fieldMappings.forEach((field, index) => {
       const cellRef = `A${index + 1}`;
-      if (ws[cellRef]) ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+      if (ws[cellRef])
+        ws[cellRef].s = {
+          font: { bold: true },
+          alignment: { horizontal: "center", vertical: "center" },
+        };
     });
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
@@ -310,7 +386,8 @@ function AdminDash() {
   };
 
   const downloadSchoolExcel = () => {
-    if (schoolData.length === 0) return toast.warn("No school data available to download!");
+    if (schoolData.length === 0)
+      return toast.warn("No school data available to download!");
     const fieldMappings = [
       { label: "जिल्हा", key: "district" },
       { label: "तालुका", key: "taluka" },
@@ -329,15 +406,42 @@ function AdminDash() {
       { label: "महिला शिक्षक", key: "teacherFemale" },
       { label: "एकूण मुले", key: "totalBoys" },
       { label: "एकूण मुली", key: "totalGirls" },
-      { label: "लाभार्थी इयत्ता १-४ मुले", key: "beneficiaries.grade1to4.boys" },
-      { label: "लाभार्थी इयत्ता १-४ मुली", key: "beneficiaries.grade1to4.girls" },
-      { label: "लाभार्थी इयत्ता १-४ एकूण", key: "beneficiaries.grade1to4.total" },
-      { label: "लाभार्थी इयत्ता ५-७ मुले", key: "beneficiaries.grade5to7.boys" },
-      { label: "लाभार्थी इयत्ता ५-७ मुली", key: "beneficiaries.grade5to7.girls" },
-      { label: "लाभार्थी इयत्ता ५-७ एकूण", key: "beneficiaries.grade5to7.total" },
-      { label: "लाभार्थी इयत्ता ८-१० मुले", key: "beneficiaries.grade8to10.boys" },
-      { label: "लाभार्थी इयत्ता ८-१० मुली", key: "beneficiaries.grade8to10.girls" },
-      { label: "लाभार्थी इयत्ता ८-१० एकूण", key: "beneficiaries.grade8to10.total" },
+      {
+        label: "लाभार्थी इयत्ता १-४ मुले",
+        key: "beneficiaries.grade1to4.boys",
+      },
+      {
+        label: "लाभार्थी इयत्ता १-४ मुली",
+        key: "beneficiaries.grade1to4.girls",
+      },
+      {
+        label: "लाभार्थी इयत्ता १-४ एकूण",
+        key: "beneficiaries.grade1to4.total",
+      },
+      {
+        label: "लाभार्थी इयत्ता ५-७ मुले",
+        key: "beneficiaries.grade5to7.boys",
+      },
+      {
+        label: "लाभार्थी इयत्ता ५-७ मुली",
+        key: "beneficiaries.grade5to7.girls",
+      },
+      {
+        label: "लाभार्थी इयत्ता ५-७ एकूण",
+        key: "beneficiaries.grade5to7.total",
+      },
+      {
+        label: "लाभार्थी इयत्ता ८-१० मुले",
+        key: "beneficiaries.grade8to10.boys",
+      },
+      {
+        label: "लाभार्थी इयत्ता ८-१० मुली",
+        key: "beneficiaries.grade8to10.girls",
+      },
+      {
+        label: "लाभार्थी इयत्ता ८-१० एकूण",
+        key: "beneficiaries.grade8to10.total",
+      },
       { label: "मध्यान्ह भोजन फलक आहे का?", key: "hasMiddayMealBoard" },
       { label: "मध्यान्ह भोजन मेनू आहे का?", key: "hasMiddayMealMenu" },
       { label: "व्यवस्थापन मंडळ आहे का?", key: "hasManagementBoard" },
@@ -370,7 +474,10 @@ function AdminDash() {
       { label: "तांदूळ वजन केले का?", key: "hasRiceWeighed" },
       { label: "साठवण युनिट्स आहेत का?", key: "hasStorageUnits" },
       { label: "ताटे आहेत का?", key: "hasPlates" },
-      { label: "वितरणादरम्यान शिक्षक उपस्थित आहे का?", key: "teacherPresentDuringDistribution" },
+      {
+        label: "वितरणादरम्यान शिक्षक उपस्थित आहे का?",
+        key: "teacherPresentDuringDistribution",
+      },
       { label: "MDM पोर्टल अद्ययावत आहे का?", key: "mdmPortalUpdated" },
       { label: "पूरक आहार आहे का?", key: "supplementaryDiet" },
       { label: "पूरक आहार तपशील", key: "supplementaryDietDetails" },
@@ -378,23 +485,35 @@ function AdminDash() {
       { label: "साफसफाई झाली का?", key: "cleaningDone" },
       { label: "मुख्याध्यापकाचे अन्न मत", key: "headmasterFoodOpinion" },
       { label: "तृतीय पक्ष समर्थन आहे का?", key: "thirdPartySupport" },
-      { label: "मूलभूत सुविधा उपलब्ध आहेत का?", key: "basicFacilitiesAvailable" },
+      {
+        label: "मूलभूत सुविधा उपलब्ध आहेत का?",
+        key: "basicFacilitiesAvailable",
+      },
       { label: "मूलभूत सुविधा तपशील", key: "basicFacilitiesDetails" },
       { label: "जेवणाची व्यवस्था", key: "diningArrangement" },
       { label: "सरकारी रेसिपी पाळली का?", key: "followsGovtRecipe" },
       { label: "अंडी-केळी नियमित आहेत का?", key: "eggsBananasRegular" },
       { label: "अंकुरित धान्य वापरले का?", key: "usesSproutedGrains" },
       { label: "मासिक प्रयोगशाळा चाचणी आहे का?", key: "labTestMonthly" },
-      { label: "वितरणापूर्वी चव चाचणी आहे का?", key: "tasteTestBeforeDistribution" },
+      {
+        label: "वितरणापूर्वी चव चाचणी आहे का?",
+        key: "tasteTestBeforeDistribution",
+      },
       { label: "SMC पालक भेटी आहेत का?", key: "smcParentVisits" },
       { label: "चव नोंदवही आहे का?", key: "hasTasteRegister" },
       { label: "दैनंदिन चव नोंदी आहेत का?", key: "dailyTasteEntries" },
       { label: "साठा नोंदवहीशी जुळतो का?", key: "stockMatchesRegister" },
       { label: "साठा विसंगती तपशील", key: "stockDiscrepancyDetails" },
       { label: "रेसिपी प्रदर्शित आहेत का?", key: "recipesDisplayed" },
-      { label: "निरीक्षण समिती बैठका आहेत का?", key: "monitoringCommitteeMeetings" },
+      {
+        label: "निरीक्षण समिती बैठका आहेत का?",
+        key: "monitoringCommitteeMeetings",
+      },
       { label: "२०२४-२५ बैठक संख्या", key: "meetingCount2024_25" },
-      { label: "रिकाम्या पोत्यांचे परतावा झाले का?", key: "emptySacksReturned" },
+      {
+        label: "रिकाम्या पोत्यांचे परतावा झाले का?",
+        key: "emptySacksReturned",
+      },
       { label: "पोत्यांचे हस्तांतरण नोंदवले का?", key: "sackTransferRecorded" },
       { label: "पोत्यांचे हस्तांतरण संख्या", key: "sackTransferCount" },
       { label: "सध्याचे अन्न साहित्य", key: "currentFoodMaterials" },
@@ -406,7 +525,10 @@ function AdminDash() {
       { label: "फील्ड अधिकारी भेट तपशील", key: "fieldOfficerVisitDetails" },
       { label: "योजनेच्या सूचना", key: "schemeSuggestions" },
       { label: "आरोग्य तपासणी झाली का?", key: "healthCheckupDone" },
-      { label: "आरोग्य तपासणी विद्यार्थी संख्या", key: "healthCheckupStudentCount" },
+      {
+        label: "आरोग्य तपासणी विद्यार्थी संख्या",
+        key: "healthCheckupStudentCount",
+      },
       { label: "BMI नोंदवले आहे का?", key: "bmiRecorded" },
       { label: "वजन-उंची मोजली का?", key: "weightHeightMeasured" },
       { label: "स्वयंपाकी आरोग्य तपासणी आहे का?", key: "cookHealthCheck" },
@@ -414,15 +536,42 @@ function AdminDash() {
       { label: "आरोग्य प्रमाणपत्र आहे का?", key: "hasHealthCertificate" },
       { label: "सहाय्यक १ नाव", key: "helper1Name" },
       { label: "सहाय्यक २ नाव", key: "helper2Name" },
-      { label: "लाभार्थी २०२२-२३ मुले", key: "beneficiariesYearly['2022-23'].boys" },
-      { label: "लाभार्थी २०२२-२३ मुली", key: "beneficiariesYearly['2022-23'].girls" },
-      { label: "लाभार्थी २०२२-२३ एकूण", key: "beneficiariesYearly['2022-23'].total" },
-      { label: "लाभार्थी २०२३-२४ मुले", key: "beneficiariesYearly['2023-24'].boys" },
-      { label: "लाभार्थी २०२३-२४ मुली", key: "beneficiariesYearly['2023-24'].girls" },
-      { label: "लाभार्थी २०२३-२४ एकूण", key: "beneficiariesYearly['2023-24'].total" },
-      { label: "लाभार्थी २०२४-२५ मुले", key: "beneficiariesYearly['2024-25'].boys" },
-      { label: "लाभार्थी २०२४-२५ मुली", key: "beneficiariesYearly['2024-25'].girls" },
-      { label: "लाभार्थी २०२४-२५ एकूण", key: "beneficiariesYearly['2024-25'].total" },
+      {
+        label: "लाभार्थी २०२२-२३ मुले",
+        key: "beneficiariesYearly['2022-23'].boys",
+      },
+      {
+        label: "लाभार्थी २०२२-२३ मुली",
+        key: "beneficiariesYearly['2022-23'].girls",
+      },
+      {
+        label: "लाभार्थी २०२२-२३ एकूण",
+        key: "beneficiariesYearly['2022-23'].total",
+      },
+      {
+        label: "लाभार्थी २०२३-२४ मुले",
+        key: "beneficiariesYearly['2023-24'].boys",
+      },
+      {
+        label: "लाभार्थी २०२३-२४ मुली",
+        key: "beneficiariesYearly['2023-24'].girls",
+      },
+      {
+        label: "लाभार्थी २०२३-२४ एकूण",
+        key: "beneficiariesYearly['2023-24'].total",
+      },
+      {
+        label: "लाभार्थी २०२४-२५ मुले",
+        key: "beneficiariesYearly['2024-25'].boys",
+      },
+      {
+        label: "लाभार्थी २०२४-२५ मुली",
+        key: "beneficiariesYearly['2024-25'].girls",
+      },
+      {
+        label: "लाभार्थी २०२४-२५ एकूण",
+        key: "beneficiariesYearly['2024-25'].total",
+      },
       { label: "अनुदान प्राप्त २०२२-२३", key: "grantReceived['2022-23']" },
       { label: "अनुदान प्राप्त २०२३-२४", key: "grantReceived['2023-24']" },
       { label: "अनुदान प्राप्त २०२४-२५", key: "grantReceived['2024-25']" },
@@ -450,14 +599,26 @@ function AdminDash() {
       { label: "शौचालय स्वच्छता", key: "toiletCleanliness" },
       { label: "रोख नोंदवही अद्ययावत आहे का?", key: "cashBookUpdated" },
       { label: "साठा नोंदवही अद्ययावत आहे का?", key: "stockRegisterUpdated" },
-      { label: "उपस्थिती नोंदवही अद्ययावत आहे का?", key: "attendanceRegisterUpdated" },
+      {
+        label: "उपस्थिती नोंदवही अद्ययावत आहे का?",
+        key: "attendanceRegisterUpdated",
+      },
       { label: "बँक खाते अद्ययावत आहे का?", key: "bankAccountUpdated" },
-      { label: "मानधन नोंदवही अद्ययावत आहे का?", key: "honorariumRegisterUpdated" },
+      {
+        label: "मानधन नोंदवही अद्ययावत आहे का?",
+        key: "honorariumRegisterUpdated",
+      },
       { label: "चव नोंदवही अद्ययावत आहे का?", key: "tasteRegisterUpdated" },
-      { label: "स्नेह तिथी नोंदवही अद्ययावत आहे का?", key: "snehTithiRegisterUpdated" },
+      {
+        label: "स्नेह तिथी नोंदवही अद्ययावत आहे का?",
+        key: "snehTithiRegisterUpdated",
+      },
       { label: "नावनोंदणी सुधारणा आहे का?", key: "enrollmentImprovement" },
       { label: "उपस्थिती वाढ आहे का?", key: "attendanceIncrease" },
-      { label: "पोषण आरोग्य सुधारणा आहे का?", key: "nutritionHealthImprovement" },
+      {
+        label: "पोषण आरोग्य सुधारणा आहे का?",
+        key: "nutritionHealthImprovement",
+      },
       { label: "वजन-उंची वाढ आहे का?", key: "weightHeightIncrease" },
       { label: "कुपोषण कमी झाले का?", key: "malnutritionReduction" },
       { label: "जंक फूड प्रतिबंध आहे का?", key: "junkFoodPrevention" },
@@ -468,9 +629,10 @@ function AdminDash() {
     const excelData = [];
     schoolData.forEach((record, index) => {
       fieldMappings.forEach(({ label, key }, fieldIndex) => {
-        const value = key.includes(".") || key.includes("[")
-          ? eval(`record.${key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
-          : record[key] || "";
+        const value =
+          key.includes(".") || key.includes("[")
+            ? eval(`record.${key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
+            : record[key] || "";
         if (index === 0) excelData.push([label, value]);
         else excelData[fieldIndex].push(value);
       });
@@ -479,7 +641,11 @@ function AdminDash() {
     const ws = XLSX.utils.aoa_to_sheet(excelData);
     fieldMappings.forEach((field, index) => {
       const cellRef = `A${index + 1}`;
-      if (ws[cellRef]) ws[cellRef].s = { font: { bold: true }, alignment: { horizontal: "center", vertical: "center" } };
+      if (ws[cellRef])
+        ws[cellRef].s = {
+          font: { bold: true },
+          alignment: { horizontal: "center", vertical: "center" },
+        };
     });
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
@@ -489,10 +655,11 @@ function AdminDash() {
   };
 
   const filterAndPaginate = (data, search, page) => {
-    const filtered = data.filter((item) =>
-      (item.email?.toLowerCase().includes(search.toLowerCase()) ||
-       item.firstName?.toLowerCase().includes(search.toLowerCase()) ||
-       item.lastName?.toLowerCase().includes(search.toLowerCase()))
+    const filtered = data.filter(
+      (item) =>
+        item.email?.toLowerCase().includes(search.toLowerCase()) ||
+        item.firstName?.toLowerCase().includes(search.toLowerCase()) ||
+        item.lastName?.toLowerCase().includes(search.toLowerCase())
     );
     const sorted = sortData(filtered, sortConfig.field, sortConfig.direction);
     return sorted.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -500,11 +667,18 @@ function AdminDash() {
 
   const chartData = {
     labels: ["Active ROs", "Active Users", "Inactive ROs", "Registered Users"],
-    datasets: [{
-      data: [activeResearchOfficers.length, allActiveUsers.length, inactiveResearchOfficers.length, userData.length],
-      backgroundColor: ["#007bff", "#28a745", "#dc3545", "#ffc107"],
-      hoverOffset: 4,
-    }],
+    datasets: [
+      {
+        data: [
+          activeResearchOfficers.length,
+          allActiveUsers.length,
+          inactiveResearchOfficers.length,
+          userData.length,
+        ],
+        backgroundColor: ["#007bff", "#28a745", "#dc3545", "#ffc107"],
+        hoverOffset: 4,
+      },
+    ],
   };
 
   const chartOptions = {
@@ -518,23 +692,57 @@ function AdminDash() {
   };
 
   return (
-    <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{ padding: "10px 20px", borderBottom: "1px solid #ddd" }}>
-        <div className="d-flex align-items-center">
-          <img src={MidDayMealLogo} alt="Mid Day Meal Logo" style={{ width: "50px", height: "50px", borderRadius: "50%" }} />
-          <a className="navbar-brand text-white ms-2" href="/admin_dashboard" style={{ fontSize: "24px" }}>Admin</a>
-          <div className="d-flex align-items-center ms-3">
-            <Link to="/dashboard" className="nav-link text-white mx-2">Home</Link>
-            <Link to="/profile" className="nav-link text-white mx-2">Profile</Link>
-            <Link to="/about_us" className="nav-link text-white mx-2">About Us</Link>
+    <div
+      style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}
+    >
+      <nav
+        className="navbar navbar-expand-lg navbar-dark bg-dark"
+        style={{ padding: "10px 20px", borderBottom: "1px solid #ddd" }}
+      >
+        <div className="container-fluid">
+          <div className="d-flex align-items-center">
+            <img
+              src={MidDayMealLogo}
+              alt="Mid Day Meal Logo"
+              style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+            />
+            <a
+              className="navbar-brand text-white ms-2"
+              href="/admin_dashboard"
+              style={{ fontSize: "24px" }}
+            >
+              Admin
+            </a>
+            <div className="d-flex align-items-center ms-3">
+              <Link to="/dashboard" className="nav-link text-white mx-2">
+                Home
+              </Link>
+              <Link to="/profile" className="nav-link text-white mx-2">
+                Profile
+              </Link>
+              <Link to="/about_us" className="nav-link text-white mx-2">
+                About Us
+              </Link>
+            </div>
           </div>
-        </div>
-        <div className="d-flex align-items-center">
-          <form className="d-flex align-items-center mx-2">
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" style={{ width: "300px" }} />
-            <button className="btn btn-outline-primary" type="submit">Search</button>
-          </form>
-          <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
+
+          <div className="d-flex align-items-center ms-auto">
+            <form className="d-flex align-items-center me-3">
+              <input
+                className="form-control me-2"
+                type="search"
+                placeholder="Search"
+                aria-label="Search"
+                style={{ width: "300px" }}
+              />
+              <button className="btn btn-outline-primary" type="submit">
+                Search
+              </button>
+            </form>
+            <button className="btn btn-outline-danger" onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
         </div>
       </nav>
 
@@ -552,10 +760,20 @@ function AdminDash() {
         <div className="col-lg-11 col-md-12 mb-4">
           <div className="card shadow">
             <div className="card-body d-flex justify-content-around text-center">
-              <div>Total Active Research Officers: <strong>{activeResearchOfficers.length}</strong></div>
-              <div>Total Active Users: <strong>{allActiveUsers.length}</strong></div>
-              <div>Inactive Research Officers: <strong>{inactiveResearchOfficers.length}</strong></div>
-              <div>Total Registered Users: <strong>{userData.length}</strong></div>
+              <div>
+                Total Active Research Officers:{" "}
+                <strong>{activeResearchOfficers.length}</strong>
+              </div>
+              <div>
+                Total Active Users: <strong>{allActiveUsers.length}</strong>
+              </div>
+              <div>
+                Inactive Research Officers:{" "}
+                <strong>{inactiveResearchOfficers.length}</strong>
+              </div>
+              <div>
+                Total Registered Users: <strong>{userData.length}</strong>
+              </div>
             </div>
           </div>
         </div>
@@ -565,7 +783,13 @@ function AdminDash() {
         <div className="col-lg-11 col-md-12 mb-4">
           <div className="card shadow">
             <div className="card-body">
-              <h5 className="card-title" onClick={() => setIsResearchOfficersOpen(!isResearchOfficersOpen)} style={{ cursor: "pointer" }}>
+              <h5
+                className="card-title"
+                onClick={() =>
+                  setIsResearchOfficersOpen(!isResearchOfficersOpen)
+                }
+                style={{ cursor: "pointer" }}
+              >
                 Active Research Officers {isResearchOfficersOpen ? "▼" : "▲"}
               </h5>
               {isResearchOfficersOpen && (
@@ -579,10 +803,42 @@ function AdminDash() {
                       onChange={(e) => setResearchOfficerSearch(e.target.value)}
                     />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(activeResearchOfficers, "active_research_officers", "Active Research Officers")}>Export to Excel</button>
-                      <button className="btn btn-outline-primary me-2" onClick={() => setResearchOfficerPage((prev) => Math.max(prev - 1, 1))} disabled={researchOfficerPage === 1}>Previous</button>
+                      <button
+                        className="btn btn-outline-success me-2"
+                        onClick={() =>
+                          downloadExcel(
+                            activeResearchOfficers,
+                            "active_research_officers",
+                            "Active Research Officers"
+                          )
+                        }
+                      >
+                        Export to Excel
+                      </button>
+                      <button
+                        className="btn btn-outline-primary me-2"
+                        onClick={() =>
+                          setResearchOfficerPage((prev) =>
+                            Math.max(prev - 1, 1)
+                          )
+                        }
+                        disabled={researchOfficerPage === 1}
+                      >
+                        Previous
+                      </button>
                       <span>Page {researchOfficerPage}</span>
-                      <button className="btn btn-outline-primary ms-2" onClick={() => setResearchOfficerPage((prev) => prev + 1)} disabled={researchOfficerPage * itemsPerPage >= activeResearchOfficers.length}>Next</button>
+                      <button
+                        className="btn btn-outline-primary ms-2"
+                        onClick={() =>
+                          setResearchOfficerPage((prev) => prev + 1)
+                        }
+                        disabled={
+                          researchOfficerPage * itemsPerPage >=
+                          activeResearchOfficers.length
+                        }
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -594,26 +850,86 @@ function AdminDash() {
                           <tr>
                             <th onClick={() => handleSort("#")}>#</th>
                             <th onClick={() => handleSort("status")}>Status</th>
-                            <th onClick={() => handleSort("email")}>Email {sortConfig.field === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("firstName")}>First Name {sortConfig.field === "firstName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastName")}>Last Name {sortConfig.field === "lastName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastActive")}>Last Active {sortConfig.field === "lastActive" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
+                            <th onClick={() => handleSort("email")}>
+                              Email{" "}
+                              {sortConfig.field === "email" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("firstName")}>
+                              First Name{" "}
+                              {sortConfig.field === "firstName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastName")}>
+                              Last Name{" "}
+                              {sortConfig.field === "lastName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastActive")}>
+                              Last Active{" "}
+                              {sortConfig.field === "lastActive" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filterAndPaginate(activeResearchOfficers, researchOfficerSearch, researchOfficerPage).length > 0 ? (
-                            filterAndPaginate(activeResearchOfficers, researchOfficerSearch, researchOfficerPage).map((user, index) => (
+                          {filterAndPaginate(
+                            activeResearchOfficers,
+                            researchOfficerSearch,
+                            researchOfficerPage
+                          ).length > 0 ? (
+                            filterAndPaginate(
+                              activeResearchOfficers,
+                              researchOfficerSearch,
+                              researchOfficerPage
+                            ).map((user, index) => (
                               <tr key={user.id}>
-                                <td>{(researchOfficerPage - 1) * itemsPerPage + index + 1}</td>
-                                <td><span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red" }} /></td>
-                                <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
+                                <td>
+                                  {(researchOfficerPage - 1) * itemsPerPage +
+                                    index +
+                                    1}
+                                </td>
+                                <td>
+                                  <span
+                                    style={{
+                                      display: "inline-block",
+                                      width: "10px",
+                                      height: "10px",
+                                      borderRadius: "50%",
+                                      backgroundColor:
+                                        new Date(user.lastActive) >
+                                        new Date(Date.now() - 5 * 60 * 1000)
+                                          ? "green"
+                                          : "red",
+                                    }}
+                                  />
+                                </td>
+                                <td
+                                  data-tooltip-id="tooltip"
+                                  data-tooltip-content={`Last Login: ${
+                                    user.lastLogin
+                                      ? new Date(
+                                          user.lastLogin
+                                        ).toLocaleString()
+                                      : "Never"
+                                  }`}
+                                >
+                                  {user.email || "N/A"}
+                                </td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
-                                <td>{new Date(user.lastActive).toLocaleString() || "N/A"}</td>
+                                <td>
+                                  {new Date(user.lastActive).toLocaleString() ||
+                                    "N/A"}
+                                </td>
                               </tr>
                             ))
                           ) : (
-                            <tr><td colSpan="6" className="text-center">No Research Officers currently logged in</td></tr>
+                            <tr>
+                              <td colSpan="6" className="text-center">
+                                No Research Officers currently logged in
+                              </td>
+                            </tr>
                           )}
                         </tbody>
                       </table>
@@ -630,18 +946,56 @@ function AdminDash() {
         <div className="col-lg-11 col-md-12 mb-4">
           <div className="card shadow">
             <div className="card-body">
-              <h5 className="card-title" onClick={() => setIsActiveUsersOpen(!isActiveUsersOpen)} style={{ cursor: "pointer" }}>
+              <h5
+                className="card-title"
+                onClick={() => setIsActiveUsersOpen(!isActiveUsersOpen)}
+                style={{ cursor: "pointer" }}
+              >
                 All Active Users {isActiveUsersOpen ? "▼" : "▲"}
               </h5>
               {isActiveUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={activeUsersSearch} onChange={(e) => setActiveUsersSearch(e.target.value)} />
+                    <input
+                      type="text"
+                      className="form-control w-25"
+                      placeholder="Search by email or name..."
+                      value={activeUsersSearch}
+                      onChange={(e) => setActiveUsersSearch(e.target.value)}
+                    />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(allActiveUsers, "all_active_users", "All Active Users")}>Export to Excel</button>
-                      <button className="btn btn-outline-primary me-2" onClick={() => setActiveUsersPage((prev) => Math.max(prev - 1, 1))} disabled={activeUsersPage === 1}>Previous</button>
+                      <button
+                        className="btn btn-outline-success me-2"
+                        onClick={() =>
+                          downloadExcel(
+                            allActiveUsers,
+                            "all_active_users",
+                            "All Active Users"
+                          )
+                        }
+                      >
+                        Export to Excel
+                      </button>
+                      <button
+                        className="btn btn-outline-primary me-2"
+                        onClick={() =>
+                          setActiveUsersPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        disabled={activeUsersPage === 1}
+                      >
+                        Previous
+                      </button>
                       <span>Page {activeUsersPage}</span>
-                      <button className="btn btn-outline-primary ms-2" onClick={() => setActiveUsersPage((prev) => prev + 1)} disabled={activeUsersPage * itemsPerPage >= allActiveUsers.length}>Next</button>
+                      <button
+                        className="btn btn-outline-primary ms-2"
+                        onClick={() => setActiveUsersPage((prev) => prev + 1)}
+                        disabled={
+                          activeUsersPage * itemsPerPage >=
+                          allActiveUsers.length
+                        }
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -653,28 +1007,92 @@ function AdminDash() {
                           <tr>
                             <th onClick={() => handleSort("#")}>#</th>
                             <th onClick={() => handleSort("status")}>Status</th>
-                            <th onClick={() => handleSort("email")}>Email {sortConfig.field === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("firstName")}>First Name {sortConfig.field === "firstName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastName")}>Last Name {sortConfig.field === "lastName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("role")}>Role {sortConfig.field === "role" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastActive")}>Last Active {sortConfig.field === "lastActive" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
+                            <th onClick={() => handleSort("email")}>
+                              Email{" "}
+                              {sortConfig.field === "email" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("firstName")}>
+                              First Name{" "}
+                              {sortConfig.field === "firstName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastName")}>
+                              Last Name{" "}
+                              {sortConfig.field === "lastName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("role")}>
+                              Role{" "}
+                              {sortConfig.field === "role" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastActive")}>
+                              Last Active{" "}
+                              {sortConfig.field === "lastActive" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filterAndPaginate(allActiveUsers, activeUsersSearch, activeUsersPage).length > 0 ? (
-                            filterAndPaginate(allActiveUsers, activeUsersSearch, activeUsersPage).map((user, index) => (
+                          {filterAndPaginate(
+                            allActiveUsers,
+                            activeUsersSearch,
+                            activeUsersPage
+                          ).length > 0 ? (
+                            filterAndPaginate(
+                              allActiveUsers,
+                              activeUsersSearch,
+                              activeUsersPage
+                            ).map((user, index) => (
                               <tr key={user.id}>
-                                <td>{(activeUsersPage - 1) * itemsPerPage + index + 1}</td>
-                                <td><span style={{ display: "inline-block", width: "10px", height: "10px", borderRadius: "50%", backgroundColor: new Date(user.lastActive) > new Date(Date.now() - 5 * 60 * 1000) ? "green" : "red" }} /></td>
-                                <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
+                                <td>
+                                  {(activeUsersPage - 1) * itemsPerPage +
+                                    index +
+                                    1}
+                                </td>
+                                <td>
+                                  <span
+                                    style={{
+                                      display: "inline-block",
+                                      width: "10px",
+                                      height: "10px",
+                                      borderRadius: "50%",
+                                      backgroundColor:
+                                        new Date(user.lastActive) >
+                                        new Date(Date.now() - 5 * 60 * 1000)
+                                          ? "green"
+                                          : "red",
+                                    }}
+                                  />
+                                </td>
+                                <td
+                                  data-tooltip-id="tooltip"
+                                  data-tooltip-content={`Last Login: ${
+                                    user.lastLogin
+                                      ? new Date(
+                                          user.lastLogin
+                                        ).toLocaleString()
+                                      : "Never"
+                                  }`}
+                                >
+                                  {user.email || "N/A"}
+                                </td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
                                 <td>{user.role || "N/A"}</td>
-                                <td>{new Date(user.lastActive).toLocaleString() || "N/A"}</td>
+                                <td>
+                                  {new Date(user.lastActive).toLocaleString() ||
+                                    "N/A"}
+                                </td>
                               </tr>
                             ))
                           ) : (
-                            <tr><td colSpan="7" className="text-center">No users currently logged in</td></tr>
+                            <tr>
+                              <td colSpan="7" className="text-center">
+                                No users currently logged in
+                              </td>
+                            </tr>
                           )}
                         </tbody>
                       </table>
@@ -691,18 +1109,56 @@ function AdminDash() {
         <div className="col-lg-11 col-md-12 mb-4">
           <div className="card shadow">
             <div className="card-body">
-              <h5 className="card-title" onClick={() => setIsInactiveUsersOpen(!isInactiveUsersOpen)} style={{ cursor: "pointer" }}>
+              <h5
+                className="card-title"
+                onClick={() => setIsInactiveUsersOpen(!isInactiveUsersOpen)}
+                style={{ cursor: "pointer" }}
+              >
                 Inactive Research Officers {isInactiveUsersOpen ? "▼" : "▲"}
               </h5>
               {isInactiveUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={inactiveUsersSearch} onChange={(e) => setInactiveUsersSearch(e.target.value)} />
+                    <input
+                      type="text"
+                      className="form-control w-25"
+                      placeholder="Search by email or name..."
+                      value={inactiveUsersSearch}
+                      onChange={(e) => setInactiveUsersSearch(e.target.value)}
+                    />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(inactiveResearchOfficers, "inactive_research_officers", "Inactive Research Officers")}>Export to Excel</button>
-                      <button className="btn btn-outline-primary me-2" onClick={() => setInactiveUsersPage((prev) => Math.max(prev - 1, 1))} disabled={inactiveUsersPage === 1}>Previous</button>
+                      <button
+                        className="btn btn-outline-success me-2"
+                        onClick={() =>
+                          downloadExcel(
+                            inactiveResearchOfficers,
+                            "inactive_research_officers",
+                            "Inactive Research Officers"
+                          )
+                        }
+                      >
+                        Export to Excel
+                      </button>
+                      <button
+                        className="btn btn-outline-primary me-2"
+                        onClick={() =>
+                          setInactiveUsersPage((prev) => Math.max(prev - 1, 1))
+                        }
+                        disabled={inactiveUsersPage === 1}
+                      >
+                        Previous
+                      </button>
                       <span>Page {inactiveUsersPage}</span>
-                      <button className="btn btn-outline-primary ms-2" onClick={() => setInactiveUsersPage((prev) => prev + 1)} disabled={inactiveUsersPage * itemsPerPage >= inactiveResearchOfficers.length}>Next</button>
+                      <button
+                        className="btn btn-outline-primary ms-2"
+                        onClick={() => setInactiveUsersPage((prev) => prev + 1)}
+                        disabled={
+                          inactiveUsersPage * itemsPerPage >=
+                          inactiveResearchOfficers.length
+                        }
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -713,27 +1169,81 @@ function AdminDash() {
                         <thead>
                           <tr>
                             <th onClick={() => handleSort("#")}>#</th>
-                            <th onClick={() => handleSort("email")}>Email {sortConfig.field === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("firstName")}>First Name {sortConfig.field === "firstName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastName")}>Last Name {sortConfig.field === "lastName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastLogin")}>Last Login {sortConfig.field === "lastLogin" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
+                            <th onClick={() => handleSort("email")}>
+                              Email{" "}
+                              {sortConfig.field === "email" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("firstName")}>
+                              First Name{" "}
+                              {sortConfig.field === "firstName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastName")}>
+                              Last Name{" "}
+                              {sortConfig.field === "lastName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastLogin")}>
+                              Last Login{" "}
+                              {sortConfig.field === "lastLogin" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
                             <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filterAndPaginate(inactiveResearchOfficers, inactiveUsersSearch, inactiveUsersPage).length > 0 ? (
-                            filterAndPaginate(inactiveResearchOfficers, inactiveUsersSearch, inactiveUsersPage).map((user, index) => (
+                          {filterAndPaginate(
+                            inactiveResearchOfficers,
+                            inactiveUsersSearch,
+                            inactiveUsersPage
+                          ).length > 0 ? (
+                            filterAndPaginate(
+                              inactiveResearchOfficers,
+                              inactiveUsersSearch,
+                              inactiveUsersPage
+                            ).map((user, index) => (
                               <tr key={user.id}>
-                                <td>{(inactiveUsersPage - 1) * itemsPerPage + index + 1}</td>
-                                <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
+                                <td>
+                                  {(inactiveUsersPage - 1) * itemsPerPage +
+                                    index +
+                                    1}
+                                </td>
+                                <td
+                                  data-tooltip-id="tooltip"
+                                  data-tooltip-content={`Last Login: ${
+                                    user.lastLogin
+                                      ? new Date(
+                                          user.lastLogin
+                                        ).toLocaleString()
+                                      : "Never"
+                                  }`}
+                                >
+                                  {user.email || "N/A"}
+                                </td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
-                                <td>{user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}</td>
-                                <td><button className="btn btn-danger btn-sm" onClick={() => handleRemoveUser(user.id)}>Remove</button></td>
+                                <td>
+                                  {user.lastLogin
+                                    ? new Date(user.lastLogin).toLocaleString()
+                                    : "Never"}
+                                </td>
+                                <td>
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleRemoveUser(user.id)}
+                                  >
+                                    Remove
+                                  </button>
+                                </td>
                               </tr>
                             ))
                           ) : (
-                            <tr><td colSpan="6" className="text-center">No inactive Research Officers</td></tr>
+                            <tr>
+                              <td colSpan="6" className="text-center">
+                                No inactive Research Officers
+                              </td>
+                            </tr>
                           )}
                         </tbody>
                       </table>
@@ -750,18 +1260,59 @@ function AdminDash() {
         <div className="col-lg-11 col-md-12 mb-4">
           <div className="card shadow">
             <div className="card-body">
-              <h5 className="card-title" onClick={() => setIsRegisteredUsersOpen(!isRegisteredUsersOpen)} style={{ cursor: "pointer" }}>
+              <h5
+                className="card-title"
+                onClick={() => setIsRegisteredUsersOpen(!isRegisteredUsersOpen)}
+                style={{ cursor: "pointer" }}
+              >
                 All Registered Users {isRegisteredUsersOpen ? "▼" : "▲"}
               </h5>
               {isRegisteredUsersOpen && (
                 <>
                   <div className="d-flex justify-content-between mb-3">
-                    <input type="text" className="form-control w-25" placeholder="Search by email or name..." value={registeredUsersSearch} onChange={(e) => setRegisteredUsersSearch(e.target.value)} />
+                    <input
+                      type="text"
+                      className="form-control w-25"
+                      placeholder="Search by email or name..."
+                      value={registeredUsersSearch}
+                      onChange={(e) => setRegisteredUsersSearch(e.target.value)}
+                    />
                     <div>
-                      <button className="btn btn-outline-success me-2" onClick={() => downloadExcel(userData, "all_registered_users", "All Registered Users")}>Export to Excel</button>
-                      <button className="btn btn-outline-primary me-2" onClick={() => setRegisteredUsersPage((prev) => Math.max(prev - 1, 1))} disabled={registeredUsersPage === 1}>Previous</button>
+                      <button
+                        className="btn btn-outline-success me-2"
+                        onClick={() =>
+                          downloadExcel(
+                            userData,
+                            "all_registered_users",
+                            "All Registered Users"
+                          )
+                        }
+                      >
+                        Export to Excel
+                      </button>
+                      <button
+                        className="btn btn-outline-primary me-2"
+                        onClick={() =>
+                          setRegisteredUsersPage((prev) =>
+                            Math.max(prev - 1, 1)
+                          )
+                        }
+                        disabled={registeredUsersPage === 1}
+                      >
+                        Previous
+                      </button>
                       <span>Page {registeredUsersPage}</span>
-                      <button className="btn btn-outline-primary ms-2" onClick={() => setRegisteredUsersPage((prev) => prev + 1)} disabled={registeredUsersPage * itemsPerPage >= userData.length}>Next</button>
+                      <button
+                        className="btn btn-outline-primary ms-2"
+                        onClick={() =>
+                          setRegisteredUsersPage((prev) => prev + 1)
+                        }
+                        disabled={
+                          registeredUsersPage * itemsPerPage >= userData.length
+                        }
+                      >
+                        Next
+                      </button>
                     </div>
                   </div>
                   <div className="table-responsive">
@@ -772,25 +1323,77 @@ function AdminDash() {
                         <thead>
                           <tr>
                             <th onClick={() => handleSort("#")}>#</th>
-                            <th onClick={() => handleSort("email")}>Email {sortConfig.field === "email" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("firstName")}>First Name {sortConfig.field === "firstName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("lastName")}>Last Name {sortConfig.field === "lastName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
-                            <th onClick={() => handleSort("role")}>Role {sortConfig.field === "role" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
+                            <th onClick={() => handleSort("email")}>
+                              Email{" "}
+                              {sortConfig.field === "email" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("firstName")}>
+                              First Name{" "}
+                              {sortConfig.field === "firstName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("lastName")}>
+                              Last Name{" "}
+                              {sortConfig.field === "lastName" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th onClick={() => handleSort("role")}>
+                              Role{" "}
+                              {sortConfig.field === "role" &&
+                                (sortConfig.direction === "asc" ? "↑" : "↓")}
+                            </th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {filterAndPaginate(userData, registeredUsersSearch, registeredUsersPage).length > 0 ? (
-                            filterAndPaginate(userData, registeredUsersSearch, registeredUsersPage).map((user, index) => (
+                          {filterAndPaginate(
+                            userData,
+                            registeredUsersSearch,
+                            registeredUsersPage
+                          ).length > 0 ? (
+                            filterAndPaginate(
+                              userData,
+                              registeredUsersSearch,
+                              registeredUsersPage
+                            ).map((user, index) => (
                               <tr key={user.id}>
-                                <td>{(registeredUsersPage - 1) * itemsPerPage + index + 1}</td>
-                                <td data-tooltip-id="tooltip" data-tooltip-content={`Last Login: ${user.lastLogin ? new Date(user.lastLogin).toLocaleString() : "Never"}`}>{user.email || "N/A"}</td>
+                                <td>
+                                  {(registeredUsersPage - 1) * itemsPerPage +
+                                    index +
+                                    1}
+                                </td>
+                                <td
+                                  data-tooltip-id="tooltip"
+                                  data-tooltip-content={`Last Login: ${
+                                    user.lastLogin
+                                      ? new Date(
+                                          user.lastLogin
+                                        ).toLocaleString()
+                                      : "Never"
+                                  }`}
+                                >
+                                  {user.email || "N/A"}
+                                </td>
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
                                 <td>{user.role || "N/A"}</td>
+                                <td>
+                                  <button
+                                    className="btn btn-danger btn-sm"
+                                    onClick={() => handleRemoveUser(user.id)}
+                                  >
+                                    Remove
+                                  </button>
+                                </td>
                               </tr>
                             ))
                           ) : (
-                            <tr><td colSpan="5" className="text-center">No data available</td></tr>
+                            <tr>
+                              <td colSpan="6" className="text-center">
+                                No data available
+                              </td>
+                            </tr>
                           )}
                         </tbody>
                       </table>
@@ -809,8 +1412,18 @@ function AdminDash() {
             <div className="card-body">
               <h5 className="card-title">Parent Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
-                <button className="btn btn-outline-success px-4" onClick={addParentEntry}>Add Entry</button>
-                <button className="btn btn-outline-success px-4" onClick={downloadParentExcel}>Download Sheet</button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={addParentEntry}
+                >
+                  Add Entry
+                </button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={downloadParentExcel}
+                >
+                  Download Sheet
+                </button>
               </div>
               <div className="table-responsive">
                 {loading ? (
@@ -871,19 +1484,35 @@ function AdminDash() {
                             <td>{parent.nutrition || "N/A"}</td>
                             <td>{parent.attendence || "N/A"}</td>
                             <td>{parent.impactOfNutritionScheme || "N/A"}</td>
-                            <td>{parent.effectOnAfternoonAttendence || "N/A"}</td>
+                            <td>
+                              {parent.effectOnAfternoonAttendence || "N/A"}
+                            </td>
                             <td>{parent.effectOfNutritionDietPlan || "N/A"}</td>
                             <td>{parent.improvementSuggestions || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
-                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateParentForm(parent.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleParentDelete(parent.id)}>Delete</button>
+                                <button
+                                  className="btn btn-primary btn-sm px-3 py-1"
+                                  onClick={() => updateParentForm(parent.id)}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm px-3 py-1"
+                                  onClick={() => handleParentDelete(parent.id)}
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
-                        <tr><td colSpan="25" className="text-center">No data available</td></tr>
+                        <tr>
+                          <td colSpan="25" className="text-center">
+                            No data available
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>
@@ -900,8 +1529,18 @@ function AdminDash() {
             <div className="card-body">
               <h5 className="card-title">School Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
-                <button className="btn btn-outline-success px-4" onClick={addSchoolEntry}>Add Entry</button>
-                <button className="btn btn-outline-success px-4" onClick={downloadSchoolExcel}>Download Sheet</button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={addSchoolEntry}
+                >
+                  Add Entry
+                </button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={downloadSchoolExcel}
+                >
+                  Download Sheet
+                </button>
               </div>
               <div className="table-responsive overflow-x-auto">
                 {loading ? (
@@ -1087,15 +1726,33 @@ function AdminDash() {
                             <td>{school.teacherFemale || "N/A"}</td>
                             <td>{school.totalBoys || "N/A"}</td>
                             <td>{school.totalGirls || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade1to4?.boys || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade1to4?.girls || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade1to4?.total || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade5to7?.boys || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade5to7?.girls || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade5to7?.total || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade8to10?.boys || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade8to10?.girls || "N/A"}</td>
-                            <td>{school.beneficiaries?.grade8to10?.total || "N/A"}</td>
+                            <td>
+                              {school.beneficiaries?.grade1to4?.boys || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade1to4?.girls || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade1to4?.total || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade5to7?.boys || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade5to7?.girls || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade5to7?.total || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade8to10?.boys || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade8to10?.girls || "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiaries?.grade8to10?.total || "N/A"}
+                            </td>
                             <td>{school.hasMiddayMealBoard || "N/A"}</td>
                             <td>{school.hasMiddayMealMenu || "N/A"}</td>
                             <td>{school.hasManagementBoard || "N/A"}</td>
@@ -1128,7 +1785,9 @@ function AdminDash() {
                             <td>{school.hasRiceWeighed || "N/A"}</td>
                             <td>{school.hasStorageUnits || "N/A"}</td>
                             <td>{school.hasPlates || "N/A"}</td>
-                            <td>{school.teacherPresentDuringDistribution || "N/A"}</td>
+                            <td>
+                              {school.teacherPresentDuringDistribution || "N/A"}
+                            </td>
                             <td>{school.mdmPortalUpdated || "N/A"}</td>
                             <td>{school.supplementaryDiet || "N/A"}</td>
                             <td>{school.supplementaryDietDetails || "N/A"}</td>
@@ -1143,14 +1802,18 @@ function AdminDash() {
                             <td>{school.eggsBananasRegular || "N/A"}</td>
                             <td>{school.usesSproutedGrains || "N/A"}</td>
                             <td>{school.labTestMonthly || "N/A"}</td>
-                            <td>{school.tasteTestBeforeDistribution || "N/A"}</td>
+                            <td>
+                              {school.tasteTestBeforeDistribution || "N/A"}
+                            </td>
                             <td>{school.smcParentVisits || "N/A"}</td>
                             <td>{school.hasTasteRegister || "N/A"}</td>
                             <td>{school.dailyTasteEntries || "N/A"}</td>
                             <td>{school.stockMatchesRegister || "N/A"}</td>
                             <td>{school.stockDiscrepancyDetails || "N/A"}</td>
                             <td>{school.recipesDisplayed || "N/A"}</td>
-                            <td>{school.monitoringCommitteeMeetings || "N/A"}</td>
+                            <td>
+                              {school.monitoringCommitteeMeetings || "N/A"}
+                            </td>
                             <td>{school.meetingCount2024_25 || "N/A"}</td>
                             <td>{school.emptySacksReturned || "N/A"}</td>
                             <td>{school.sackTransferRecorded || "N/A"}</td>
@@ -1172,21 +1835,60 @@ function AdminDash() {
                             <td>{school.hasHealthCertificate || "N/A"}</td>
                             <td>{school.helper1Name || "N/A"}</td>
                             <td>{school.helper2Name || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2022-23"]?.boys || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2022-23"]?.girls || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2022-23"]?.total || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2023-24"]?.boys || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2023-24"]?.girls || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2023-24"]?.total || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2024-25"]?.boys || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2024-25"]?.girls || "N/A"}</td>
-                            <td>{school.beneficiariesYearly?.["2024-25"]?.total || "N/A"}</td>
-                            <td>{school.grantReceived?.["2022-23"] || "N/A"}</td>
-                            <td>{school.grantReceived?.["2023-24"] || "N/A"}</td>
-                            <td>{school.grantReceived?.["2024-25"] || "N/A"}</td>
-                            <td>{school.grantExpenditure?.["2022-23"] || "N/A"}</td>
-                            <td>{school.grantExpenditure?.["2023-24"] || "N/A"}</td>
-                            <td>{school.grantExpenditure?.["2024-25"] || "N/A"}</td>
+                            <td>
+                              {school.beneficiariesYearly?.["2022-23"]?.boys ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2022-23"]?.girls ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2022-23"]?.total ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2023-24"]?.boys ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2023-24"]?.girls ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2023-24"]?.total ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2024-25"]?.boys ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2024-25"]?.girls ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.beneficiariesYearly?.["2024-25"]?.total ||
+                                "N/A"}
+                            </td>
+                            <td>
+                              {school.grantReceived?.["2022-23"] || "N/A"}
+                            </td>
+                            <td>
+                              {school.grantReceived?.["2023-24"] || "N/A"}
+                            </td>
+                            <td>
+                              {school.grantReceived?.["2024-25"] || "N/A"}
+                            </td>
+                            <td>
+                              {school.grantExpenditure?.["2022-23"] || "N/A"}
+                            </td>
+                            <td>
+                              {school.grantExpenditure?.["2023-24"] || "N/A"}
+                            </td>
+                            <td>
+                              {school.grantExpenditure?.["2024-25"] || "N/A"}
+                            </td>
                             <td>{school.grantBalance?.["2022-23"] || "N/A"}</td>
                             <td>{school.grantBalance?.["2023-24"] || "N/A"}</td>
                             <td>{school.grantBalance?.["2024-25"] || "N/A"}</td>
@@ -1215,7 +1917,9 @@ function AdminDash() {
                             <td>{school.snehTithiRegisterUpdated || "N/A"}</td>
                             <td>{school.enrollmentImprovement || "N/A"}</td>
                             <td>{school.attendanceIncrease || "N/A"}</td>
-                            <td>{school.nutritionHealthImprovement || "N/A"}</td>
+                            <td>
+                              {school.nutritionHealthImprovement || "N/A"}
+                            </td>
                             <td>{school.weightHeightIncrease || "N/A"}</td>
                             <td>{school.malnutritionReduction || "N/A"}</td>
                             <td>{school.junkFoodPrevention || "N/A"}</td>
@@ -1223,14 +1927,28 @@ function AdminDash() {
                             <td>{school.submissionDate || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
-                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateSchoolForm(school.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleSchoolDelete(school.id)}>Delete</button>
+                                <button
+                                  className="btn btn-primary btn-sm px-3 py-1"
+                                  onClick={() => updateSchoolForm(school.id)}
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm px-3 py-1"
+                                  onClick={() => handleSchoolDelete(school.id)}
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
-                        <tr><td colSpan="151" className="text-center">No data available</td></tr>
+                        <tr>
+                          <td colSpan="151" className="text-center">
+                            No data available
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>
@@ -1247,8 +1965,18 @@ function AdminDash() {
             <div className="card-body">
               <h5 className="card-title">Observation Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
-                <button className="btn btn-outline-success px-4" onClick={addObservationEntry}>Add Entry</button>
-                <button className="btn btn-outline-success px-4" onClick={downloadObservationExcel}>Download Sheet</button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={addObservationEntry}
+                >
+                  Add Entry
+                </button>
+                <button
+                  className="btn btn-outline-success px-4"
+                  onClick={downloadObservationExcel}
+                >
+                  Download Sheet
+                </button>
               </div>
               <div className="table-responsive">
                 {loading ? (
@@ -1278,14 +2006,32 @@ function AdminDash() {
                             <td>{observe.voiceInput || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
-                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateObservationForm(observe.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleObservationDelete(observe.id)}>Delete</button>
+                                <button
+                                  className="btn btn-primary btn-sm px-3 py-1"
+                                  onClick={() =>
+                                    updateObservationForm(observe.id)
+                                  }
+                                >
+                                  Edit
+                                </button>
+                                <button
+                                  className="btn btn-danger btn-sm px-3 py-1"
+                                  onClick={() =>
+                                    handleObservationDelete(observe.id)
+                                  }
+                                >
+                                  Delete
+                                </button>
                               </div>
                             </td>
                           </tr>
                         ))
                       ) : (
-                        <tr><td colSpan="7" className="text-center">No data available</td></tr>
+                        <tr>
+                          <td colSpan="7" className="text-center">
+                            No data available
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </table>
@@ -1297,7 +2043,17 @@ function AdminDash() {
       </div>
 
       <Tooltip id="tooltip" place="top" effect="solid" />
-      <ToastContainer position="top-right" autoClose={3000} hideProgressBar={false} newestOnTop closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover />
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 }
