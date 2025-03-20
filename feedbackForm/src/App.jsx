@@ -64,6 +64,9 @@ function App() {
             path="/update_parent_form/:id"
             element={<UpdateParentForm />}
           />
+
+
+
           <Route
             path="/update_Observation_form/:id"
             element={<UpdateObserveForm />}

@@ -1,34 +1,73 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { db } from "../components/Firebase";
-import { collection, addDoc } from "firebase/firestore";
-import { useNavigate } from "react-router-dom";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { useNavigate, useParams } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-const ObservationForm = () => {
+const UpdateObservationForm = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [schoolName, setSchoolName] = useState("");
-  const [udiseNo, setUdiseNo] = useState(""); // Added UDISE No state
-  const [district, setDistrict] = useState("");
-  const [taluka, setTaluka] = useState("");
-  const [voiceInput, setVoiceInput] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [formData, setFormData] = useState({
+    schoolName: "",
+    udiseNo: "",
+    district: "",
+    taluka: "",
+    voiceInput: "",
+  });
+  const [loading, setLoading] = useState(true);
+
+  const fetchObservation = async () => {
+    try {
+      setLoading(true);
+      const docRef = doc(db, "Observation_Form", id);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setFormData(docSnap.data());
+      } else {
+        toast.error("No such observation found!");
+        navigate("/admin_dashboard");
+      }
+    } catch (error) {
+      toast.error("Error fetching observation: " + error.message);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchObservation();
+  }, [id]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const startDictation = () => {
-    if (window.hasOwnProperty("webkitSpeechRecognition")) {
+    if ("webkitSpeechRecognition" in window) {
       const recognition = new window.webkitSpeechRecognition();
       recognition.continuous = false;
       recognition.interimResults = false;
       recognition.lang = "mr-IN";
-      recognition.start();
 
+      recognition.onstart = () => toast.info("Voice input started...");
       recognition.onresult = (e) => {
-        setVoiceInput(e.results[0][0].transcript);
+        const transcript = e.results[0][0].transcript;
+        setFormData((prev) => ({ ...prev, voiceInput: transcript }));
+        toast.success("Voice input captured!");
+      };
+      recognition.onerror = (e) => {
+        toast.error("Voice input error: " + e.error);
+      };
+      recognition.onend = () => {
         recognition.stop();
       };
 
-      recognition.onerror = () => {
-        recognition.stop();
-      };
+      recognition.start();
+    } else {
+      toast.error("Speech recognition not supported in this browser.");
     }
   };
 
@@ -37,62 +76,64 @@ const ObservationForm = () => {
     setLoading(true);
 
     try {
-      await addDoc(collection(db, "Observation_Form"), {
-        schoolName,
-        udiseNo,
-        district,
-        taluka,
-        voiceInput,
-        timestamp: new Date(),
+      const docRef = doc(db, "Observation_Form", id);
+      await updateDoc(docRef, {
+        ...formData,
+        timestamp: new Date().toISOString(), // Update timestamp
       });
-
-      navigate("/dashboard");
-
-      setMessage("Data submitted successfully!");
-      setSchoolName("");
-      setUdiseNo("");
-      setDistrict("");
-      setTaluka("");
-      setVoiceInput("");
+      toast.success("Observation updated successfully!");
+      setTimeout(() => navigate("/admin_dashboard"), 1500);
     } catch (error) {
-      setMessage("Error submitting data. Please try again.");
+      toast.error("Error updating observation: " + error.message);
+      console.error("Update error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ minHeight: "100vh" }}>
+        <div className="spinner-border text-primary" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mt-4 p-4 border rounded bg-white">
       <h2 className="text-center border-bottom pb-2">
-        प्रधानमंत्री पोषण शक्ती निर्माण योजना
+        प्रधानमंत्री पोषण शक्ती निर्माण योजना (Update)
       </h2>
 
       <form onSubmit={handleSubmit}>
         <div className="row mb-3">
           <div className="col-md-6">
-            <label htmlFor="school-name" className="form-label fw-bold">
+            <label htmlFor="schoolName" className="form-label fw-bold">
               शाळेचे नाव:
             </label>
             <input
               type="text"
-              id="school-name"
+              id="schoolName"
+              name="schoolName"
               className="form-control"
-              value={schoolName}
-              onChange={(e) => setSchoolName(e.target.value)}
+              value={formData.schoolName}
+              onChange={handleChange}
               required
             />
           </div>
-
           <div className="col-md-6">
-            <label htmlFor="udise-no" className="form-label fw-bold">
+            <label htmlFor="udiseNo" className="form-label fw-bold">
               UDISE क्रमांक:
             </label>
             <input
               type="text"
-              id="udise-no"
+              id="udiseNo"
+              name="udiseNo"
               className="form-control"
-              value={udiseNo}
-              onChange={(e) => setUdiseNo(e.target.value)}
+              value={formData.udiseNo}
+              onChange={handleChange}
               required
             />
           </div>
@@ -106,13 +147,13 @@ const ObservationForm = () => {
             <input
               type="text"
               id="taluka"
+              name="taluka"
               className="form-control"
-              value={taluka}
-              onChange={(e) => setTaluka(e.target.value)}
+              value={formData.taluka}
+              onChange={handleChange}
               required
             />
           </div>
-
           <div className="col-md-6">
             <label htmlFor="district" className="form-label fw-bold">
               जिल्हा:
@@ -120,9 +161,10 @@ const ObservationForm = () => {
             <input
               type="text"
               id="district"
+              name="district"
               className="form-control"
-              value={district}
-              onChange={(e) => setDistrict(e.target.value)}
+              value={formData.district}
+              onChange={handleChange}
               required
             />
           </div>
@@ -135,37 +177,53 @@ const ObservationForm = () => {
         </p>
 
         <div className="mt-3">
+          <label htmlFor="voiceInput" className="form-label fw-bold">
+            Feedback:
+          </label>
           <textarea
             id="voiceInput"
+            name="voiceInput"
             className="form-control"
             rows="4"
             placeholder="Voice input will appear here..."
-            value={voiceInput}
-            onChange={(e) => setVoiceInput(e.target.value)}
-          ></textarea>
+            value={formData.voiceInput}
+            onChange={handleChange}
+          />
           <button
             type="button"
             className="btn btn-primary mt-2"
             onClick={startDictation}
+            disabled={loading}
           >
             Start Voice Input
           </button>
         </div>
 
-        <div className="d-flex justify-content-center">
+        <div className="d-flex justify-content-center mt-3">
           <button
             type="submit"
-            className="btn btn-primary mt-3"
+            className="btn btn-primary me-2"
             disabled={loading}
           >
-            {loading ? "Submitting..." : "Submit"}
+            {loading ? (
+              <span className="spinner-border spinner-border-sm" />
+            ) : (
+              "Update"
+            )}
+          </button>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => navigate("/admin_dashboard")}
+            disabled={loading}
+          >
+            Cancel
           </button>
         </div>
-
-        {message && <p className="mt-3 text-success">{message}</p>}
       </form>
+      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
 
-export default ObservationForm;
+export default UpdateObservationForm;

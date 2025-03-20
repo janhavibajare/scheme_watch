@@ -1,359 +1,217 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { auth } from "../components/Firebase";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import slider1 from "../images/slider1.jpeg";
 import slider2 from "../images/slider2.png";
 import slider3 from "../images/slider3.png";
-import { auth } from "../components/Firebase";
 import Mid_day_logo from "../images/Mid_day_logo.png";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const aboutUsRef = useRef(null); // Reference to the About Us section
+  const aboutUsRef = useRef(null);
+  const [userName, setUserName] = useState("");
+  const [isDarkMode, setIsDarkMode] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUserName(user.displayName || user.email.split("@")[0]);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", isDarkMode);
+  }, [isDarkMode]);
 
   async function handleLogout() {
-    try {
-      await auth.signOut();
-      navigate("/login");
-      console.log("User logged out successfully!");
-    } catch (error) {
-      console.error("Error logging out:", error.message);
+    if (window.confirm("Are you sure you want to logout?")) {
+      setLoading(true);
+      try {
+        await auth.signOut();
+        toast.success("Logged out successfully!");
+        setTimeout(() => navigate("/login"), 1500);
+      } catch (error) {
+        toast.error("Error logging out: " + error.message);
+      } finally {
+        setLoading(false);
+      }
     }
   }
 
-  // Function to scroll to the About Us section
   const scrollToAboutUs = () => {
     aboutUsRef.current.scrollIntoView({ behavior: "smooth" });
   };
 
-  // About Us content
+  const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
+
   const renderAboutUs = () => (
-    <div
-      className="container mt-4 mb-4"
-      ref={aboutUsRef} // Attach the ref here
-    >
-      <div
-        className="card shadow-lg p-4"
-        style={{
-          width: "100%",
-          borderRadius: "15px",
-          backgroundColor: "#ffffff",
-          border: "1px solid #dee2e6",
-          boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-        }}
-      >
-        <h2 className="text-center mb-4 text-secondary" style={{ fontWeight: "600" }}>
+    <div className="container mt-5 mb-5" ref={aboutUsRef}>
+      <div className="card shadow-lg p-4" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
+        <h2 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}>
           About Us
         </h2>
-        <div className="container mt-4">
-      <div className="card shadow">
         <div className="card-body">
-          <h3 className="card-title text-center">Mid Day Meal Scheme (PM-POSHAN)</h3>
-          <p className="card-text">
-            The Mid Day Meal Scheme is a school meal programme in India designed to 
-            better the nutritional status of school-age children nationwide. The scheme 
-            has been renamed as <strong>PM-POSHAN Scheme</strong>.
+          <h3 className="text-center" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Mid Day Meal Scheme (PM-POSHAN)</h3>
+          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
+            The Mid Day Meal Scheme is a school meal programme in India designed to better the nutritional status of school-age children nationwide. Renamed <strong>PM-POSHAN</strong>, it serves <strong>120 million children</strong> across <strong>1.27 million schools</strong>.
           </p>
-          
-          <p className="card-text">
-            The programme supplies free lunches on working days for children in government 
-            primary and upper primary schools, government-aided Anganwadis, Madarsa, and Maqtabs. 
-            Serving <strong>120 million children</strong> in over <strong>1.27 million schools</strong>, 
-            it is the largest of its kind in the world.
+          <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 History</h5>
+          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
+            Launched in Puducherry in <strong>1930</strong>, it was pioneered in Tamil Nadu in the 1960s by <strong>K. Kamaraj</strong>. It became nationwide in 2002 via Supreme Court orders.
           </p>
-
-          <h5>📌 History</h5>
-          <p>
-            The Mid Day Meal Scheme has been implemented in Puducherry since <strong>1930</strong> 
-            under French administration. In independent India, Tamil Nadu pioneered the scheme 
-            in the early 1960s under former Chief Minister <strong>K. Kamaraj</strong>. By 2002, 
-            it was implemented across all states under orders from the Supreme Court of India.
+          <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 Recent Updates</h5>
+          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
+            Renamed <strong>PM-POSHAN</strong> in <strong>September 2021</strong>, it added <strong>24 lakh pre-primary students</strong> in 2022.
           </p>
-
-          <h5>📌 Recent Updates</h5>
-          <p>
-            <strong>Ajay Kumar</strong>, Director of Poshan Abhiyaan, stated that the scheme was renamed 
-            to <strong>PM-POSHAN (Pradhan Mantri Poshan Shakti Nirman)</strong> in <strong>September 2021</strong> 
-            by the Ministry of Education. Additionally, <strong>24 lakh pre-primary students</strong> were included 
-            in 2022.
+          <p className="text-muted text-end" style={{ color: isDarkMode ? "#adb5bd" : "#6c757d" }}>
+            Source: Government Reports & Supreme Court Orders
           </p>
-
-          <h5>📌 Legal Backing</h5>
-          <p>
-            Under <strong>Article 24, paragraph 2c</strong> of the <strong>Convention on the Rights of the Child</strong>, 
-            India has committed to providing "adequate nutritious food" for children. The scheme is covered under the 
-            <strong>National Food Security Act, 2013</strong>, similar to the US National School Lunch Act.
-          </p>
-
-          <p className="text-muted text-end">Source: Government Reports & Supreme Court Orders</p>
         </div>
-      </div>
-    </div>
       </div>
     </div>
   );
 
   return (
-    <>
-      <div style={{ backgroundColor: "#f4f7fa" }}>
-        <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-          <div className="container-fluid d-flex justify-content-between align-items-center">
-            {/* Left Section: Logo & Links */}
-            <div className="d-flex align-items-center">
-              <Link className="navbar-brand d-flex align-items-center" to="/">
-                <img
-                  src={Mid_day_logo}
-                  alt="Logo"
-                  style={{ height: "40px", marginRight: "10px" }}
-                />
-                Dashboard
-              </Link>
+    <div style={{ backgroundColor: isDarkMode ? "#212529" : "#f4f7fa", minHeight: "100vh" }}>
+      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3 sticky-top">
+        <div className="container-fluid d-flex justify-content-between align-items-center">
+          <div className="d-flex align-items-center">
+            <Link className="navbar-brand d-flex align-items-center" to="/">
+              <img src={Mid_day_logo} alt="Mid Day Meal Logo" style={{ height: "40px", marginRight: "10px" }} />
+              Home
+            </Link>
+            <ul className="navbar-nav d-flex flex-row">
+              <li className="nav-item mx-2">
+                <Link className="nav-link" to="/admin_dashboard">Admin</Link>
+              </li>
+              <li className="nav-item mx-2">
+                <Link className="nav-link" to="/officer_dashboard">Research Officer</Link>
+              </li>
+              <li className="nav-item mx-2">
+                <span className="nav-link" style={{ cursor: "pointer" }} onClick={scrollToAboutUs}>About Us</span>
+              </li>
+            </ul>
+          </div>
+          <div className="d-flex align-items-center">
+            <button className="btn btn-outline-light me-2" onClick={toggleDarkMode}>
+              {isDarkMode ? "Light Mode" : "Dark Mode"}
+            </button>
+            <button className="btn btn-outline-danger" onClick={handleLogout} disabled={loading}>
+              {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : "Logout"}
+            </button>
+          </div>
+        </div>
+      </nav>
 
-              {/* Navbar Links */}
-              <div className="collapse navbar-collapse">
-                <ul className="navbar-nav">
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/admin_dashboard">
-                      Admin
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <Link className="nav-link" to="/officer_dashboard">
-                      Research Officer
-                    </Link>
-                  </li>
-                  <li className="nav-item">
-                    <span
-                      className="nav-link"
-                      style={{ cursor: "pointer" }}
-                      onClick={scrollToAboutUs} // Scroll to About Us on click
-                    >
-                      About Us
-                    </span>
-                  </li>
-                </ul>
+      <div className="container mt-4">
+        <h3 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
+          Welcome, {userName || "User"}!
+        </h3>
+
+        <div className="row justify-content-center align-items-center">
+          <div className="col-md-7 col-12">
+            <div id="dashboardCarousel" className="carousel slide shadow" data-bs-ride="carousel" data-bs-interval="3000">
+              <div className="carousel-inner">
+                <div className="carousel-item active">
+                  <img src={slider1} className="d-block w-100" alt="Children enjoying meals" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <div className="carousel-caption d-none d-md-block">
+                    <h5>Nutritious Meals for All</h5>
+                  </div>
+                </div>
+                <div className="carousel-item">
+                  <img src={slider2} className="d-block w-100" alt="School lunch distribution" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <div className="carousel-caption d-none d-md-block">
+                    <h5>Supporting Education</h5>
+                  </div>
+                </div>
+                <div className="carousel-item">
+                  <img src={slider3} className="d-block w-100" alt="Healthy kids in school" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <div className="carousel-caption d-none d-md-block">
+                    <h5>Growth & Learning</h5>
+                  </div>
+                </div>
               </div>
-            </div>
-
-            {/* Right Section: Logout Button */}
-            <div className="d-flex align-items-center ms-auto">
-              <button
-                className="btn btn-outline-danger ms-3"
-                onClick={handleLogout}
-              >
-                Logout
+              <button className="carousel-control-prev" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="prev">
+                <span className="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Previous</span>
+              </button>
+              <button className="carousel-control-next" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="next">
+                <span className="carousel-control-next-icon" aria-hidden="true"></span>
+                <span className="visually-hidden">Next</span>
               </button>
             </div>
           </div>
-        </nav>
 
-        {/* Main Content */}
-        <div className="container mt-4">
-          <div className="row justify-content-center align-items-center">
-            {/* Carousel Section */}
-            <div className="col-md-7 col-12">
-              <div
-                id="dashboardCarousel"
-                className="carousel slide"
-                data-bs-ride="carousel"
-                data-bs-interval="3000"
-                style={{ maxWidth: "100%", maxHeight: "350px" }}
-              >
-                <div className="carousel-inner">
-                  <div className="carousel-item active">
-                    <img
-                      src={slider1}
-                      className="d-block w-100"
-                      alt="Slide 1"
-                      style={{
-                        borderRadius: "10px",
-                        height: "350px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div className="carousel-item">
-                    <img
-                      src={slider2}
-                      className="d-block w-100"
-                      alt="Slide 2"
-                      style={{
-                        borderRadius: "10px",
-                        height: "350px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                  <div className="carousel-item">
-                    <img
-                      src={slider3}
-                      className="d-block w-100"
-                      alt="Slide 3"
-                      style={{
-                        borderRadius: "10px",
-                        height: "350px",
-                        objectFit: "cover",
-                      }}
-                    />
-                  </div>
-                </div>
-                <button
-                  className="carousel-control-prev"
-                  type="button"
-                  data-bs-target="#dashboardCarousel"
-                  data-bs-slide="prev"
-                >
-                  <span className="carousel-control-prev-icon" aria-hidden="true"></span>
-                  <span className="visually-hidden">Previous</span>
-                </button>
-                <button
-                  className="carousel-control-next"
-                  type="button"
-                  data-bs-target="#dashboardCarousel"
-                  data-bs-slide="next"
-                >
-                  <span className="carousel-control-next-icon" aria-hidden="true"></span>
-                  <span className="visually-hidden">Next</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Forms Section */}
-            <div className="col-md-5 col-12 mt-4 mt-md-0">
-              <div
-                className="card shadow-lg p-4"
-                style={{
-                  width: "100%",
-                  borderRadius: "15px",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #dee2e6",
-                  boxShadow: "0 4px 15px rgba(0, 0, 0, 0.1)",
-                  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-                }}
-              >
-                <h2
-                  className="text-center mb-4 text-secondary"
-                  style={{ fontWeight: "600" }}
-                >
-                  Forms
-                </h2>
-                <div className="list-group">
+          <div className="col-md-5 col-12 mt-4 mt-md-0">
+            <div className="card shadow-lg p-4" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
+              <h2 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}>Forms</h2>
+              <div className="list-group">
+                {[
+                  { to: "/parent_form", text: "पालकांचा अभिप्राय प्रश्नावली" },
+                  { to: "/school_form", text: "School Form" },
+                  { to: "/observation_form", text: "Observation Form" },
+                ].map((form, index) => (
                   <Link
-                    to="/parent_form"
-                    className="list-group-item list-group-item-action"
+                    key={index}
+                    to={form.to}
+                    className="list-group-item list-group-item-action mb-2"
                     style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#343a40",
-                      fontSize: "16px",
-                      textAlign: "center",
-                      marginBottom: "8px",
-                      borderRadius: "8px",
-                      border: "1px solid #dee2e6",
-                      padding: "12px",
-                      transition: "background-color 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => (e.target.style.backgroundColor = "#e9ecef")}
-                    onMouseLeave={(e) => (e.target.style.backgroundColor = "#f8f9fa")}
-                  >
-                    पालकांचा अभिप्राय प्रश्नावली
-                  </Link>
-                  <Link
-                    to="/school_form"
-                    className="list-group-item list-group-item-action"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#343a40",
-                      fontSize: "16px",
-                      textAlign: "center",
-                      marginBottom: "8px",
-                      borderRadius: "8px",
-                      border: "1px solid #dee2e6",
-                      padding: "12px",
-                      transition: "background-color 0.3s ease",
-                    }}
-                    onMouseEnter={(e) => (e.target.style.backgroundColor = "#e9ecef")}
-                    onMouseLeave={(e) => (e.target.style.backgroundColor = "#f8f9fa")}
-                  >
-                    School Form
-                  </Link>
-                  <Link
-                    to="/observation_form"
-                    className="list-group-item list-group-item-action"
-                    style={{
-                      backgroundColor: "#f8f9fa",
-                      color: "#343a40",
-                      fontSize: "16px",
+                      backgroundColor: isDarkMode ? "#495057" : "#f8f9fa",
+                      color: isDarkMode ? "#f8f9fa" : "#343a40",
                       textAlign: "center",
                       borderRadius: "8px",
-                      border: "1px solid #dee2e6",
                       padding: "12px",
-                      transition: "background-color 0.3s ease",
+                      transition: "transform 0.2s ease, background-color 0.2s ease",
                     }}
-                    onMouseEnter={(e) => (e.target.style.backgroundColor = "#e9ecef")}
-                    onMouseLeave={(e) => (e.target.style.backgroundColor = "#f8f9fa")}
+                    onMouseEnter={(e) => {
+                      e.target.style.backgroundColor = isDarkMode ? "#6c757d" : "#e9ecef";
+                      e.target.style.transform = "scale(1.02)";
+                    }}
+                    onMouseLeave={(e) => {
+                      e.target.style.backgroundColor = isDarkMode ? "#495057" : "#f8f9fa";
+                      e.target.style.transform = "scale(1)";
+                    }}
                   >
-                    Observation Form
+                    {form.text}
                   </Link>
-                </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Quote Section */}
-        <div className="d-flex justify-content-center mt-4">
+        <div className="d-flex justify-content-center mt-5">
           <div
-            className="quote-container"
+            className="quote-container card shadow-lg"
             style={{
-              width: "100%",
               maxWidth: "1400px",
-              height: "230px",
+              width: "100%",
               borderRadius: "12px",
-              border: "1px solid #dee2e6",
-              backgroundColor: "#ffffff",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              padding: "20px",
+              background: isDarkMode ? "linear-gradient(135deg, #343a40, #495057)" : "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+              padding: "30px",
               textAlign: "center",
-              boxShadow: "0px 4px 20px rgba(0, 0, 0, 0.1)",
-              background: "linear-gradient(135deg, #f8f9fa, #e9ecef)",
             }}
           >
-            <p
-              style={{
-                fontSize: "26px",
-                fontStyle: "italic",
-                color: "#495057",
-                fontWeight: "bold",
-                lineHeight: "1.6",
-                maxWidth: "80%",
-                margin: "0 auto",
-              }}
-            >
-              "The Mid Day Meal Scheme is a transformative initiative in India that
-              ensures school-age children receive nutritious meals, aiding both their
-              growth and learning."
+            <p style={{ fontSize: "26px", fontStyle: "italic", color: isDarkMode ? "#f8f9fa" : "#495057", fontWeight: "bold", lineHeight: "1.6" }}>
+              "The Mid Day Meal Scheme nourishes both body and mind, empowering India's future."
             </p>
           </div>
         </div>
 
-        {/* About Us Section (always visible) */}
         {renderAboutUs()}
-
-        {/* Footer */}
-        <footer
-          className="text-center mt-5 py-3"
-          style={{
-            backgroundColor: "#6c757d",
-            borderTop: "1px solid #dee2e6",
-          }}
-        >
-          <p className="text-light mb-0">
-            © 2025 User Dashboard. All rights reserved.
-          </p>
-        </footer>
       </div>
-    </>
+
+      <footer className="text-center mt-5 py-3" style={{ backgroundColor: "#6c757d", color: "#f8f9fa" }}>
+        <p className="mb-0">© 2025 PM-POSHAN Dashboard. All rights reserved.</p>
+      </footer>
+
+      <ToastContainer position="top-right" autoClose={3000} />
+    </div>
   );
 };
 
