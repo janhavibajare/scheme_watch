@@ -316,21 +316,23 @@ function AdminDash() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", flexDirection: "column" }}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark" style={{ padding: "10px 20px", borderBottom: "1px solid #ddd" }}>
-        <div className="d-flex align-items-center">
-          <img src={MidDayMealLogo} alt="Mid Day Meal Logo" style={{ width: "50px", height: "50px", borderRadius: "50%" }} />
-          <a className="navbar-brand text-white ms-2" href="/admin_dashboard" style={{ fontSize: "24px" }}>Admin</a>
-          <div className="d-flex align-items-center ms-3">
-            <Link to="/dashboard" className="nav-link text-white mx-2">Home</Link>
-            <Link to="/profile" className="nav-link text-white mx-2">Profile</Link>
-            <Link to="/about_us" className="nav-link text-white mx-2">About Us</Link>
+        <div className="container-fluid">
+          <div className="d-flex align-items-center">
+            <img src={MidDayMealLogo} alt="Mid Day Meal Logo" style={{ width: "50px", height: "50px", borderRadius: "50%" }} />
+            <a className="navbar-brand text-white ms-2" href="/admin_dashboard" style={{ fontSize: "24px" }}>Admin</a>
+            <div className="d-flex align-items-center ms-3">
+              <Link to="/dashboard" className="nav-link text-white mx-2">Home</Link>
+              <Link to="/profile" className="nav-link text-white mx-2">Profile</Link>
+              <Link to="/about_us" className="nav-link text-white mx-2">About Us</Link>
+            </div>
           </div>
-        </div>
-        <div className="d-flex align-items-center">
-          <form className="d-flex align-items-center mx-2">
-            <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" style={{ width: "300px" }} />
-            <button className="btn btn-outline-primary" type="submit">Search</button>
-          </form>
-          <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
+          <div className="d-flex align-items-center ms-auto">
+            <form className="d-flex align-items-center me-3">
+              <input className="form-control me-2" type="search" placeholder="Search" aria-label="Search" style={{ width: "300px" }} />
+              <button className="btn btn-outline-primary" type="submit">Search</button>
+            </form>
+            <button className="btn btn-outline-danger" onClick={handleLogout}>Logout</button>
+          </div>
         </div>
       </nav>
 
@@ -572,6 +574,7 @@ function AdminDash() {
                             <th onClick={() => handleSort("firstName")}>First Name {sortConfig.field === "firstName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
                             <th onClick={() => handleSort("lastName")}>Last Name {sortConfig.field === "lastName" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
                             <th onClick={() => handleSort("role")}>Role {sortConfig.field === "role" && (sortConfig.direction === "asc" ? "↑" : "↓")}</th>
+                            <th>Action</th>
                           </tr>
                         </thead>
                         <tbody>
@@ -583,10 +586,11 @@ function AdminDash() {
                                 <td>{user.firstName || "N/A"}</td>
                                 <td>{user.lastName || "N/A"}</td>
                                 <td>{user.role || "N/A"}</td>
+                                <td><button className="btn btn-danger btn-sm" onClick={() => handleRemoveUser(user.id)}>Delete</button></td>
                               </tr>
                             ))
                           ) : (
-                            <tr><td colSpan="5" className="text-center">No data available</td></tr>
+                            <tr><td colSpan="6" className="text-center">No data available</td></tr>
                           )}
                         </tbody>
                       </table>
@@ -600,7 +604,7 @@ function AdminDash() {
       </div>
 
       <div className="row mt-4 justify-content-center">
-        <div className="col-lg-11 col-md-12 mb-4">
+        <div className="col-lg-11 col-md-12quée mb-4">
           <div className="card shadow">
             <div className="card-body">
               <h5 className="card-title">Parent Feedback Form</h5>
@@ -615,6 +619,7 @@ function AdminDash() {
                   <table className="table table-striped text-center">
                     <thead>
                       <tr>
+                        <th>Actions</th>
                         <th>#</th>
                         <th>District</th>
                         <th>Taluka</th>
@@ -639,13 +644,18 @@ function AdminDash() {
                         <th>दुपारच्या उपस्थितीवर जेवणाचा प्रभाव</th>
                         <th>सामाजिकीकरण प्रक्रियेवर प्रभाव</th>
                         <th>सुधारणा सूचना</th>
-                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {parentData.length > 0 ? (
                         parentData.map((parent, index) => (
                           <tr key={parent.id}>
+                            <td style={{ whiteSpace: "nowrap" }}>
+                              <div className="d-flex justify-content-center gap-2">
+                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateParentForm(parent.id)}>Edit</button>
+                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleParentDelete(parent.id)}>Delete</button>
+                              </div>
+                            </td>
                             <td>{index + 1}</td>
                             <td>{parent.district || "N/A"}</td>
                             <td>{parent.taluka || "N/A"}</td>
@@ -670,12 +680,6 @@ function AdminDash() {
                             <td>{parent.effectOnAfternoonAttendence || "N/A"}</td>
                             <td>{parent.effectOfNutritionDietPlan || "N/A"}</td>
                             <td>{parent.improvementSuggestions || "N/A"}</td>
-                            <td style={{ whiteSpace: "nowrap" }}>
-                              <div className="d-flex justify-content-center gap-2">
-                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateParentForm(parent.id)}>Edit</button>
-                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleParentDelete(parent.id)}>Delete</button>
-                              </div>
-                            </td>
                           </tr>
                         ))
                       ) : (
@@ -705,6 +709,7 @@ function AdminDash() {
                   <table className="table table-striped text-center">
                     <thead>
                       <tr>
+                        <th>Actions</th>
                         <th>#</th>
                         <th>शाळेचे नाव</th>
                         <th>तालुका/जिल्हा</th>
@@ -712,7 +717,24 @@ function AdminDash() {
                       </tr>
                     </thead>
                     <tbody>
-                      {/* Add observeData mapping if intended */}
+                      {observeData.length > 0 ? (
+                        observeData.map((observer, index) => (
+                          <tr key={observer.id}>
+                            <td style={{ whiteSpace: "nowrap" }}>
+                              <div className="d-flex justify-content-center gap-2">
+                                <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateObservationForm(observer.id)}>Edit</button>
+                                <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleObservationDelete(observer.id)}>Delete</button>
+                              </div>
+                            </td>
+                            <td>{index + 1}</td>
+                            <td>{observer.schoolName || "N/A"}</td>
+                            <td>{observer.taluka || "N/A"} / {observer.district || "N/A"}</td>
+                            <td>{observer.voiceInput || "N/A"}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr><td colSpan="5" className="text-center">No data available</td></tr>
+                      )}
                     </tbody>
                   </table>
                 )}
@@ -738,31 +760,31 @@ function AdminDash() {
                   <table className="table table-striped text-center">
                     <thead>
                       <tr>
+                        <th>Actions</th>
                         <th>#</th>
                         <th>शाळेचे नाव</th>
                         <th>UDISE क्रमांक</th>
                         <th>तालुका</th>
                         <th>जिल्हा</th>
                         <th>Feedback</th>
-                        <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {observeData.length > 0 ? (
                         observeData.map((observer, index) => (
                           <tr key={observer.id}>
-                            <td>{index + 1}</td>
-                            <td>{observer.schoolName || "N/A"}</td>
-                            <td>{observer.udiseNo || "N/A"}</td>
-                            <td>{observer.taluka || "N/A"}</td>
-                            <td>{observer.district || "N/A"}</td>
-                            <td>{observer.voiceInput || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
                                 <button className="btn btn-primary btn-sm px-3 py-1" onClick={() => updateObservationForm(observer.id)}>Edit</button>
                                 <button className="btn btn-danger btn-sm px-3 py-1" onClick={() => handleObservationDelete(observer.id)}>Delete</button>
                               </div>
                             </td>
+                            <td>{index + 1}</td>
+                            <td>{observer.schoolName || "N/A"}</td>
+                            <td>{observer.udiseNo || "N/A"}</td>
+                            <td>{observer.taluka || "N/A"}</td>
+                            <td>{observer.district || "N/A"}</td>
+                            <td>{observer.voiceInput || "N/A"}</td>
                           </tr>
                         ))
                       ) : (
