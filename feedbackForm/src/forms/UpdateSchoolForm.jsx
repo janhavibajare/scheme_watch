@@ -35,7 +35,7 @@ const UpdateSchoolForm = () => {
     fetchSchoolData();
   }, [id, navigate]);
 
-  // Centralized handlers
+  // Handlers for UpdateSchoolFormPage3
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -47,10 +47,67 @@ const UpdateSchoolForm = () => {
   const handleBinaryChange = (name, value) => {
     setFormData((prev) => ({
       ...prev,
-      [name]: value === "" ? null : Number(value),
+      [name]: Number(value),
     }));
   };
 
+  const handleNumberChange = (e) => {
+    const { name, value } = e.target;
+    const numericValue = value === "" ? "" : Number(value);
+    setFormData((prev) => ({
+      ...prev,
+      [name]: numericValue,
+    }));
+  };
+
+  const handleBeneficiaryChange = (year, field, value) => {
+    const numericValue = value === "" ? "" : Number(value);
+    setFormData((prev) => {
+      const updatedBeneficiaries = {
+        ...prev.beneficiariesYearly,
+        [year]: {
+          ...prev.beneficiariesYearly?.[year] || {},
+          [field]: numericValue,
+        },
+      };
+      
+      // Calculate total
+      const boys = field === "boys" ? numericValue : updatedBeneficiaries[year].boys || 0;
+      const girls = field === "girls" ? numericValue : updatedBeneficiaries[year].girls || 0;
+      updatedBeneficiaries[year].total = (boys || 0) + (girls || 0);
+
+      return {
+        ...prev,
+        beneficiariesYearly: updatedBeneficiaries,
+      };
+    });
+  };
+
+  const handleFinancialChange = (year, field, value) => {
+    const numericValue = value === "" ? "" : Number(value);
+    setFormData((prev) => {
+      const key = field === "deposited" ? "grantReceived" : "grantExpenditure";
+      const updatedFinancial = {
+        ...prev[key],
+        [year]: numericValue,
+      };
+
+      const received = field === "deposited" ? numericValue : prev.grantReceived?.[year] || 0;
+      const spent = field === "spent" ? numericValue : prev.grantExpenditure?.[year] || 0;
+      const updatedBalance = {
+        ...prev.grantBalance,
+        [year]: (received || 0) - (spent || 0),
+      };
+
+      return {
+        ...prev,
+        [key]: updatedFinancial,
+        grantBalance: updatedBalance,
+      };
+    });
+  };
+
+  // Handlers for other pages
   const handleTeacherChange = (name, value) => {
     const numericValue = value === "" ? "" : Number(value) || "";
     setFormData((prev) => ({
@@ -63,7 +120,7 @@ const UpdateSchoolForm = () => {
     const numericValue = value === "" ? "" : Number(value) || "";
     setFormData((prev) => {
       const updatedGrade = {
-        ...prev.beneficiaries[gradeKey],
+        ...prev.beneficiaries?.[gradeKey] || {},
         [field]: numericValue,
       };
       updatedGrade.total =
@@ -114,9 +171,11 @@ const UpdateSchoolForm = () => {
 
   const pageProps = {
     formData,
-    setFormData,
     handleChange,
     handleBinaryChange,
+    handleNumberChange,
+    handleBeneficiaryChange,
+    handleFinancialChange,
     handleTeacherChange,
     handleStudentChange,
     nextStep,
@@ -126,7 +185,6 @@ const UpdateSchoolForm = () => {
   return (
     <div className="container mt-4 p-4 border rounded bg-white">
       <h2 className="text-center border-bottom pb-2">Update School Form</h2>
-      {/* Progress Bar */}
       <div className="progress mb-4">
         <div
           className="progress-bar bg-primary"
