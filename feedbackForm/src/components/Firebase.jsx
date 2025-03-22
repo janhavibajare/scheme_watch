@@ -7,12 +7,13 @@ import {getFirestore , collection, addDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyA3kbEk67D444LOBbnXIRNI2OoUcagtpkE",
-  authDomain: "schemewatch.firebaseapp.com",
-  projectId: "schemewatch",
-  storageBucket: "schemewatch.firebasestorage.app",
-  messagingSenderId: "851834646772",
-  appId: "1:851834646772:web:3c4a41f61055832766aea1"
+  apiKey: "AIzaSyBcvridNP3yqRy5-cZW838xtu7Txs0M5-c",
+  authDomain: "my-web-app-d62d0.firebaseapp.com",
+  databaseURL: "https://my-web-app-d62d0-default-rtdb.firebaseio.com",
+  projectId: "my-web-app-d62d0",
+  storageBucket: "my-web-app-d62d0.firebasestorage.app",
+  messagingSenderId: "829682409504",
+  appId: "1:829682409504:web:6a7e6cef8d4d6622d3dc45"
 };
 
 // Initialize Firebase

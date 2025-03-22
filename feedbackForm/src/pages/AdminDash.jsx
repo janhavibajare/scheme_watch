@@ -58,6 +58,8 @@ function AdminDash() {
   const [isInactiveUsersOpen, setIsInactiveUsersOpen] = useState(true);
   const [isRegisteredUsersOpen, setIsRegisteredUsersOpen] = useState(true);
 
+  const displayValue = (value) => (value != null ? value : "N/A");
+
   useEffect(() => {
     const fetchUserData = async () => {
       const unsubscribe = auth.onAuthStateChanged(async (user) => {
@@ -143,7 +145,7 @@ function AdminDash() {
 
   const fetchSchoolData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "School_Forms"));
+      const querySnapshot = await getDocs(collection(db, "School_Form"));
       const data = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
@@ -898,7 +900,7 @@ function AdminDash() {
                                       borderRadius: "50%",
                                       backgroundColor:
                                         new Date(user.lastActive) >
-                                        new Date(Date.now() - 5 * 60 * 1000)
+                                          new Date(Date.now() - 5 * 60 * 1000)
                                           ? "green"
                                           : "red",
                                     }}
@@ -906,13 +908,12 @@ function AdminDash() {
                                 </td>
                                 <td
                                   data-tooltip-id="tooltip"
-                                  data-tooltip-content={`Last Login: ${
-                                    user.lastLogin
-                                      ? new Date(
-                                          user.lastLogin
-                                        ).toLocaleString()
-                                      : "Never"
-                                  }`}
+                                  data-tooltip-content={`Last Login: ${user.lastLogin
+                                    ? new Date(
+                                      user.lastLogin
+                                    ).toLocaleString()
+                                    : "Never"
+                                    }`}
                                 >
                                   {user.email || "N/A"}
                                 </td>
@@ -1060,7 +1061,7 @@ function AdminDash() {
                                       borderRadius: "50%",
                                       backgroundColor:
                                         new Date(user.lastActive) >
-                                        new Date(Date.now() - 5 * 60 * 1000)
+                                          new Date(Date.now() - 5 * 60 * 1000)
                                           ? "green"
                                           : "red",
                                     }}
@@ -1068,13 +1069,12 @@ function AdminDash() {
                                 </td>
                                 <td
                                   data-tooltip-id="tooltip"
-                                  data-tooltip-content={`Last Login: ${
-                                    user.lastLogin
-                                      ? new Date(
-                                          user.lastLogin
-                                        ).toLocaleString()
-                                      : "Never"
-                                  }`}
+                                  data-tooltip-content={`Last Login: ${user.lastLogin
+                                    ? new Date(
+                                      user.lastLogin
+                                    ).toLocaleString()
+                                    : "Never"
+                                    }`}
                                 >
                                   {user.email || "N/A"}
                                 </td>
@@ -1211,13 +1211,12 @@ function AdminDash() {
                                 </td>
                                 <td
                                   data-tooltip-id="tooltip"
-                                  data-tooltip-content={`Last Login: ${
-                                    user.lastLogin
-                                      ? new Date(
-                                          user.lastLogin
-                                        ).toLocaleString()
-                                      : "Never"
-                                  }`}
+                                  data-tooltip-content={`Last Login: ${user.lastLogin
+                                    ? new Date(
+                                      user.lastLogin
+                                    ).toLocaleString()
+                                    : "Never"
+                                    }`}
                                 >
                                   {user.email || "N/A"}
                                 </td>
@@ -1365,13 +1364,12 @@ function AdminDash() {
                                 </td>
                                 <td
                                   data-tooltip-id="tooltip"
-                                  data-tooltip-content={`Last Login: ${
-                                    user.lastLogin
-                                      ? new Date(
-                                          user.lastLogin
-                                        ).toLocaleString()
-                                      : "Never"
-                                  }`}
+                                  data-tooltip-content={`Last Login: ${user.lastLogin
+                                    ? new Date(
+                                      user.lastLogin
+                                    ).toLocaleString()
+                                    : "Never"
+                                    }`}
                                 >
                                   {user.email || "N/A"}
                                 </td>
@@ -1429,13 +1427,14 @@ function AdminDash() {
                 {loading ? (
                   <p className="text-center">Loading...</p>
                 ) : (
+
                   <table className="table table-striped text-center">
                     <thead>
                       <tr>
                         <th>#</th>
+                        <th>Udise Number</th>
                         <th>District</th>
                         <th>Taluka</th>
-                        <th>Udise Number</th>
                         <th>पालकाचे नाव</th>
                         <th>शाळेचे नाव</th>
                         <th>पाल्याांचे नाव 1</th>
@@ -1464,31 +1463,29 @@ function AdminDash() {
                         parentData.map((parent, index) => (
                           <tr key={parent.id}>
                             <td>{index + 1}</td>
-                            <td>{parent.district || "N/A"}</td>
-                            <td>{parent.taluka || "N/A"}</td>
-                            <td>{parent.schoolUdiseNumber || "N/A"}</td>
-                            <td>{parent.parentName || "N/A"}</td>
-                            <td>{parent.schoolName || "N/A"}</td>
-                            <td>{parent.child1 || "N/A"}</td>
-                            <td>{parent.child1Sec || "N/A"}</td>
-                            <td>{parent.child2 || "N/A"}</td>
-                            <td>{parent.child2Sec || "N/A"}</td>
-                            <td>{parent.parentEducation || "N/A"}</td>
-                            <td>{parent.address || "N/A"}</td>
-                            <td>{parent.sendChildDaily || "N/A"}</td>
-                            <td>{parent.reason || "N/A"}</td>
-                            <td>{parent.weightGain || "N/A"}</td>
-                            <td>{parent.sickFrequency || "N/A"}</td>
-                            <td>{parent.studyProgress || "N/A"}</td>
-                            <td>{parent.concentration || "N/A"}</td>
-                            <td>{parent.nutrition || "N/A"}</td>
-                            <td>{parent.attendence || "N/A"}</td>
-                            <td>{parent.impactOfNutritionScheme || "N/A"}</td>
-                            <td>
-                              {parent.effectOnAfternoonAttendence || "N/A"}
-                            </td>
-                            <td>{parent.effectOfNutritionDietPlan || "N/A"}</td>
-                            <td>{parent.improvementSuggestions || "N/A"}</td>
+                            <td>{displayValue(parent.schoolUdiseNumber)}</td>
+                            <td>{displayValue(parent.district)}</td>
+                            <td>{displayValue(parent.taluka)}</td>
+                            <td>{displayValue(parent.parentName)}</td>
+                            <td>{displayValue(parent.schoolName)}</td>
+                            <td>{displayValue(parent.child1)}</td>
+                            <td>{displayValue(parent.child1Sec)}</td>
+                            <td>{displayValue(parent.child2)}</td>
+                            <td>{displayValue(parent.child2Sec)}</td>
+                            <td>{displayValue(parent.parentEducation)}</td>
+                            <td>{displayValue(parent.address)}</td>
+                            <td>{displayValue(parent.sendChildDaily)}</td>
+                            <td>{displayValue(parent.reason)}</td>
+                            <td>{displayValue(parent.weightGain)}</td>
+                            <td>{displayValue(parent.sickFrequency)}</td>
+                            <td>{displayValue(parent.studyProgress)}</td>
+                            <td>{displayValue(parent.concentration)}</td>
+                            <td>{displayValue(parent.nutrition)}</td>
+                            <td>{displayValue(parent.attendance)}</td>
+                            <td>{displayValue(parent.effectOfNutritionDietPlan)}</td>
+                            <td>{displayValue(parent.effectOnAfternoonAttendance)}</td>
+                            <td>{displayValue(parent.impactOfNutritionScheme)}</td>
+                            <td>{displayValue(parent.improvementSuggestions)}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
@@ -1549,158 +1546,160 @@ function AdminDash() {
                   <table className="table table-striped text-center">
                     <thead>
                       <tr>
-                        <th>#</th>
-                        <th>जिल्हा</th>
-                        <th>तालुका</th>
-                        <th>शाळेचे नाव</th>
-                        <th>तपासणी तारीख</th>
-                        <th>तपासणी वेळ</th>
-                        <th>तपासणी करणाऱ्याचे नाव</th>
-                        <th>शाळेचे पूर्ण नाव</th>
-                        <th>मुख्याध्यापकाचे नाव</th>
-                        <th>मुख्याध्यापकाचा फोन</th>
-                        <th>मुख्याध्यापकाचा पत्ता</th>
-                        <th>सहाय्यक शिक्षकाचे नाव</th>
-                        <th>सहाय्यक शिक्षकाचा फोन</th>
-                        <th>UDISE कोड</th>
-                        <th>पुरुष शिक्षक</th>
-                        <th>महिला शिक्षक</th>
-                        <th>एकूण मुले</th>
-                        <th>एकूण मुली</th>
-                        <th>लाभार्थी इयत्ता १-४ मुले</th>
-                        <th>लाभार्थी इयत्ता १-४ मुली</th>
-                        <th>लाभार्थी इयत्ता १-४ एकूण</th>
-                        <th>लाभार्थी इयत्ता ५-७ मुले</th>
-                        <th>लाभार्थी इयत्ता ५-७ मुली</th>
-                        <th>लाभार्थी इयत्ता ५-७ एकूण</th>
-                        <th>लाभार्थी इयत्ता ८-१० मुले</th>
-                        <th>लाभार्थी इयत्ता ८-१० मुली</th>
-                        <th>लाभार्थी इयत्ता ८-१० एकूण</th>
-                        <th>मध्यान्ह भोजन फलक आहे का?</th>
-                        <th>मध्यान्ह भोजन मेनू आहे का?</th>
-                        <th>व्यवस्थापन मंडळ आहे का?</th>
-                        <th>मुख्याध्यापक संपर्क आहे का?</th>
-                        <th>अधिकारी संपर्क आहे का?</th>
-                        <th>तक्रार पेटी आहे का?</th>
-                        <th>आपत्कालीन क्रमांक आहे का?</th>
-                        <th>स्वयंपाक शेड आहे का?</th>
-                        <th>प्रथमोपचार पेटी आहे का?</th>
-                        <th>पाण्याचा स्रोत आहे का?</th>
-                        <th>पाण्याचा स्रोत प्रकार</th>
-                        <th>नियमित पाणीपुरवठा आहे का?</th>
-                        <th>अग्निशामक यंत्र आहे का?</th>
-                        <th>अग्निशामक तपासणी आहे का?</th>
-                        <th>अग्निशामक पुनर्भरण आहे का?</th>
-                        <th>अग्निशामक तपशील</th>
-                        <th>स्वयंपाक बाग आहे का?</th>
-                        <th>बागेची उत्पादने वापरली का?</th>
-                        <th>स्वयंपाक बाग तपशील</th>
-                        <th>नाविन्यपूर्ण उपक्रम</th>
-                        <th>आहार समिती आहे का?</th>
-                        <th>समिती फलक आहे का?</th>
-                        <th>स्वयंपाक एजन्सी</th>
-                        <th>कराराची प्रत आहे का?</th>
-                        <th>स्वयंपाकी प्रशिक्षण आहे का?</th>
-                        <th>स्वयंपाकी सहाय्यक संख्या</th>
-                        <th>शाळेत स्वयंपाक होतो का?</th>
-                        <th>इंधन प्रकार</th>
-                        <th>वजन काटा आहे का?</th>
-                        <th>तांदूळ वजन केले का?</th>
-                        <th>साठवण युनिट्स आहेत का?</th>
-                        <th>ताटे आहेत का?</th>
-                        <th>वितरणादरम्यान शिक्षक उपस्थित आहे का?</th>
-                        <th>MDM पोर्टल अद्ययावत आहे का?</th>
-                        <th>पूरक आहार आहे का?</th>
-                        <th>पूरक आहार तपशील</th>
-                        <th>नमुना साठवला आहे का?</th>
-                        <th>साफसफाई झाली का?</th>
-                        <th>मुख्याध्यापकाचे अन्न मत</th>
-                        <th>तृतीय पक्ष समर्थन आहे का?</th>
-                        <th>मूलभूत सुविधा उपलब्ध आहेत का?</th>
-                        <th>मूलभूत सुविधा तपशील</th>
-                        <th>जेवणाची व्यवस्था</th>
-                        <th>सरकारी रेसिपी पाळली का?</th>
-                        <th>अंडी-केळी नियमित आहेत का?</th>
-                        <th>अंकुरित धान्य वापरले का?</th>
-                        <th>मासिक प्रयोगशाळा चाचणी आहे का?</th>
-                        <th>वितरणापूर्वी चव चाचणी आहे का?</th>
-                        <th>SMC पालक भेटी आहेत का?</th>
-                        <th>चव नोंदवही आहे का?</th>
-                        <th>दैनंदिन चव नोंदी आहेत का?</th>
-                        <th>साठा नोंदवहीशी जुळतो का?</th>
-                        <th>साठा विसंगती तपशील</th>
-                        <th>रेसिपी प्रदर्शित आहेत का?</th>
-                        <th>निरीक्षण समिती बैठका आहेत का?</th>
-                        <th>२०२४-२५ बैठक संख्या</th>
-                        <th>रिकाम्या पोत्यांचे परतावा झाले का?</th>
-                        <th>पोत्यांचे हस्तांतरण नोंदवले का?</th>
-                        <th>पोत्यांचे हस्तांतरण संख्या</th>
-                        <th>सध्याचे अन्न साहित्य</th>
-                        <th>स्नेह तिथी कार्यक्रम आहे का?</th>
-                        <th>स्नेह तिथी कार्यक्रम तपशील</th>
-                        <th>भ्रष्टाचार तपशील</th>
-                        <th>भ्रष्टाचार कारवाई तपशील</th>
-                        <th>फील्ड अधिकारी भेटी आहेत का?</th>
-                        <th>फील्ड अधिकारी भेट तपशील</th>
-                        <th>योजनेच्या सूचना</th>
-                        <th>आरोग्य तपासणी झाली का?</th>
-                        <th>आरोग्य तपासणी विद्यार्थी संख्या</th>
-                        <th>BMI नोंदवले आहे का?</th>
-                        <th>वजन-उंची मोजली का?</th>
-                        <th>स्वयंपाकी आरोग्य तपासणी आहे का?</th>
-                        <th>SMC ठराव आहे का?</th>
-                        <th>आरोग्य प्रमाणपत्र आहे का?</th>
-                        <th>सहाय्यक १ नाव</th>
-                        <th>सहाय्यक २ नाव</th>
-                        <th>लाभार्थी २०२२-२३ मुले</th>
-                        <th>लाभार्थी २०२२-२३ मुली</th>
-                        <th>लाभार्थी २०२२-२३ एकूण</th>
-                        <th>लाभार्थी २०२३-२४ मुले</th>
-                        <th>लाभार्थी २०२३-२४ मुली</th>
-                        <th>लाभार्थी २०२३-२४ एकूण</th>
-                        <th>लाभार्थी २०२४-२५ मुले</th>
-                        <th>लाभार्थी २०२४-२५ मुली</th>
-                        <th>लाभार्थी २०२४-२५ एकूण</th>
-                        <th>अनुदान प्राप्त २०२२-२३</th>
-                        <th>अनुदान प्राप्त २०२३-२४</th>
-                        <th>अनुदान प्राप्त २०२४-२५</th>
-                        <th>अनुदान खर्च २०२२-२३</th>
-                        <th>अनुदान खर्च २०२३-२४</th>
-                        <th>अनुदान खर्च २०२४-२५</th>
-                        <th>अनुदान शिल्लक २०२२-२३</th>
-                        <th>अनुदान शिल्लक २०२३-२४</th>
-                        <th>अनुदान शिल्लक २०२४-२५</th>
-                        <th>स्वयंपाकघर आहे का?</th>
-                        <th>साठवण खोली आहे का?</th>
-                        <th>जेवण कक्ष आहे का?</th>
-                        <th>भांडी आहेत का?</th>
-                        <th>धान्य सुरक्षित आहे का?</th>
-                        <th>हात धुण्याचा साबण आहे का?</th>
-                        <th>स्वतंत्र शौचालये आहेत का?</th>
-                        <th>CCTV आहे का?</th>
-                        <th>स्वयंपाकघर स्वच्छता</th>
-                        <th>जेवण कक्ष स्वच्छता</th>
-                        <th>साठवण स्वच्छता</th>
-                        <th>सर्व्हिंग क्षेत्र स्वच्छता</th>
-                        <th>भांडीची स्थिती</th>
-                        <th>पाणीपुरवठा</th>
-                        <th>हात धुण्याची सुविधा</th>
-                        <th>शौचालय स्वच्छता</th>
-                        <th>रोख नोंदवही अद्ययावत आहे का?</th>
-                        <th>साठा नोंदवही अद्ययावत आहे का?</th>
-                        <th>उपस्थिती नोंदवही अद्ययावत आहे का?</th>
-                        <th>बँक खाते अद्ययावत आहे का?</th>
-                        <th>मानधन नोंदवही अद्ययावत आहे का?</th>
-                        <th>चव नोंदवही अद्ययावत आहे का?</th>
-                        <th>स्नेह तिथी नोंदवही अद्ययावत आहे का?</th>
-                        <th>नावनोंदणी सुधारणा आहे का?</th>
-                        <th>उपस्थिती वाढ आहे का?</th>
-                        <th>पोषण आरोग्य सुधारणा आहे का?</th>
-                        <th>वजन-उंची वाढ आहे का?</th>
-                        <th>कुपोषण कमी झाले का?</th>
-                        <th>जंक फूड प्रतिबंध आहे का?</th>
-                        <th>एकता बंधन आहे का?</th>
-                        <th>सादर करण्याची तारीख</th>
+                        {/* 1 */}<th>#</th>
+                        {/* 2 */}<th>जिल्हा</th>
+                        {/* 3 */}<th>तालुका</th>
+                        {/* 4 */}<th>शाळेचे नाव</th>
+                        {/* 5 */}<th>तपासणी तारीख</th>
+                        {/* 6 */}<th>तपासणी वेळ</th>
+                        {/* 7 */}<th>तपासणी करणाऱ्याचे नाव</th>
+                        {/* 8 */}<th>शाळेचे पूर्ण नाव</th>
+                        {/* 9 */}<th>मुख्याध्यापकाचे नाव</th>
+                        {/* 10 */}<th>मुख्याध्यापकाचा फोन</th>
+                        {/* 11 */}<th>मुख्याध्यापकाचा पत्ता</th>
+                        {/* 12 */}<th>सहाय्यक शिक्षकाचे नाव</th>
+                        {/* 13 */}<th>सहाय्यक शिक्षकाचा फोन</th>
+                        {/* 14 */}<th>UDISE कोड</th>
+                        {/* 15 */}<th>पुरुष शिक्षक</th>
+                        {/* 16 */}<th>महिला शिक्षक</th>
+                        {/* 17 */}<th>एकूण शिक्षक</th>
+                        {/* 18 */}<th>एकूण मुले</th>
+                        {/* 19 */}<th>एकूण मुली</th>
+                        {/* 20 */}<th>एकूण student</th>
+                        {/* 21 */}<th>लाभार्थी इयत्ता १-४ मुले</th>
+                        {/* 22 */}<th>लाभार्थी इयत्ता १-४ मुली</th>
+                        {/* 23 */}<th>लाभार्थी इयत्ता १-४ एकूण</th>
+                        {/* 24 */}<th>लाभार्थी इयत्ता ५-७ मुले</th>
+                        {/* 25 */}<th>लाभार्थी इयत्ता ५-७ मुली</th>
+                        {/* 26 */}<th>लाभार्थी इयत्ता ५-७ एकूण</th>
+                        {/* 27 */}<th>लाभार्थी इयत्ता ८-१० मुले</th>
+                        {/* 28 */}<th>लाभार्थी इयत्ता ८-१० मुली</th>
+                        {/* 29 */}<th>लाभार्थी इयत्ता ८-१० एकूण</th>
+                        {/* 30 */}<th>मध्यान्ह भोजन फलक आहे का?</th>
+                        {/* 31 */}<th>मध्यान्ह भोजन मेनू आहे का?</th>
+                        {/* 32 */}<th>व्यवस्थापन मंडळ आहे का?</th>
+                        {/* 33 */}<th>मुख्याध्यापक संपर्क आहे का?</th>
+                        {/* 34 */}<th>अधिकारी संपर्क आहे का?</th>
+                        {/* 35 */}<th>तक्रार पेटी आहे का?</th>
+                        {/* 36 */}<th>आपत्कालीन क्रमांक आहे का?</th>
+                        {/* 37 */}<th>स्वयंपाक शेड आहे का?</th>
+                        {/* 38 */}<th>प्रथमोपचार पेटी आहे का?</th>
+                        {/* 39 */}<th>पाण्याचा स्रोत आहे का?</th>
+                        {/* 40 */}<th>पाण्याचा स्रोत प्रकार</th>
+                        {/* 41 */}<th>नियमित पाणीपुरवठा आहे का?</th>
+                        {/* 42 */}<th>अग्निशामक यंत्र आहे का?</th>
+                        {/* 43 */}<th>अग्निशामक तपासणी आहे का?</th>
+                        {/* 44 */}<th>अग्निशामक पुनर्भरण आहे का?</th>
+                        {/* 45 */}<th>अग्निशामक तपशील</th>
+                        {/* 46 */}<th>स्वयंपाक बाग आहे का?</th>
+                        {/* 47 */}<th>बागेची उत्पादने वापरली का?</th>
+                        {/* 48 */}<th>स्वयंपाक बाग तपशील</th>
+                        {/* 49 */}<th>नाविन्यपूर्ण उपक्रम</th>
+                        {/* 50 */}<th>आहार समिती आहे का?</th>
+                        {/* 51 */}<th>समिती फलक आहे का?</th>
+                        {/* 52 */}<th>स्वयंपाक एजन्सी</th>
+                        {/* 53 */}<th>कराराची प्रत आहे का?</th>
+                        {/* 54 */}<th>स्वयंपाकी प्रशिक्षण आहे का?</th>
+                        {/* 55 */}<th>स्वयंपाकी सहाय्यक संख्या</th>
+                        {/* 56 */}<th>शाळेत स्वयंपाक होतो का?</th>
+                        {/* 57 */}<th>इंधन प्रकार</th>
+                        {/* 58 */}<th>वजन काटा आहे का?</th>
+                        {/* 59 */}<th>तांदूळ वजन केले का?</th>
+                        {/* 60 */}<th>साठवण युनिट्स आहेत का?</th>
+                        {/* 61 */}<th>ताटे आहेत का?</th>
+                        {/* 62 */}<th>वितरणादरम्यान शिक्षक उपस्थित आहे का?</th>
+                        {/* 63 */}<th>MDM पोर्टल अद्ययावत आहे का?</th>
+                        {/* 64 */}<th>पूरक आहार आहे का?</th>
+                        {/* 65 */}<th>पूरक आहार तपशील</th>
+                        {/* 66 */}<th>नमुना साठवला आहे का?</th>
+                        {/* 67 */}<th>साफसफाई झाली का?</th>
+                        {/* 68 */}<th>मुख्याध्यापकाचे अन्न मत</th>
+                        {/* 69 */}<th>तृतीय पक्ष समर्थन आहे का?</th>
+                        {/* 70 */}<th>मूलभूत सुविधा उपलब्ध आहेत का?</th>
+                        {/* 71 */}<th>मूलभूत सुविधा तपशील</th>
+                        {/* 72 */}<th>जेवणाची व्यवस्था</th>
+                        {/* 73 */}<th>सरकारी रेसिपी पाळली का?</th>
+                        {/* 74 */}<th>अंडी-केळी नियमित आहेत का?</th>
+                        {/* 75 */}<th>अंकुरित धान्य वापरले का?</th>
+                        {/* 76 */}<th>मासिक प्रयोगशाळा चाचणी आहे का?</th>
+                        {/* 77 */}<th>वितरणापूर्वी चव चाचणी आहे का?</th>
+                        {/* 78 */}<th>SMC पालक भेटी आहेत का?</th>
+                        {/* 79 */}<th>चव नोंदवही आहे का?</th>
+                        {/* 80 */}<th>दैनंदिन चव नोंदी आहेत का?</th>
+                        {/* 81 */}<th>साठा नोंदवहीशी जुळतो का?</th>
+                        {/* 82 */}<th>साठा विसंगती तपशील</th>
+                        {/* 83 */}<th>रेसिपी प्रदर्शित आहेत का?</th>
+                        {/* 84 */}<th>निरीक्षण समिती बैठका आहेत का?</th>
+                        {/* 85 */}<th>२०२४-२५ बैठक संख्या</th>
+                        {/* 86 */}<th>रिकाम्या पोत्यांचे परतावा झाले का?</th>
+                        {/* 87 */}<th>पोत्यांचे हस्तांतरण नोंदवले का?</th>
+                        {/* 88 */}<th>पोत्यांचे हस्तांतरण संख्या</th>
+                        {/* 89 */}<th>सध्याचे अन्न साहित्य</th>
+                        {/* 90 */}<th>स्नेह तिथी कार्यक्रम आहे का?</th>
+                        {/* 91 */}<th>स्नेह तिथी कार्यक्रम तपशील</th>
+                        {/* 92 */}<th>भ्रष्टाचार तपशील</th>
+                        {/* 93 */}<th>भ्रष्टाचार कारवाई तपशील</th>
+                        {/* 94 */}<th>फील्ड अधिकारी भेटी आहेत का?</th>
+                        {/* 95 */}<th>फील्ड अधिकारी भेट तपशील</th>
+                        {/* 96 */}<th>योजनेच्या सूचना</th>
+                        {/* 97 */}<th>आरोग्य तपासणी झाली का?</th>
+                        {/* 98 */}<th>आरोग्य तपासणी विद्यार्थी संख्या</th>
+                        {/* 99 */}<th>BMI नोंदवले आहे का?</th>
+                        {/* 100 */}<th>वजन-उंची मोजली का?</th>
+                        {/* 101 */}<th>स्वयंपाकी आरोग्य तपासणी आहे का?</th>
+                        {/* 102 */}<th>SMC ठराव आहे का?</th>
+                        {/* 103 */}<th>आरोग्य प्रमाणपत्र आहे का?</th>
+                        {/* 104 */}<th>सहाय्यक १ नाव</th>
+                        {/* 105 */}<th>सहाय्यक २ नाव</th>
+                        {/* 106 */}<th>लाभार्थी २०२२-२३ मुले</th>
+                        {/* 107 */}<th>लाभार्थी २०२२-२३ मुली</th>
+                        {/* 108 */}<th>लाभार्थी २०२२-२३ एकूण</th>
+                        {/* 109 */}<th>लाभार्थी २०२३-२४ मुले</th>
+                        {/* 110 */}<th>लाभार्थी २०२३-२४ मुली</th>
+                        {/* 111 */}<th>लाभार्थी २०२३-२४ एकूण</th>
+                        {/* 112 */}<th>लाभार्थी २०२४-२५ मुले</th>
+                        {/* 113 */}<th>लाभार्थी २०२४-२५ मुली</th>
+                        {/* 114 */}<th>लाभार्थी २०२४-२५ एकूण</th>
+                        {/* 115 */}<th>अनुदान प्राप्त २०२२-२३</th>
+                        {/* 116 */}<th>अनुदान प्राप्त २०२३-२४</th>
+                        {/* 117 */}<th>अनुदान प्राप्त २०२४-२५</th>
+                        {/* 118 */}<th>अनुदान खर्च २०२२-२३</th>
+                        {/* 119 */}<th>अनुदान खर्च २०२३-२४</th>
+                        {/* 120 */}<th>अनुदान खर्च २०२४-२५</th>
+                        {/* 121 */}<th>अनुदान शिल्लक २०२२-२३</th>
+                        {/* 122 */}<th>अनुदान शिल्लक २०२३-२४</th>
+                        {/* 123 */}<th>अनुदान शिल्लक २०२४-२५</th>
+                        {/* 124 */}<th>स्वयंपाकघर आहे का?</th>
+                        {/* 125 */}<th>साठवण खोली आहे का?</th>
+                        {/* 126 */}<th>जेवण कक्ष आहे का?</th>
+                        {/* 127 */}<th>भांडी आहेत का?</th>
+                        {/* 128 */}<th>धान्य सुरक्षित आहे का?</th>
+                        {/* 129 */}<th>हात धुण्याचा साबण आहे का?</th>
+                        {/* 130 */}<th>स्वतंत्र शौचालये आहेत का?</th>
+                        {/* 131 */}<th>CCTV आहे का?</th>
+                        {/* 132 */}<th>स्वयंपाकघर स्वच्छता</th>
+                        {/* 133 */}<th>जेवण कक्ष स्वच्छता</th>
+                        {/* 134 */}<th>साठवण स्वच्छता</th>
+                        {/* 135 */}<th>सर्व्हिंग क्षेत्र स्वच्छता</th>
+                        {/* 136 */}<th>भांडीची स्थिती</th>
+                        {/* 137 */}<th>पाणीपुरवठा</th>
+                        {/* 138 */}<th>हात धुण्याची सुविधा</th>
+                        {/* 139 */}<th>शौचालय स्वच्छता</th>
+                        {/* 140 */}<th>रोख नोंदवही अद्ययावत आहे का?</th>
+                        {/* 141 */}<th>साठा नोंदवही अद्ययावत आहे का?</th>
+                        {/* 142 */}<th>उपस्थिती नोंदवही अद्ययावत आहे का?</th>
+                        {/* 143 */}<th>बँक खाते अद्ययावत आहे का?</th>
+                        {/* 144 */}<th>मानधन नोंदवही अद्ययावत आहे का?</th>
+                        {/* 145 */}<th>चव नोंदवही अद्ययावत आहे का?</th>
+                        {/* 146 */}<th>स्नेह तिथी नोंदवही अद्ययावत आहे का?</th>
+                        {/* 147 */}<th>नावनोंदणी सुधारणा आहे का?</th>
+                        {/* 148 */}<th>उपस्थिती वाढ आहे का?</th>
+                        {/* 149 */}<th>पोषण आरोग्य सुधारणा आहे का?</th>
+                        {/* 150 */}<th>वजन-उंची वाढ आहे का?</th>
+                        {/* 151 */}<th>कुपोषण कमी झाले का?</th>
+                        {/* 152 */}<th>जंक फूड प्रतिबंध आहे का?</th>
+                        {/* 153 */}<th>एकता बंधन आहे का?</th>
+                        {/* 154 */}<th>सादर करण्याची तारीख</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
@@ -1708,223 +1707,161 @@ function AdminDash() {
                       {schoolData.length > 0 ? (
                         schoolData.map((school, index) => (
                           <tr key={school.id}>
-                            <td>{index + 1}</td>
-                            <td>{school.district || "N/A"}</td>
-                            <td>{school.taluka || "N/A"}</td>
-                            <td>{school.schoolName || "N/A"}</td>
-                            <td>{school.inspectionDate || "N/A"}</td>
-                            <td>{school.inspectionTime || "N/A"}</td>
-                            <td>{school.inspectorName || "N/A"}</td>
-                            <td>{school.schoolFullName || "N/A"}</td>
-                            <td>{school.headmasterName || "N/A"}</td>
-                            <td>{school.headmasterPhone || "N/A"}</td>
-                            <td>{school.headmasterAddress || "N/A"}</td>
-                            <td>{school.assistantTeacherName || "N/A"}</td>
-                            <td>{school.assistantTeacherPhone || "N/A"}</td>
-                            <td>{school.udiseCode || "N/A"}</td>
-                            <td>{school.teacherMale || "N/A"}</td>
-                            <td>{school.teacherFemale || "N/A"}</td>
-                            <td>{school.totalBoys || "N/A"}</td>
-                            <td>{school.totalGirls || "N/A"}</td>
-                            <td>
-                              {school.beneficiaries?.grade1to4?.boys || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade1to4?.girls || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade1to4?.total || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade5to7?.boys || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade5to7?.girls || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade5to7?.total || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade8to10?.boys || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade8to10?.girls || "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiaries?.grade8to10?.total || "N/A"}
-                            </td>
-                            <td>{school.hasMiddayMealBoard || "N/A"}</td>
-                            <td>{school.hasMiddayMealMenu || "N/A"}</td>
-                            <td>{school.hasManagementBoard || "N/A"}</td>
-                            <td>{school.hasPrincipalContact || "N/A"}</td>
-                            <td>{school.hasOfficerContact || "N/A"}</td>
-                            <td>{school.hasComplaintBox || "N/A"}</td>
-                            <td>{school.hasEmergencyNumber || "N/A"}</td>
-                            <td>{school.hasKitchenShed || "N/A"}</td>
-                            <td>{school.hasFirstAidBox || "N/A"}</td>
-                            <td>{school.hasWaterSource || "N/A"}</td>
-                            <td>{school.waterSourceType || "N/A"}</td>
-                            <td>{school.hasRegularWaterSupply || "N/A"}</td>
-                            <td>{school.hasFireExtinguisher || "N/A"}</td>
-                            <td>{school.hasFireExtinguisherCheck || "N/A"}</td>
-                            <td>{school.hasFireExtinguisherRefill || "N/A"}</td>
-                            <td>{school.fireExtinguisherDetails || "N/A"}</td>
-                            <td>{school.hasKitchenGarden || "N/A"}</td>
-                            <td>{school.usesGardenProduce || "N/A"}</td>
-                            <td>{school.kitchenGardenDetails || "N/A"}</td>
-                            <td>{school.innovativeInitiatives || "N/A"}</td>
-                            <td>{school.hasDietCommittee || "N/A"}</td>
-                            <td>{school.hasCommitteeBoard || "N/A"}</td>
-                            <td>{school.cookingAgency || "N/A"}</td>
-                            <td>{school.hasAgreementCopy || "N/A"}</td>
-                            <td>{school.hasCookTraining || "N/A"}</td>
-                            <td>{school.cookHelperCount || "N/A"}</td>
-                            <td>{school.isCookedAtSchool || "N/A"}</td>
-                            <td>{school.fuelType || "N/A"}</td>
-                            <td>{school.hasWeighingScale || "N/A"}</td>
-                            <td>{school.hasRiceWeighed || "N/A"}</td>
-                            <td>{school.hasStorageUnits || "N/A"}</td>
-                            <td>{school.hasPlates || "N/A"}</td>
-                            <td>
-                              {school.teacherPresentDuringDistribution || "N/A"}
-                            </td>
-                            <td>{school.mdmPortalUpdated || "N/A"}</td>
-                            <td>{school.supplementaryDiet || "N/A"}</td>
-                            <td>{school.supplementaryDietDetails || "N/A"}</td>
-                            <td>{school.sampleStored || "N/A"}</td>
-                            <td>{school.cleaningDone || "N/A"}</td>
-                            <td>{school.headmasterFoodOpinion || "N/A"}</td>
-                            <td>{school.thirdPartySupport || "N/A"}</td>
-                            <td>{school.basicFacilitiesAvailable || "N/A"}</td>
-                            <td>{school.basicFacilitiesDetails || "N/A"}</td>
-                            <td>{school.diningArrangement || "N/A"}</td>
-                            <td>{school.followsGovtRecipe || "N/A"}</td>
-                            <td>{school.eggsBananasRegular || "N/A"}</td>
-                            <td>{school.usesSproutedGrains || "N/A"}</td>
-                            <td>{school.labTestMonthly || "N/A"}</td>
-                            <td>
-                              {school.tasteTestBeforeDistribution || "N/A"}
-                            </td>
-                            <td>{school.smcParentVisits || "N/A"}</td>
-                            <td>{school.hasTasteRegister || "N/A"}</td>
-                            <td>{school.dailyTasteEntries || "N/A"}</td>
-                            <td>{school.stockMatchesRegister || "N/A"}</td>
-                            <td>{school.stockDiscrepancyDetails || "N/A"}</td>
-                            <td>{school.recipesDisplayed || "N/A"}</td>
-                            <td>
-                              {school.monitoringCommitteeMeetings || "N/A"}
-                            </td>
-                            <td>{school.meetingCount2024_25 || "N/A"}</td>
-                            <td>{school.emptySacksReturned || "N/A"}</td>
-                            <td>{school.sackTransferRecorded || "N/A"}</td>
-                            <td>{school.sackTransferCount || "N/A"}</td>
-                            <td>{school.currentFoodMaterials || "N/A"}</td>
-                            <td>{school.snehTithiProgram || "N/A"}</td>
-                            <td>{school.snehTithiProgramDetails || "N/A"}</td>
-                            <td>{school.corruptionDetails || "N/A"}</td>
-                            <td>{school.corruptionActionDetails || "N/A"}</td>
-                            <td>{school.fieldOfficerVisits || "N/A"}</td>
-                            <td>{school.fieldOfficerVisitDetails || "N/A"}</td>
-                            <td>{school.schemeSuggestions || "N/A"}</td>
-                            <td>{school.healthCheckupDone || "N/A"}</td>
-                            <td>{school.healthCheckupStudentCount || "N/A"}</td>
-                            <td>{school.bmiRecorded || "N/A"}</td>
-                            <td>{school.weightHeightMeasured || "N/A"}</td>
-                            <td>{school.cookHealthCheck || "N/A"}</td>
-                            <td>{school.hasSmcResolution || "N/A"}</td>
-                            <td>{school.hasHealthCertificate || "N/A"}</td>
-                            <td>{school.helper1Name || "N/A"}</td>
-                            <td>{school.helper2Name || "N/A"}</td>
-                            <td>
-                              {school.beneficiariesYearly?.["2022-23"]?.boys ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2022-23"]?.girls ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2022-23"]?.total ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2023-24"]?.boys ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2023-24"]?.girls ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2023-24"]?.total ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2024-25"]?.boys ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2024-25"]?.girls ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.beneficiariesYearly?.["2024-25"]?.total ||
-                                "N/A"}
-                            </td>
-                            <td>
-                              {school.grantReceived?.["2022-23"] || "N/A"}
-                            </td>
-                            <td>
-                              {school.grantReceived?.["2023-24"] || "N/A"}
-                            </td>
-                            <td>
-                              {school.grantReceived?.["2024-25"] || "N/A"}
-                            </td>
-                            <td>
-                              {school.grantExpenditure?.["2022-23"] || "N/A"}
-                            </td>
-                            <td>
-                              {school.grantExpenditure?.["2023-24"] || "N/A"}
-                            </td>
-                            <td>
-                              {school.grantExpenditure?.["2024-25"] || "N/A"}
-                            </td>
-                            <td>{school.grantBalance?.["2022-23"] || "N/A"}</td>
-                            <td>{school.grantBalance?.["2023-24"] || "N/A"}</td>
-                            <td>{school.grantBalance?.["2024-25"] || "N/A"}</td>
-                            <td>{school.hasKitchen || "N/A"}</td>
-                            <td>{school.hasStorageRoom || "N/A"}</td>
-                            <td>{school.hasDiningHall || "N/A"}</td>
-                            <td>{school.hasUtensils || "N/A"}</td>
-                            <td>{school.hasGrainSafety || "N/A"}</td>
-                            <td>{school.hasHandwashSoap || "N/A"}</td>
-                            <td>{school.hasSeparateToilets || "N/A"}</td>
-                            <td>{school.hasCctv || "N/A"}</td>
-                            <td>{school.kitchenCleanliness || "N/A"}</td>
-                            <td>{school.diningHallCleanliness || "N/A"}</td>
-                            <td>{school.storageCleanliness || "N/A"}</td>
-                            <td>{school.servingAreaCleanliness || "N/A"}</td>
-                            <td>{school.utensilCondition || "N/A"}</td>
-                            <td>{school.waterSupply || "N/A"}</td>
-                            <td>{school.handwashFacility || "N/A"}</td>
-                            <td>{school.toiletCleanliness || "N/A"}</td>
-                            <td>{school.cashBookUpdated || "N/A"}</td>
-                            <td>{school.stockRegisterUpdated || "N/A"}</td>
-                            <td>{school.attendanceRegisterUpdated || "N/A"}</td>
-                            <td>{school.bankAccountUpdated || "N/A"}</td>
-                            <td>{school.honorariumRegisterUpdated || "N/A"}</td>
-                            <td>{school.tasteRegisterUpdated || "N/A"}</td>
-                            <td>{school.snehTithiRegisterUpdated || "N/A"}</td>
-                            <td>{school.enrollmentImprovement || "N/A"}</td>
-                            <td>{school.attendanceIncrease || "N/A"}</td>
-                            <td>
-                              {school.nutritionHealthImprovement || "N/A"}
-                            </td>
-                            <td>{school.weightHeightIncrease || "N/A"}</td>
-                            <td>{school.malnutritionReduction || "N/A"}</td>
-                            <td>{school.junkFoodPrevention || "N/A"}</td>
-                            <td>{school.unityBonding || "N/A"}</td>
-                            <td>{school.submissionDate || "N/A"}</td>
+
+                            {/* 1 */}<td>{index + 1}</td>
+                            {/* 2 */}<td>{displayValue(school.district)}</td>
+                            {/* 3 */}<td>{displayValue(school.taluka)}</td>
+                            {/* 4 */}<td>{displayValue(school.schoolName)}</td>
+                            {/* 5 */}<td>{displayValue(school.inspectionDate)}</td>
+                            {/* 6 */}<td>{displayValue(school.inspectionTime)}</td>
+                            {/* 7 */}<td>{displayValue(school.inspectorName)}</td>
+                            {/* 8 */}<td>{displayValue(school.schoolFullName)}</td>
+                            {/* 9 */}<td>{displayValue(school.headmasterName)}</td>
+                            {/* 10 */}<td>{displayValue(school.headmasterPhone)}</td>
+                            {/* 11 */}<td>{displayValue(school.headmasterAddress)}</td>
+                            {/* 12 */}<td>{displayValue(school.assistantTeacherName)}</td>
+                            {/* 13 */}<td>{displayValue(school.assistantTeacherPhone)}</td>
+                            {/* 14 */}<td>{displayValue(school.udiseCode)}</td>
+                            {/* 15 */}<td>{displayValue(school.teacherMale)}</td>
+                            {/* 16 */}<td>{displayValue(school.teacherFemale)}</td>
+                            {/* 17 */}<td>{displayValue(school.totalTeachers)}</td>
+                            {/* 18 */}<td>{displayValue(school.totalBoys)}</td>
+                            {/* 19 */}<td>{displayValue(school.totalGirls)}</td>
+                            {/* 20 */}<td>{displayValue(school.totalStudents)}</td>
+                            {/* 21 */}<td>{displayValue(school.gradeStudents?.grade1to4?.female)}</td>
+                            {/* 22 */}<td>{displayValue(school.gradeStudents?.grade1to4?.male)}</td>
+                            {/* 23 */}<td>{displayValue(school.gradeStudents?.grade1to4?.total)}</td>
+                            {/* 24 */}<td>{displayValue(school.gradeStudents?.grade5to7?.female)}</td>
+                            {/* 25 */}<td>{displayValue(school.gradeStudents?.grade5to7?.male)}</td>
+                            {/* 26 */}<td>{displayValue(school.gradeStudents?.grade5to7?.total)}</td>
+                            {/* 27 */}<td>{displayValue(school.gradeStudents?.grade8to10?.female)}</td>
+                            {/* 28 */}<td>{displayValue(school.gradeStudents?.grade8to10?.male)}</td>
+                            {/* 29 */}<td>{displayValue(school.gradeStudents?.grade8to10?.total)}</td>
+                            {/* 30 */}<td>{displayValue(school.hasMiddayMealBoard)}</td>
+                            {/* 31 */}<td>{displayValue(school.hasMiddayMealMenu)}</td>
+                            {/* 32 */}<td>{displayValue(school.hasManagementBoard)}</td>
+                            {/* 33 */}<td>{displayValue(school.hasPrincipalContact)}</td>
+                            {/* 34 */}<td>{displayValue(school.hasOfficerContact)}</td>
+                            {/* 35 */}<td>{displayValue(school.hasComplaintBox)}</td>
+                            {/* 36 */}<td>{displayValue(school.hasEmergencyNumber)}</td>
+                            {/* 37 */}<td>{displayValue(school.hasKitchenShed)}</td>
+                            {/* 38 */}<td>{displayValue(school.hasFirstAidBox)}</td>
+                            {/* 39 */}<td>{displayValue(school.hasWaterSource)}</td>
+                            {/* 40 */}<td>{displayValue(school.waterSourceType)}</td>
+                            {/* 41 */}<td>{displayValue(school.hasRegularWaterSupply)}</td>
+                            {/* 42 */}<td>{displayValue(school.hasFireExtinguisher)}</td>
+                            {/* 43 */}<td>{displayValue(school.hasFireExtinguisherCheck)}</td>
+                            {/* 44 */}<td>{displayValue(school.hasFireExtinguisherRefill)}</td>
+                            {/* 45 */}<td>{displayValue(school.fireExtinguisherDetails)}</td>
+                            {/* 46 */}<td>{displayValue(school.hasKitchenGarden)}</td>
+                            {/* 47 */}<td>{displayValue(school.usesGardenProduce)}</td>
+                            {/* 48 */}<td>{displayValue(school.kitchenGardenDetails)}</td>
+                            {/* 49 */}<td>{displayValue(school.innovativeInitiatives)}</td>
+                            {/* 50 */}<td>{displayValue(school.hasDietCommittee)}</td>
+                            {/* 51 */}<td>{displayValue(school.hasCommitteeBoard)}</td>
+                            {/* 52 */}<td>{displayValue(school.cookingAgency)}</td>
+                            {/* 53 */}<td>{displayValue(school.hasAgreementCopy)}</td>
+                            {/* 54 */}<td>{displayValue(school.hasCookTraining)}</td>
+                            {/* 55 */}<td>{displayValue(school.cookHelperCount)}</td>
+                            {/* 56 */}<td>{displayValue(school.isCookedAtSchool)}</td>
+                            {/* 57 */}<td>{displayValue(school.fuelType)}</td>
+                            {/* 58 */}<td>{displayValue(school.hasWeighingScale)}</td>
+                            {/* 59 */}<td>{displayValue(school.hasRiceWeighed)}</td>
+                            {/* 60 */}<td>{displayValue(school.hasStorageUnits)}</td>
+                            {/* 61 */}<td>{displayValue(school.hasPlates)}</td>
+                            {/* 62 */}<td>{displayValue(school.teacherPresentDuringDistribution)}</td>
+                            {/* 63 */}<td>{displayValue(school.mdmPortalUpdated)}</td>
+                            {/* 64 */}<td>{displayValue(school.supplementaryDiet)}</td>
+                            {/* 65 */}<td>{displayValue(school.supplementaryDietDetails)}</td>
+                            {/* 66 */}<td>{displayValue(school.sampleStored)}</td>
+                            {/* 67 */}<td>{displayValue(school.cleaningDone)}</td>
+                            {/* 68 */}<td>{displayValue(school.headmasterFoodOpinion)}</td>
+                            {/* 69 */}<td>{displayValue(school.thirdPartySupport)}</td>
+                            {/* 70 */}<td>{displayValue(school.basicFacilitiesAvailable)}</td>
+                            {/* 71 */}<td>{displayValue(school.basicFacilitiesDetails)}</td>
+                            {/* 72 */}<td>{displayValue(school.diningArrangement)}</td>
+                            {/* 73 */}<td>{displayValue(school.followsGovtRecipe)}</td>
+                            {/* 74 */}<td>{displayValue(school.eggsBananasRegular)}</td>
+                            {/* 75 */}<td>{displayValue(school.usesSproutedGrains)}</td>
+                            {/* 76 */}<td>{displayValue(school.labTestMonthly)}</td>
+                            {/* 77 */}<td>{displayValue(school.tasteTestBeforeDistribution)}</td>
+                            {/* 78 */}<td>{displayValue(school.smcParentVisits)}</td>
+                            {/* 79 */}<td>{displayValue(school.hasTasteRegister)}</td>
+                            {/* 80 */}<td>{displayValue(school.dailyTasteEntries)}</td>
+                            {/* 81 */}<td>{displayValue(school.stockMatchesRegister)}</td>
+                            {/* 82 */}<td>{displayValue(school.stockDiscrepancyDetails)}</td>
+                            {/* 83 */}<td>{displayValue(school.recipesDisplayed)}</td>
+                            {/* 84 */}<td>{displayValue(school.monitoringCommitteeMeetings)}</td>
+                            {/* 85 */}<td>{displayValue(school.meetingCount2024_25)}</td>
+                            {/* 86 */}<td>{displayValue(school.emptySacksReturned)}</td>
+                            {/* 87 */}<td>{displayValue(school.sackTransferRecorded)}</td>
+                            {/* 88 */}<td>{displayValue(school.sackTransferCount)}</td>
+                            {/* 89 */}<td>{displayValue(school.currentFoodMaterials)}</td>
+                            {/* 90 */}<td>{displayValue(school.snehTithiProgram)}</td>
+                            {/* 91 */}<td>{displayValue(school.snehTithiProgramDetails)}</td>
+                            {/* 92 */}<td>{displayValue(school.corruptionDetails)}</td>
+                            {/* 93 */}<td>{displayValue(school.corruptionActionDetails)}</td>
+                            {/* 94 */}<td>{displayValue(school.fieldOfficerVisits)}</td>
+                            {/* 95 */}<td>{displayValue(school.fieldOfficerVisitDetails)}</td>
+                            {/* 96 */}<td>{displayValue(school.schemeSuggestions)}</td>
+                            {/* 97 */}<td>{displayValue(school.healthCheckupDone)}</td>
+                            {/* 98 */}<td>{displayValue(school.healthCheckupStudentCount)}</td>
+                            {/* 99 */}<td>{displayValue(school.bmiRecorded)}</td>
+                            {/* 100 */}<td>{displayValue(school.weightHeightMeasured)}</td>
+                            {/* 101 */}<td>{displayValue(school.cookHealthCheck)}</td>
+                            {/* 102 */}<td>{displayValue(school.hasSmcResolution)}</td>
+                            {/* 103 */}<td>{displayValue(school.hasHealthCertificate)}</td>
+                            {/* 104 */}<td>{displayValue(school.helper1Name)}</td>
+                            {/* 105 */}<td>{displayValue(school.helper2Name)}</td>
+                            {/* 106 */}<td>{displayValue(school.beneficiaries?.["2022-23"]?.boys)}</td>
+                            {/* 107 */}<td>{displayValue(school.beneficiaries?.["2022-23"]?.girls)}</td>
+                            {/* 108 */}<td>{displayValue(school.beneficiaries?.["2022-23"]?.total)}</td>
+                            {/* 109 */}<td>{displayValue(school.beneficiaries?.["2023-24"]?.boys)}</td>
+                            {/* 110 */}<td>{displayValue(school.beneficiaries?.["2023-24"]?.girls)}</td>
+                            {/* 111 */}<td>{displayValue(school.beneficiaries?.["2023-24"]?.total)}</td>
+                            {/* 112 */}<td>{displayValue(school.beneficiaries?.["2024-25"]?.boys)}</td>
+                            {/* 113 */}<td>{displayValue(school.beneficiaries?.["2024-25"]?.girls)}</td>
+                            {/* 114 */}<td>{displayValue(school.beneficiaries?.["2024-25"]?.total)}</td>
+                            {/* 115 */}<td>{displayValue(school.grantReceived?.["2022-23"])}</td>
+                            {/* 116 */}<td>{displayValue(school.grantReceived?.["2023-24"])}</td>
+                            {/* 117 */}<td>{displayValue(school.grantReceived?.["2024-25"])}</td>
+                            {/* 118 */}<td>{displayValue(school.grantExpenditure?.["2022-23"])}</td>
+                            {/* 119 */}<td>{displayValue(school.grantExpenditure?.["2023-24"])}</td>
+                            {/* 120 */}<td>{displayValue(school.grantExpenditure?.["2024-25"])}</td>
+                            {/* 121 */}<td>{displayValue(school.grantBalance?.["2022-23"])}</td>
+                            {/* 122 */}<td>{displayValue(school.grantBalance?.["2023-24"])}</td>
+                            {/* 123 */}<td>{displayValue(school.grantBalance?.["2024-25"])}</td>
+                            {/* 124 */}<td>{displayValue(school.basicFacilities?.hasKitchen)}</td>
+                            {/* 125 */}<td>{displayValue(school.basicFacilities?.hasStorageRoom)}</td>
+                            {/* 126 */}<td>{displayValue(school.basicFacilities?.hasDiningHall)}</td>
+                            {/* 127 */}<td>{displayValue(school.basicFacilities?.hasUtensils)}</td>
+                            {/* 128 */}<td>{displayValue(school.basicFacilities?.hasGrainSafety)}</td>
+                            {/* 129 */}<td>{displayValue(school.basicFacilities?.hasHandwashSoap)}</td>
+                            {/* 130 */}<td>{displayValue(school.basicFacilities?.hasSeparateToilets)}</td>
+                            {/* 131 */}<td>{displayValue(school.basicFacilities?.hasCctv)}</td>
+                            {/* 132 */}<td>{displayValue(school.quality?.kitchenCleanliness)}</td>
+                            {/* 133 */}<td>{displayValue(school.quality?.diningHallCleanliness)}</td>
+                            {/* 134 */}<td>{displayValue(school.quality?.storageCleanliness)}</td>
+                            {/* 135 */}<td>{displayValue(school.quality?.servingAreaCleanliness)}</td>
+                            {/* 136 */}<td>{displayValue(school.quality?.utensilCondition)}</td>
+                            {/* 137 */}<td>{displayValue(school.quality?.waterSupply)}</td>
+                            {/* 138 */}<td>{displayValue(school.quality?.handwashFacility)}</td>
+                            {/* 139 */}<td>{displayValue(school.quality?.toiletCleanliness)}</td>
+                            {/* 140 */}<td>{displayValue(school.repairing?.cashBookUpdated)}</td>
+                            {/* 141 */}<td>{displayValue(school.repairing?.stockRegisterUpdated)}</td>
+                            {/* 142 */}<td>{displayValue(school.repairing?.attendanceRegisterUpdated)}</td>
+                            {/* 143 */}<td>{displayValue(school.repairing?.bankAccountUpdated)}</td>
+                            {/* 144 */}<td>{displayValue(school.repairing?.honorariumRegisterUpdated)}</td>
+                            {/* 145 */}<td>{displayValue(school.repairing?.tasteRegisterUpdated)}</td>
+                            {/* 146 */}<td>{displayValue(school.repairing?.snehTithiRegisterUpdated)}</td>
+                            {/* 147 */}<td>{displayValue(school.profitFromScheme?.enrollmentImprovement)}</td>
+                            {/* 148 */}<td>{displayValue(school.profitFromScheme?.attendanceIncrease)}</td>
+                            {/* 149 */}<td>{displayValue(school.profitFromScheme?.nutritionHealthImprovement)}</td>
+                            {/* 150 */}<td>{displayValue(school.profitFromScheme?.weightHeightIncrease)}</td>
+                            {/* 151 */}<td>{displayValue(school.profitFromScheme?.malnutritionReduction)}</td>
+                            {/* 152 */}<td>{displayValue(school.profitFromScheme?.junkFoodPrevention)}</td>
+                            {/* 153 */}<td>{displayValue(school.profitFromScheme?.unityBonding)}</td>
+                            {/* 154 */}<td>{displayValue(school.submissionDate)}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
@@ -1986,8 +1923,8 @@ function AdminDash() {
                     <thead>
                       <tr>
                         <th>#</th>
-                        <th>School Name</th>
                         <th>UDISE No</th>
+                        <th>School Name</th>
                         <th>Taluka</th>
                         <th>District</th>
                         <th>Feedback</th>
@@ -1999,11 +1936,11 @@ function AdminDash() {
                         observeData.map((observe, index) => (
                           <tr key={observe.id}>
                             <td>{index + 1}</td>
+                            <td>{observe.schoolUdiseNumber || "N/A"}</td>
                             <td>{observe.schoolName || "N/A"}</td>
-                            <td>{observe.udiseNo || "N/A"}</td>
                             <td>{observe.taluka || "N/A"}</td>
                             <td>{observe.district || "N/A"}</td>
-                            <td>{observe.voiceInput || "N/A"}</td>
+                            <td>{observe.remarks || "N/A"}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
                                 <button
