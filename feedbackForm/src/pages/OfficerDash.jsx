@@ -616,7 +616,7 @@ function AdminDash() {
       {/* Graphs Section */}
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title text-center">Form Submission Trends</h5>
               <div className="row">
@@ -640,7 +640,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+          <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">Parent Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -656,7 +656,7 @@ function AdminDash() {
                   <p className="text-center">Loading...</p>
                 ) : (
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         <th>#</th>
                         <th>Udise Number</th>
@@ -685,7 +685,7 @@ function AdminDash() {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {parentData.length > 0 ? (
                         parentData.map((parent, index) => (
                           <tr key={parent.id}>
@@ -743,7 +743,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">Observation Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -759,27 +759,27 @@ function AdminDash() {
                   <p className="text-center">Loading...</p>
                 ) : (
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         <th>#</th>
-                        <th>शाळेचे नाव</th>
                         <th>UDISE क्रमांक</th>
+                        <th>शाळेचे नाव</th>
                         <th>तालुका</th>
                         <th>जिल्हा</th>
                         <th>Feedback</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {observeData.length > 0 ? (
                         observeData.map((observer, index) => (
                           <tr key={observer.id}>
                             <td>{index + 1}</td>
+                            <td>{displayValue(observer.schoolUdiseNumber)}</td>
                             <td>{displayValue(observer.schoolName)}</td>
-                            <td>{displayValue(observer.udiseNo)}</td>
                             <td>{displayValue(observer.taluka)}</td>
                             <td>{displayValue(observer.district)}</td>
-                            <td>{displayValue(observer.voiceInput)}</td>
+                            <td>{displayValue(observer.remarks)}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center align-items-center gap-2">
                                 <button
@@ -810,7 +810,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">School Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -826,7 +826,7 @@ function AdminDash() {
                   <p className="text-center">Loading...</p>
                 ) : (
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         <th>#</th>
                         <th>जिल्हा</th>
@@ -985,7 +985,7 @@ function AdminDash() {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {schoolData.length > 0 ? (
                         schoolData.map((school, index) => (
                           <tr key={school.id}>

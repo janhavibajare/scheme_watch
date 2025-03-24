@@ -70,9 +70,7 @@ function Login() {
     <>
       <div className="container-fluid d-flex justify-content-center align-items-center vh-100">
         <div
-          className="card shadow-lg p-4"
-          style={{ maxWidth: "400px", width: "100%" }}
-        >
+          className="card shadow-lg p-4"style={{ maxWidth: "400px", width: "100%", transform: 'none', transition: 'none' }}>
           {forgotPassword ? (
             <form
               onSubmit={(e) => {

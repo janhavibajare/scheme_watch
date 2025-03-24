@@ -3,7 +3,7 @@ import React from 'react'
 const AboutUs = () => {
   return (
     <div className="container mt-4">
-      <div className="card shadow">
+      <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
         <div className="card-body">
           <h3 className="card-title text-center">Mid Day Meal Scheme (PM-POSHAN)</h3>
           <p className="card-text">

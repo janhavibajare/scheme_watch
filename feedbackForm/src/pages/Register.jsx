@@ -10,17 +10,30 @@ function Register() {
   const [password, setPassword] = useState("");
   const [fname, setFname] = useState("");
   const [lname, setLname] = useState("");
-  const [role, setRole] = useState("Research Officer","admin");
+  const [role] = useState("Research Officer");
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [age, setAge] = useState("");
+  const [qualification, setQualification] = useState("");
+  const [workExperience, setWorkExperience] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
-    console.log("Form submitted with:", { fname, email, password, phoneNumber, role });
+    console.log("Form submitted with:", { 
+      fname, 
+      email, 
+      password, 
+      phoneNumber, 
+      role, 
+      age, 
+      qualification, 
+      workExperience 
+    });
 
-    if (!fname.trim() || !email.trim() || !password || !phoneNumber) {
+    if (!fname.trim() || !email.trim() || !password || !phoneNumber || !age || 
+        !lname.trim() || !qualification.trim() || !workExperience.trim()) {
       toast.error("Please fill all required fields!", { position: "top-center" });
       console.log("Validation failed");
       return;
@@ -38,8 +51,11 @@ function Register() {
           email: user.email,
           firstName: fname.trim(),
           lastName: lname.trim(),
-          role,
+          role: "Research Officer",
           phoneNumber,
+          age: Number(age),
+          qualification: qualification.trim(),
+          workExperience: workExperience.trim(),
         });
         console.log("User data written successfully");
         toast.success("User registered successfully!", { position: "top-center" });
@@ -53,21 +69,19 @@ function Register() {
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center min-vh-100 p-3">
-      <div className="card shadow-lg p-3 p-md-4 w-100" style={{ maxWidth: "500px" }}>
+      <div className="card shadow-lg p-3 p-md-4 w-100" style={{ maxWidth: "500px", transform: 'none', transition: 'none' }}>
         <form onSubmit={handleRegister}>
           <h3 className="text-center mb-4">Sign Up</h3>
 
           <div className="mb-3">
-            <label className="form-label">Select Role</label>
-            <select
-              className="form-select"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
+            <label className="form-label">Role</label>
+            <input
+              type="text"
+              className="form-control"
+              value="Research Officer"
+              readOnly
               required
-            >
-              <option value="Research Officer">Research Officer</option>
-              <option value="Admin">Admin</option>
-            </select>
+            />
           </div>
 
           <div className="row">
@@ -91,6 +105,7 @@ function Register() {
                 placeholder="Enter last name"
                 value={lname}
                 onChange={(e) => setLname(e.target.value)}
+                required
               />
             </div>
           </div>
@@ -136,6 +151,44 @@ function Register() {
               placeholder="Enter phone number (e.g., +1234567890)"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Age</label>
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Enter your age"
+              value={age}
+              onChange={(e) => setAge(e.target.value)}
+              min="18"
+              max="100"
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Qualification</label>
+            <input
+              type="text"
+              className="form-control"
+              placeholder="Enter your highest qualification"
+              value={qualification}
+              onChange={(e) => setQualification(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label className="form-label">Work Experience</label>
+            <textarea
+              className="form-control"
+              placeholder="Describe your work experience"
+              value={workExperience}
+              onChange={(e) => setWorkExperience(e.target.value)}
+              rows="3"
               required
             />
           </div>

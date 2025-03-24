@@ -750,7 +750,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body" style={{ height: "300px" }}>
               <Doughnut data={chartData} options={chartOptions} />
             </div>
@@ -760,7 +760,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body d-flex justify-content-around text-center">
               <div>
                 Total Active Research Officers:{" "}
@@ -783,7 +783,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5
                 className="card-title"
@@ -945,7 +945,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5
                 className="card-title"
@@ -1107,7 +1107,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5
                 className="card-title"
@@ -1257,7 +1257,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5
                 className="card-title"
@@ -1406,7 +1406,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">Parent Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -1429,7 +1429,7 @@ function AdminDash() {
                 ) : (
 
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         <th>#</th>
                         <th>Udise Number</th>
@@ -1458,7 +1458,7 @@ function AdminDash() {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {parentData.length > 0 ? (
                         parentData.map((parent, index) => (
                           <tr key={parent.id}>
@@ -1482,9 +1482,9 @@ function AdminDash() {
                             <td>{displayValue(parent.concentration)}</td>
                             <td>{displayValue(parent.nutrition)}</td>
                             <td>{displayValue(parent.attendance)}</td>
-                            <td>{displayValue(parent.effectOfNutritionDietPlan)}</td>
-                            <td>{displayValue(parent.effectOnAfternoonAttendance)}</td>
                             <td>{displayValue(parent.impactOfNutritionScheme)}</td>
+                            <td>{displayValue(parent.effectOnAfternoonAttendance)}</td>
+                            <td>{displayValue(parent.effectOfNutritionDietPlan)}</td>
                             <td>{displayValue(parent.improvementSuggestions)}</td>
                             <td style={{ whiteSpace: "nowrap" }}>
                               <div className="d-flex justify-content-center gap-2">
@@ -1522,7 +1522,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">School Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -1544,7 +1544,7 @@ function AdminDash() {
                   <p className="text-center">Loading...</p>
                 ) : (
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         {/* 1 */}<th>#</th>
                         {/* 2 */}<th>जिल्हा</th>
@@ -1703,7 +1703,7 @@ function AdminDash() {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {schoolData.length > 0 ? (
                         schoolData.map((school, index) => (
                           <tr key={school.id}>
@@ -1898,7 +1898,7 @@ function AdminDash() {
 
       <div className="row mt-4 justify-content-center">
         <div className="col-lg-11 col-md-12 mb-4">
-          <div className="card shadow">
+        <div className="card shadow" style={{transform: 'none', transition: 'none' }}>
             <div className="card-body">
               <h5 className="card-title">Observation Feedback Form</h5>
               <div className="d-flex justify-content-end gap-3 mb-3">
@@ -1920,7 +1920,7 @@ function AdminDash() {
                   <p className="text-center">Loading...</p>
                 ) : (
                   <table className="table table-striped text-center">
-                    <thead>
+                    <thead style={{ position: 'sticky', top: 0, backgroundColor: '#f8f9fa', zIndex: 1 }}>
                       <tr>
                         <th>#</th>
                         <th>UDISE No</th>
@@ -1931,7 +1931,7 @@ function AdminDash() {
                         <th>Actions</th>
                       </tr>
                     </thead>
-                    <tbody>
+                    <tbody style={{ overflowY: 'auto' }}>
                       {observeData.length > 0 ? (
                         observeData.map((observe, index) => (
                           <tr key={observe.id}>

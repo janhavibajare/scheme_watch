@@ -6,8 +6,8 @@ import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MidDayMealLogo from "../images/Mid_day_logo.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"; // Import FA
-import { faUser } from "@fortawesome/free-solid-svg-icons"; // Import fa-user icon
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
 
 function Profile() {
   const [userData, setUserData] = useState(null);
@@ -129,7 +129,7 @@ function Profile() {
         {userData ? (
           <div className="row justify-content-center">
             <div className="col-md-6 col-lg-4">
-              <div className="card shadow-lg" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
+              <div className="card shadow-lg" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff", transform: 'none', transition: 'none' }}>
                 <div className="card-body text-center">
                   {userData.photoURL ? (
                     <img
@@ -205,7 +205,7 @@ function Profile() {
                       <p className="card-text" style={{ color: isDarkMode ? "#ced4da" : "#6c757d" }}>
                         Last Login: {userData.lastLogin ? new Date(userData.lastLogin).toLocaleString() : "N/A"}
                       </p>
-                      <button className="btn btn-primary mb-3" onClick={handleEditToggle}>Edit Profile</button>
+                      <button className="btn btn-primary mbI mb-3" onClick={handleEditToggle}>Edit Profile</button>
                     </>
                   )}
                 </div>
@@ -213,13 +213,18 @@ function Profile() {
             </div>
 
             <div className="col-md-6 col-lg-4 mt-4 mt-md-0">
-              <div className="card shadow-lg" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
+              <div className="card shadow-lg" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff", transform: 'none', transition: 'none' }}>
                 <div className="card-body">
                   <h5 className="card-title text-center" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
                     Quick Actions
                   </h5>
                   <div className="d-flex flex-column gap-2">
-                    <Link to="/dashboard" className="btn btn-outline-primary" style={{ color: isDarkMode ? "#f8f9fa" : "#007bff", borderColor: isDarkMode ? "#f8f9fa" : "#007bff" }}>
+                    {/* Changed this line: Added inline style to reduce width */}
+                    <Link 
+                      to="/dashboard" 
+                      className="btn btn-primary" 
+                      style={{ paddingLeft: "1rem", paddingRight: "1rem", width: "200px", alignSelf: "center" }} 
+                    >
                       Back to Dashboard
                     </Link>
                     {userData.role === "Research Officer" && (
