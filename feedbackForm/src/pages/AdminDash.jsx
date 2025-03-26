@@ -656,6 +656,7 @@ function AdminDash() {
     XLSX.writeFile(wb, "school_data.xlsx");
   };
 
+  
   const filterAndPaginate = (data, search, page) => {
     const filtered = data.filter(
       (item) =>
