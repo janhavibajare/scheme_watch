@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 import "./App.css";
 import {
@@ -12,23 +12,25 @@ import Login from "./pages/Login";
 import SignUp from "./pages/Register";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useState } from "react";
-import { auth } from "./components/Firebase";
-import AdminDash from "./pages/AdminDash";
+import { auth, db } from "./components/Firebase";
+import { doc, getDoc } from "firebase/firestore";
+import AdminDashboard from "./pages/AdminDashboard.jsx"; // Updated AdminDashboard (new slim version)
 import Profile from "./pages/Profile";
 import AboutUs from "./pages/AboutUs";
-import { AuthProvider, useAuth } from "./hooks/useAuth";
+import { AuthProvider } from "./hooks/useAuth";
 import ParentFeedbackForm from "./forms/ParentFeedbackForm";
 import ObservationForm from "./forms/ObservationForm";
+import SchoolForm from "./forms/SchoolForm";
 import OfficerDash from "./pages/OfficerDash";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Dashboard from "./pages/Dashboard";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "./components/Firebase";
 import UpdateParentForm from "./forms/UpdateParentForm";
 import UpdateObserveForm from "./forms/UpdateObserveForm";
-import SchoolForm from "./forms/SchoolForm";
-import UpdateSchoolForm from "./forms/UpdateSchoolForm"; // Added import
+import UpdateSchoolForm from "./forms/UpdateSchoolForm";
+import ParentFeedback from "./components/admin/ParentFormTable"; // New component
+import SchoolFeedback from "./components/admin/SchoolFormTable"; // New component
+import ObservationFeedback from "./components/admin/ObservationFormTable"; // New component
+import FindSchool from "./components/admin/FindSchool"; // New component
 
 function App() {
   const [user, setUser] = useState(null);
@@ -53,35 +55,84 @@ function App() {
     <AuthProvider>
       <Router>
         <Routes>
+          {/* Public Routes */}
           <Route path="/" element={<Login />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<SignUp />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/about_us" element={<AboutUs />} />
+
+          {/* Form Routes */}
           <Route path="/parent_form" element={<ParentFeedbackForm />} />
           <Route path="/observation_form" element={<ObservationForm />} />
           <Route path="/school_form" element={<SchoolForm />} />
+
+          {/* Update Form Routes (Protected for Admin) */}
           <Route
             path="/update_parent_form/:id"
-            element={<UpdateParentForm />}
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <UpdateParentForm />
+              </ProtectedRoute>
+            }
           />
           <Route
-            path="/update_Observation_form/:id"
-            element={<UpdateObserveForm />}
+            path="/update_observation_form/:id"
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <UpdateObserveForm />
+              </ProtectedRoute>
+            }
           />
           <Route
-            path="/update_school_form/:id" // Added route
+            path="/update_school_form/:id"
             element={
               <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
                 <UpdateSchoolForm />
               </ProtectedRoute>
             }
           />
+
+          {/* New Component Routes (Protected for Admin) */}
+          <Route
+            path="/parent-feedback"
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <ParentFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/school-feedback"
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <SchoolFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/observation-feedback"
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <ObservationFeedback />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/find-school"
+            element={
+              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
+                <FindSchool />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Dashboard Routes */}
           <Route
             path="/admin_dashboard"
             element={
               <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
-                <AdminDash />
+                <AdminDashboard />
               </ProtectedRoute>
             }
           />
@@ -109,6 +160,9 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          {/* Fallback Route */}
+          <Route path="*" element={<Navigate to="/login" />} />
         </Routes>
         <ToastContainer />
       </Router>
