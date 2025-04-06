@@ -266,6 +266,7 @@ const SchoolFormPage1 = ({ formData, setFormData, handleChange, nextStep }) => {
                     onChange={handleChange}
                   />
                 </div>
+                
                 <div className="col-md-4 mb-3">
                   <label className="form-label">तपासणी करणाऱ्याचे नाव</label>
                   <input

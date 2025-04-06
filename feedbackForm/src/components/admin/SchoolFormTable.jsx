@@ -39,8 +39,8 @@ function SchoolFormTable() {
     }
   };
 
-  const updateSchoolForm = (id) => navigate(`/update_school_forms/${id}`);
-  const addSchoolEntry = () => navigate("/school_forms");
+  const updateSchoolForm = (id) => navigate(`/update_school_form/${id}`);
+  const addSchoolEntry = () => navigate("/school_form");
 
   const displayValue = (value) => (value != null ? value : "N/A");
 
@@ -180,7 +180,7 @@ function SchoolFormTable() {
   { label: "BS-2", key: "basicFacilities.hasStorageRoom" },
   { label: "BS-3", key: "basicFacilities.hasDiningHall" },
   { label: "BS-4", key: "basicFacilities.hasUtensils" },
-  { label: "BS-5", key: "basiFacilities.hasGrainSafety" },
+  { label: "BS-5", key: "basicFacilities.hasGrainSafety" },
   { label: "BS-6", key: "basicFacilities.hasHandwashSoap" },
   { label: "BS-7", key: "basicFacilities.hasSeparateToilets" },
   { label: "BS-8", key: "basicFacilities.hasCctv" },

@@ -41,7 +41,7 @@ function FindSchool() {
       setParentData(parentSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
       const schoolQuery = query(
-        collection(db, "School_Form"),
+        collection(db, "School_Forms"),
         searchType === "udise" ? where("udiseCode", "==", searchValue) : where("schoolName", "==", searchValue)
       );
       const schoolSnap = await getDocs(schoolQuery);
@@ -528,12 +528,12 @@ function FindSchool() {
                               ))}
                               <td>
                                 <OverlayTrigger overlay={<Tooltip>Edit Entry</Tooltip>}>
-                                  <Button variant="primary" size="sm" className="me-2" onClick={() => navigate(`/update_school_form/${school.id}`)}>
+                                  <Button variant="primary" size="sm" className="me-2" onClick={() => navigate(`/update_school_forms/${school.id}`)}>
                                     Edit
                                   </Button>
                                 </OverlayTrigger>
                                 <OverlayTrigger overlay={<Tooltip>Delete Entry</Tooltip>}>
-                                  <Button variant="danger" size="sm" onClick={() => handleDelete("School_Form", school.id, "School entry deleted successfully!")}>
+                                  <Button variant="danger" size="sm" onClick={() => handleDelete("School_Forms", school.id, "School entry deleted successfully!")}>
                                     Delete
                                   </Button>
                                 </OverlayTrigger>
