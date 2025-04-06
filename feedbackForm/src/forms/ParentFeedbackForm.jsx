@@ -122,7 +122,7 @@ const ParentFeedbackForm = () => {
     try {
       const docRef = await addDoc(collection(db, "Parent_Form"), formData);
       console.log(docRef);
-      navigate("/dashboard");
+      navigate("/parent-feedback");
 
       toast.success("फॉर्म डेटा यशस्वीरित्या सबमिट झाला!", {
         position: "top-right",

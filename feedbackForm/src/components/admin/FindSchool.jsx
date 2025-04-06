@@ -1,11 +1,12 @@
-import React, { useState } from "react";
-import { db } from "../Firebase";
-import { getDocs, collection, deleteDoc, query, where } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { db, auth } from "../Firebase"; // Ensure auth is imported from your Firebase config
+import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore"; // Added doc import
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
 import { Accordion, Button, Form, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+import { onAuthStateChanged } from "firebase/auth"; // Import to monitor auth state
 
 function FindSchool() {
   const [searchType, setSearchType] = useState("udise"); // "udise" or "name"
@@ -20,44 +21,73 @@ function FindSchool() {
   const [parentPage, setParentPage] = useState(1);
   const [schoolPage, setSchoolPage] = useState(1);
   const [observePage, setObservePage] = useState(1);
+  const [user, setUser] = useState(null); // Track authenticated user
   const itemsPerPage = 5;
   const navigate = useNavigate();
+
+  // Monitor authentication state
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      if (!currentUser) {
+        toast.error("Please log in to access school data.");
+        navigate("/login"); // Redirect to your login page
+      }
+    });
+    return () => unsubscribe();
+  }, [navigate]);
 
   const displayValue = (value) => (value != null ? value : "N/A");
 
   const handleSearch = async () => {
-    if (!searchValue.trim()) {
+    const trimmedSearchValue = searchValue.trim(); // Remove leading/trailing spaces
+    if (!trimmedSearchValue) {
       toast.warn("Please enter a value to search!");
+      return;
+    }
+
+    if (!user) {
+      toast.error("You must be logged in to search for school data.");
+      navigate("/login"); // Redirect to login if not authenticated
       return;
     }
 
     setLoading(true);
     try {
+      // Parent_Form Query
       const parentQuery = query(
         collection(db, "Parent_Form"),
-        searchType === "udise" ? where("schoolUdiseNumber", "==", searchValue) : where("schoolName", "==", searchValue)
+        searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
       );
       const parentSnap = await getDocs(parentQuery);
+      console.log("Parent_Form - Docs found:", parentSnap.size, "Data:", parentSnap.docs.map((doc) => doc.data()));
       setParentData(parentSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
+      // School_Forms Query (Updated to schoolUdiseNumber)
       const schoolQuery = query(
         collection(db, "School_Forms"),
-        searchType === "udise" ? where("udiseCode", "==", searchValue) : where("schoolName", "==", searchValue)
+
+        searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
+
       );
       const schoolSnap = await getDocs(schoolQuery);
+      console.log("School_Forms - Docs found:", schoolSnap.size, "Data:", schoolSnap.docs.map((doc) => doc.data()));
       setSchoolData(schoolSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
+      // Observation_Form Query (Updated to schoolUdiseNumber)
       const observeQuery = query(
         collection(db, "Observation_Form"),
-        searchType === "udise" ? where("udiseNo", "==", searchValue) : where("schoolName", "==", searchValue)
+        searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
       );
       const observeSnap = await getDocs(observeQuery);
+      console.log("Observation_Form - Docs found:", observeSnap.size, "Data:", observeSnap.docs.map((doc) => doc.data()));
       setObserveData(observeSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
       if (parentSnap.empty && schoolSnap.empty && observeSnap.empty) {
         toast.info("No records found for this school!");
       }
     } catch (error) {
+      console.error("Error:", error);
       toast.error("Error fetching school data: " + error.message);
     } finally {
       setLoading(false);
@@ -65,8 +95,14 @@ function FindSchool() {
   };
 
   const handleDelete = async (collectionName, id, successMessage) => {
+    if (!user) {
+      toast.error("You must be logged in to delete data.");
+      navigate("/login");
+      return;
+    }
+
     try {
-      await deleteDoc(doc(db, collectionName, id));
+      await deleteDoc(doc(db, collectionName, id)); // Use doc() for reference
       toast.success(successMessage);
       handleSearch();
     } catch (error) {
@@ -113,7 +149,7 @@ function FindSchool() {
     { label: "मुख्याध्यापकाचा पत्ता", key: "headmasterAddress" },
     { label: "सहाय्यक शिक्षकाचे नाव", key: "assistantTeacherName" },
     { label: "सहाय्यक शिक्षकाचा फोन", key: "assistantTeacherPhone" },
-    { label: "UDISE कोड", key: "udiseCode" },
+    { label: "UDISE कोड", key: "schoolUdiseNumber" }, // Updated from udiseCode
     { label: "पुरुष शिक्षक", key: "teacherMale" },
     { label: "महिला शिक्षक", key: "teacherFemale" },
     { label: "एकूण मुले", key: "totalBoys" },
@@ -256,7 +292,7 @@ function FindSchool() {
 
   const observeFieldMappings = [
     { label: "School Name", key: "schoolName" },
-    { label: "UDISE No", key: "udiseNo" },
+    { label: "UDISE No", key: "schoolUdiseNumber" }, // Updated from udiseNo
     { label: "Taluka", key: "taluka" },
     { label: "District", key: "district" },
     { label: "Feedback", key: "voiceInput" },
@@ -305,6 +341,12 @@ function FindSchool() {
   };
 
   const downloadAllExcel = () => {
+    if (!user) {
+      toast.error("You must be logged in to download data.");
+      navigate("/login");
+      return;
+    }
+
     if (parentData.length === 0 && schoolData.length === 0 && observeData.length === 0)
       return toast.warn("No data available to download!");
     const wb = XLSX.utils.book_new();
@@ -362,11 +404,11 @@ function FindSchool() {
   );
   const filteredSchoolData = schoolData.filter((school) =>
     school.schoolName?.toLowerCase().includes(schoolFilter.toLowerCase()) ||
-    school.udiseCode?.toLowerCase().includes(schoolFilter.toLowerCase())
+    school.schoolUdiseNumber?.toLowerCase().includes(schoolFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
   const filteredObserveData = observeData.filter((observe) =>
     observe.schoolName?.toLowerCase().includes(observeFilter.toLowerCase()) ||
-    observe.udiseNo?.toLowerCase().includes(observeFilter.toLowerCase())
+    observe.schoolUdiseNumber?.toLowerCase().includes(observeFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
 
   return (
@@ -391,11 +433,11 @@ function FindSchool() {
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
-              <Button variant="primary" onClick={handleSearch} disabled={loading}>
+              <Button variant="primary" onClick={handleSearch} disabled={loading || !user}>
                 {loading ? <Spinner as="span" animation="border" size="sm" /> : "Search"}
               </Button>
             </div>
-            <Button variant="outline-success" onClick={downloadAllExcel}>
+            <Button variant="outline-success" onClick={downloadAllExcel} disabled={!user}>
               Download All (Excel)
             </Button>
           </div>
