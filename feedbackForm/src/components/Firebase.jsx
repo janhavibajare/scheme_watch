@@ -7,12 +7,13 @@ import {getFirestore , collection, addDoc } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBQn8D-gwt020iTrb93BAbGhKwUoxtZoB8",
-  authDomain: "schemewatch-614f8.firebaseapp.com",
-  projectId: "schemewatch-614f8",
-  storageBucket: "schemewatch-614f8.firebasestorage.app",
-  messagingSenderId: "507056081195",
-  appId: "1:507056081195:web:e07198933252b1e90e9d6e"
+  apiKey: "AIzaSyBpAvqxLzgSiT97KlRwykEzRXLzeTKfA44",
+  authDomain: "schemewatch-c34c5.firebaseapp.com",
+  projectId: "schemewatch-c34c5",
+  storageBucket: "schemewatch-c34c5.firebasestorage.app",
+  messagingSenderId: "780390926285",
+  appId: "1:780390926285:web:9e719ad46b117464586684",
+  measurementId: "G-Y1YM4PPJLH"
 };
 
 // Initialize Firebase
@@ -24,3 +25,4 @@ export { addDoc, collection }
 export default app;
 
 export { RecaptchaVerifier, signInWithPhoneNumber };
+

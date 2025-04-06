@@ -104,18 +104,16 @@ function Profile() {
 
   return (
     <div style={{ backgroundColor: isDarkMode ? "#212529" : "#f4f7fa", minHeight: "100vh" }}>
-      <nav className="navbar navbar-dark bg-dark px-3 sticky-top">
+      <nav className="navbar navbar-dark bg-primary px-3 sticky-top">
         <div className="container-fluid d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <img src={MidDayMealLogo} alt="Mid Day Meal Logo" style={{ height: "40px", marginRight: "10px" }} />
-            <span className="navbar-brand">Profile</span>
+            <span className="fs-4 fw-bold text-white">Profile</span>
           </div>
           <div className="d-flex align-items-center">
-            <button className="btn btn-outline-light me-2" onClick={toggleDarkMode}>
-              {isDarkMode ? "Light Mode" : "Dark Mode"}
-            </button>
-            <button className="btn btn-outline-danger" onClick={handleLogout} disabled={loading}>
-              {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : "लॉगआउट"}
+            
+            <button className="btn btn-outline-light" onClick={handleLogout} disabled={loading}>
+              {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : "Logout"}
             </button>
           </div>
         </div>

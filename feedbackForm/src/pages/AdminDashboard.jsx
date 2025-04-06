@@ -189,7 +189,7 @@ function AdminDashboard() {
       <Navbar bg="primary" variant="dark" expand="lg" sticky="top" className="shadow-sm">
         <Container fluid>
           <Navbar.Brand href="/admin_dashboard" className="d-flex align-items-center">
-            <img src={MidDayMealLogo} alt="Logo" style={{ width: "45px", height: "45px", borderRadius: "50%", marginRight: "10px" }} />
+            <img src={MidDayMealLogo} alt="Mid Day Meal Logo" style={{ height: "40px", marginRight: "10px" }} />
             <span className="fs-4 fw-bold">Admin Dashboard</span>
           </Navbar.Brand>
           <Nav className="me-auto">

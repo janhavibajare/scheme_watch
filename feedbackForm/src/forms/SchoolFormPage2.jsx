@@ -6,11 +6,11 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: value === "" ? "" : Number(value), // "1" -> 1, "0" -> 0
+      [name]: value === "" ? null : Number(value),
     }));
   };
 
-  // Next step handler (alert removed)
+  // Next step handler without validation
   const handleNext = () => {
     nextStep();
   };
@@ -35,9 +35,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     name="hasDietCommittee"
                     id="hasDietCommittee"
                     className="form-control"
-                    value={formData.hasDietCommittee}
+                    value={formData.hasDietCommittee === null ? "" : formData.hasDietCommittee}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -46,15 +45,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasCommitteeBoard">
-                    १.१. असल्यास शाळा परिसरात समिती सभासदांचा फलक सर्वाना दिसण्यासाठी लावला आहे का?
+                    १.१. समिती सभासदांचा फलक लावला आहे का?
                   </label>
                   <select
                     name="hasCommitteeBoard"
                     id="hasCommitteeBoard"
                     className="form-control"
-                    value={formData.hasCommitteeBoard}
+                    value={formData.hasCommitteeBoard === null ? "" : formData.hasCommitteeBoard}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -63,7 +61,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="cookingAgency">
-                    २. अन्न शिजवणाऱ्या यंत्रणा :- शाळा स्तरावर बचतगटामार्फत इतर
+                    २. अन्न शिजवणाऱ्या यंत्रणा
                   </label>
                   <textarea
                     name="cookingAgency"
@@ -72,20 +70,18 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     style={{ height: "60px", width: "100%" }}
                     value={formData.cookingAgency || ""}
                     onChange={handleChange}
-                    required
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasAgreementCopy">
-                    ३. आहार शिजवणाऱ्या यंत्रणा / संस्थेसोबत केलेल्या करारनाम्याची प्रत शाळेत उपलब्ध आहे काय
+                    ३. करारनाम्याची प्रत उपलब्ध आहे काय
                   </label>
                   <select
                     name="hasAgreementCopy"
                     id="hasAgreementCopy"
                     className="form-control"
-                    value={formData.hasAgreementCopy}
+                    value={formData.hasAgreementCopy === null ? "" : formData.hasAgreementCopy}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -98,15 +94,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="hasCookTraining">
-                    ४. आहार शिजविणाऱ्या स्वयंपाकी / मदतनीस यांना अन्न सुरक्षा मानदे काय‌द्यानुसार प्रशिक्षण देण्यात आले आहे का?
+                    ४. स्वयंपाकी/मदतनीस यांना प्रशिक्षण देण्यात आले आहे का?
                   </label>
                   <select
                     name="hasCookTraining"
                     id="hasCookTraining"
                     className="form-control"
-                    value={formData.hasCookTraining}
+                    value={formData.hasCookTraining === null ? "" : formData.hasCookTraining}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -115,7 +110,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="cookHelperCount">
-                    ५. आहार शिजवणाऱ्या यंत्रणा संस्थेमार्फत आहार वितरीत करण्यासाठी शाळा स्तरावर नियमितपणे उपस्थित राहणाऱ्या स्वयंपाकी मदतनीस संख्या :-
+                    ५. स्वयंपाकी मदतनीस संख्या
                   </label>
                   <textarea
                     name="cookHelperCount"
@@ -124,26 +119,27 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     style={{ height: "60px", width: "100%" }}
                     value={formData.cookHelperCount || ""}
                     onChange={handleChange}
-                    required
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="isCookedAtSchool">
                     ६. आहार शाळेमध्ये शिजवला जातो काय?
                   </label>
-                  <textarea
+                  <select
                     name="isCookedAtSchool"
                     id="isCookedAtSchool"
                     className="form-control"
-                    style={{ height: "60px", width: "100%" }}
-                    value={formData.isCookedAtSchool || ""}
-                    onChange={handleChange}
-                    required
-                  ></textarea>
+                    value={formData.isCookedAtSchool === null ? "" : formData.isCookedAtSchool}
+                    onChange={handleBinaryChange}
+                  >
+                    <option value="">निवडा</option>
+                    <option value="1">होय</option>
+                    <option value="0">नाही</option>
+                  </select>
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="fuelType">
-                    ६.१ इंधनाचा वापर :-
+                    ६.१ इंधनाचा वापर
                   </label>
                   <select
                     name="fuelType"
@@ -151,13 +147,12 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     className="form-control"
                     value={formData.fuelType || ""}
                     onChange={handleChange}
-                    required
                   >
                     <option value="">निवडा</option>
-                    <option value="एलपीजी गँस">एलपीजी गँस</option>
-                    <option value="चलू">चलू</option>
-                    <option value="स्टोव्ह">स्टोव्ह</option>
-                    <option value="इतर">इतर</option>
+                    <option value="1">एलपीजी गँस</option>
+                    <option value="2">चुल</option> 
+                    <option value="3">स्टोव्ह</option>
+                    <option value="4">इतर</option>
                   </select>
                 </div>
               </div>
@@ -166,15 +161,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasWeighingScale">
-                    ७. शाळेमध्ये वजनकाटा उपलब्ध आहे काय?
+                    ७. वजनकाटा उपलब्ध आहे काय?
                   </label>
                   <select
                     name="hasWeighingScale"
                     id="hasWeighingScale"
                     className="form-control"
-                    value={formData.hasWeighingScale}
+                    value={formData.hasWeighingScale === null ? "" : formData.hasWeighingScale}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -183,15 +177,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "7px" }} htmlFor="hasRiceWeighed">
-                    ७.१. असल्यास आहार शिजवण्यासाठी वि‌द्यार्थ्यांच्या प्रमाणात तांदूळ व धान्यादी वस्तू वजन करून वापरल्या जातात काय?
+                    ७.१. तांदूळ वजन करून वापरल्या जातात काय?
                   </label>
                   <select
                     name="hasRiceWeighed"
                     id="hasRiceWeighed"
                     className="form-control"
-                    value={formData.hasRiceWeighed}
+                    value={formData.hasRiceWeighed === null ? "" : formData.hasRiceWeighed}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -200,15 +193,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="hasStorageUnits">
-                    ८. धान्य साठविण्याकरीता पुरेशा कोठ्या आहेत का?
+                    ८. धान्य साठविण्याकरीता कोठ्या आहेत का?
                   </label>
                   <select
                     name="hasStorageUnits"
                     id="hasStorageUnits"
                     className="form-control"
-                    value={formData.hasStorageUnits}
+                    value={formData.hasStorageUnits === null ? "" : formData.hasStorageUnits}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -217,15 +209,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasPlates">
-                    ९. शाळा स्तरावर विद्यार्थ्यांना आहाराचा लाभ देण्यासाठी शाळेत ताटे प्लेट्स उपलब्ध आहेत काय?
+                    ९. ताटे/प्लेट्स उपलब्ध आहेत काय?
                   </label>
                   <select
                     name="hasPlates"
                     id="hasPlates"
                     className="form-control"
-                    value={formData.hasPlates}
+                    value={formData.hasPlates === null ? "" : formData.hasPlates}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -238,33 +229,30 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "30px" }} htmlFor="teacherPresentDuringDistribution">
-                    १०. विद्यार्थ्यांना आहार वितरीत करतेवेळी शिक्षक उपस्थित असतात का?
+                    १०. आहार वितरीत करतेवेळी शिक्षक उपस्थित असतात का?
                   </label>
                   <select
                     name="teacherPresentDuringDistribution"
                     id="teacherPresentDuringDistribution"
                     className="form-control"
-                    value={formData.teacherPresentDuringDistribution}
+                    value={formData.teacherPresentDuringDistribution === null ? "" : formData.teacherPresentDuringDistribution}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
-
                     <option value="1">होय</option>
                     <option value="0">नाही</option>
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="mdmPortalUpdated">
-                    ११. शाळा स्तरावर देण्यात आलेल्या दैनंदिन लाभार्थ्यांची माहिती शाळा स्तरावरुन एमडीएम पोर्टलवर नियमितपणे नोंदवली जाते काय?
+                    ११. एमडीएम पोर्टलवर नोंदवली जाते काय?
                   </label>
                   <select
                     name="mdmPortalUpdated"
                     id="mdmPortalUpdated"
                     className="form-control"
-                    value={formData.mdmPortalUpdated}
+                    value={formData.mdmPortalUpdated === null ? "" : formData.mdmPortalUpdated}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -273,15 +261,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "7px" }} htmlFor="supplementaryDiet">
-                    १२. आहार शिजवणाऱ्या यंत्रणा/संस्थेमार्फत आठवड्यातून एकदा पूरक आहार दिला जातो काय?
+                    १२. पूरक आहार दिला जातो काय?
                   </label>
                   <select
                     name="supplementaryDiet"
                     id="supplementaryDiet"
                     className="form-control"
-                    value={formData.supplementaryDiet}
+                    value={formData.supplementaryDiet === null ? "" : formData.supplementaryDiet}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -289,8 +276,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   </select>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "30px" }} htmlFor="supplementaryDietDetails">
-                    १२.१ तपशील थोडक्यात नमूद करावाः
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="supplementaryDietDetails">
+                    १२.१ पूरक आहार तपशील
                   </label>
                   <textarea
                     name="supplementaryDietDetails"
@@ -307,15 +294,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="sampleStored">
-                    १३. आहाराचा नमुना बंद डब्यात ठेवून पुढील दिवसांपर्यंत जतन केला जातो काय?
+                    १३. आहाराचा नमुना जतन केला जातो काय?
                   </label>
                   <select
                     name="sampleStored"
                     id="sampleStored"
                     className="form-control"
-                    value={formData.sampleStored}
+                    value={formData.sampleStored === null ? "" : formData.sampleStored}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -324,15 +310,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="cleaningDone">
-                    १४. स्वयंपाकी मदतनीस यांच्यामार्फत वि‌द्यार्थ्यांच्या जेवणानंतर परिसर आणि भांड्याची स्वच्छता केली जाते काय किंवा कसे?
+                    १४. जेवणानंतर स्वच्छता केली जाते काय?
                   </label>
                   <select
                     name="cleaningDone"
                     id="cleaningDone"
                     className="form-control"
-                    value={formData.cleaningDone}
+                    value={formData.cleaningDone === null ? "" : formData.cleaningDone}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -341,7 +326,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="headmasterFoodOpinion">
-                    १५. आहार शिजवणान्या यंत्रणा/संस्थेमार्फत पुरवठा होत असलेल्या आहाराबाबत (वजन/दर्जा/गुणवत्ता) याब‌द्दल शाळेच्या मुख्याध्यापक यांचा थोडक्यात अभिप्रायः-
+                    १५. मुख्याध्यापकाचे अन्न मत
                   </label>
                   <textarea
                     name="headmasterFoodOpinion"
@@ -354,15 +339,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="thirdPartySupport">
-                    १६. त्रयस्थ किंवा अन्य कोणत्याही NGO/SHG इत्यादी संस्थांकडून वेळोवेळी आहार आणि पिण्याच्या पाण्याची देखरेख/देखभाल याकरीता सहकार्य (CSR निधी) करतात का?
+                    १६. त्रयस्थ संस्थांकडून सहकार्य मिळते का?
                   </label>
                   <select
                     name="thirdPartySupport"
                     id="thirdPartySupport"
                     className="form-control"
-                    value={formData.thirdPartySupport}
+                    value={formData.thirdPartySupport === null ? "" : formData.thirdPartySupport}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -381,9 +365,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     name="basicFacilitiesAvailable"
                     id="basicFacilitiesAvailable"
                     className="form-control"
-                    value={formData.basicFacilitiesAvailable}
+                    value={formData.basicFacilitiesAvailable === null ? "" : formData.basicFacilitiesAvailable}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -392,7 +375,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="basicFacilitiesDetails">
-                    १७.१ असल्यास थोडक्यात नमूद करावीः-
+                    १७.१ मूलभूत सुविधा तपशील
                   </label>
                   <textarea
                     name="basicFacilitiesDetails"
@@ -404,8 +387,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="diningArrangement">
-                    १८. विद्यार्थ्यांना भोजन व्यवस्था असल्यास स्थिती थोडक्यात नमूद करावी-
+                  <label className="d-block text-start" style={{ marginBottom: "30px" }} htmlFor="diningArrangement">
+                    १८. भोजन व्यवस्था
                   </label>
                   <textarea
                     name="diningArrangement"
@@ -417,16 +400,15 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                   ></textarea>
                 </div>
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "6px" }} htmlFor="followsGovtRecipe">
-                    १९. शासनाने दिनांक ११ जून, २०२४ च्या निर्णया‌द्वारे निश्चित करून दिलेल्या पाककृतीनुसार आहाराचा लाभ देण्यात येत आहे काय?
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="followsGovtRecipe">
+                    १९. शासनाच्या पाककृतीनुसार आहार दिला जातो काय?
                   </label>
                   <select
                     name="followsGovtRecipe"
                     id="followsGovtRecipe"
                     className="form-control"
-                    value={formData.followsGovtRecipe}
+                    value={formData.followsGovtRecipe === null ? "" : formData.followsGovtRecipe}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -439,15 +421,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="eggsBananasRegular">
-                    २०. अंडी/केळीचा लाभ वि‌द्यार्थ्यांना नियमित देण्यात येत आहे काय?
+                    २०. अंडी/केळी नियमित देण्यात येत आहे काय?
                   </label>
                   <select
                     name="eggsBananasRegular"
                     id="eggsBananasRegular"
                     className="form-control"
-                    value={formData.eggsBananasRegular}
+                    value={formData.eggsBananasRegular === null ? "" : formData.eggsBananasRegular}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -456,15 +437,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="usesSproutedGrains">
-                    २१. आहारामध्ये मोड आलेल्या कडधान्याचा वापर?
+                    २१. मोड आलेल्या कडधान्याचा वापर?
                   </label>
                   <select
                     name="usesSproutedGrains"
                     id="usesSproutedGrains"
                     className="form-control"
-                    value={formData.usesSproutedGrains}
+                    value={formData.usesSproutedGrains === null ? "" : formData.usesSproutedGrains}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -473,15 +453,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="labTestMonthly">
-                    २२. शिजविलेल्या आहाराची दरमहा प्रयोगशाळा तपासणी करण्यात येते काय?
+                    २२. दरमहा प्रयोगशाळा तपासणी होते काय?
                   </label>
                   <select
                     name="labTestMonthly"
                     id="labTestMonthly"
                     className="form-control"
-                    value={formData.labTestMonthly}
+                    value={formData.labTestMonthly === null ? "" : formData.labTestMonthly}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -490,15 +469,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="tasteTestBeforeDistribution">
-                    २३. विद्यार्थ्यांना आहार वितरणच्या अगोदर शिक्षक/शाळा व्यवस्थापन समिती सदस्य त्रयस्त व्यक्तीकडून अन्नाची चव घेतली जाते काय?
+                    २३. आहार वितरणच्या अगोदर चव घेतली जाते काय?
                   </label>
                   <select
                     name="tasteTestBeforeDistribution"
                     id="tasteTestBeforeDistribution"
                     className="form-control"
-                    value={formData.tasteTestBeforeDistribution}
+                    value={formData.tasteTestBeforeDistribution === null ? "" : formData.tasteTestBeforeDistribution}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -511,15 +489,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="smcParentVisits">
-                    २४. शालेय व्यवस्थापन समिती/माता-पालक संघ यांनी शालेय पोषण आहार संबंधात शाळेला भेटी दिल्या आहेत काय?
+                    २४. शालेय व्यवस्थापन समितीच्या भेटी झाल्या आहेत काय?
                   </label>
                   <select
                     name="smcParentVisits"
                     id="smcParentVisits"
                     className="form-control"
-                    value={formData.smcParentVisits}
+                    value={formData.smcParentVisits === null ? "" : formData.smcParentVisits}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -528,15 +505,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="hasTasteRegister">
-                    २५. शाळा स्तरावर चव रजिस्टर ठेवण्यात जतन करण्यात आले आहे काय?
+                    २५. चव रजिस्टर ठेवण्यात आले आहे काय?
                   </label>
                   <select
                     name="hasTasteRegister"
                     id="hasTasteRegister"
                     className="form-control"
-                    value={formData.hasTasteRegister}
+                    value={formData.hasTasteRegister === null ? "" : formData.hasTasteRegister}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -545,15 +521,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="dailyTasteEntries">
-                    २५.१ असल्यास दैनंदिन नोंदी घेण्यात येतात का?
+                    २५.१ दैनंदिन नोंदी घेण्यात येतात का?
                   </label>
                   <select
                     name="dailyTasteEntries"
                     id="dailyTasteEntries"
                     className="form-control"
-                    value={formData.dailyTasteEntries}
+                    value={formData.dailyTasteEntries === null ? "" : formData.dailyTasteEntries}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -562,15 +537,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="stockMatchesRegister">
-                    २६. नोंदवहीतील तांदूळ साठा/धान्यादी मालाची शिल्लक बरोबर आहे काय?
+                    २६. नोंदवहीतील साठा बरोबर आहे काय?
                   </label>
                   <select
                     name="stockMatchesRegister"
                     id="stockMatchesRegister"
                     className="form-control"
-                    value={formData.stockMatchesRegister}
+                    value={formData.stockMatchesRegister === null ? "" : formData.stockMatchesRegister}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -582,8 +556,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               {/* Row 9 */}
               <div className="row">
                 <div className="col-md-3 form-group">
-                  <label className="d-block text-start" style={{ marginBottom: "10px" }} htmlFor="stockDiscrepancyDetails">
-                    २६.१ नसल्यास तफावतीचा तपशील नमूद करावा:-
+                  <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="stockDiscrepancyDetails">
+                    २६.१ साठा विसंगती तपशील
                   </label>
                   <textarea
                     name="stockDiscrepancyDetails"
@@ -596,15 +570,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="recipesDisplayed">
-                    २७. शाळेच्या दर्शनी भागात आठवड्‌यातील दैनंदिन आहाराच्या पाककृतीचे प्रकार प्रदर्शित करण्यात आले आहे काय?
+                    २७. दैनंदिन आहाराच्या पाककृती प्रदर्शित आहेत काय?
                   </label>
                   <select
                     name="recipesDisplayed"
                     id="recipesDisplayed"
                     className="form-control"
-                    value={formData.recipesDisplayed}
+                    value={formData.recipesDisplayed === null ? "" : formData.recipesDisplayed}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -613,15 +586,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "32px" }} htmlFor="monitoringCommitteeMeetings">
-                    २८. शालेय आहार व्यवस्थापन समितीच्या बैठक घेण्यात आल्या आहेत काय?
+                    २८. समितीच्या बैठक घेण्यात आल्या आहेत काय?
                   </label>
                   <select
                     name="monitoringCommitteeMeetings"
                     id="monitoringCommitteeMeetings"
                     className="form-control"
-                    value={formData.monitoringCommitteeMeetings}
+                    value={formData.monitoringCommitteeMeetings === null ? "" : formData.monitoringCommitteeMeetings}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -630,7 +602,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "10px" }} htmlFor="meetingCount2024_25">
-                    २८.१ असल्यास सन २०२४-२५ या कालावधीत झालेल्या बैठकांची संख्या नमूद करावीः-
+                    २८.१ सन २०२४-२५ मधील बैठकांची संख्या
                   </label>
                   <textarea
                     name="meetingCount2024_25"
@@ -647,15 +619,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
               <div className="row">
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="emptySacksReturned">
-                    २९. तांदुळाच्या रिकाम्या गोण्या पुढील पुरवठ्‌यावेळी वर्गीकरण करून पुरवठादारास दिल्या आहेत काय?
+                    २९. रिकाम्या गोण्या पुरवठादारास दिल्या आहेत काय?
                   </label>
                   <select
                     name="emptySacksReturned"
                     id="emptySacksReturned"
                     className="form-control"
-                    value={formData.emptySacksReturned}
+                    value={formData.emptySacksReturned === null ? "" : formData.emptySacksReturned}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -664,15 +635,14 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="sackTransferRecorded">
-                    २९.१ असलयास हस्तांतरित गोण्यांची नोंद ठेवली आहे काय?
+                    २९.१ हस्तांतरित गोण्यांची नोंद ठेवली आहे काय?
                   </label>
                   <select
                     name="sackTransferRecorded"
                     id="sackTransferRecorded"
                     className="form-control"
-                    value={formData.sackTransferRecorded}
+                    value={formData.sackTransferRecorded === null ? "" : formData.sackTransferRecorded}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -681,7 +651,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="sackTransferCount">
-                    २९.२ हस्तांतरित केलेल्या गोण्यांची संख्या नमूद करण्यात यावी.
+                    २९.२ हस्तांतरित गोण्यांची संख्या
                   </label>
                   <textarea
                     name="sackTransferCount"
@@ -694,7 +664,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="currentFoodMaterials">
-                    ३०. सद्यस्थितीमध्ये शाळेत दिल्या जाणाऱ्या आहारात वापरण्यात येत असलेल्या धान्य व इतर साहित्याचा थोड्यक्यात तपशील नमूद करण्यात यावा
+                    ३०. सध्याचे अन्न साहित्य
                   </label>
                   <textarea
                     name="currentFoodMaterials"
@@ -717,9 +687,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     name="snehTithiProgram"
                     id="snehTithiProgram"
                     className="form-control"
-                    value={formData.snehTithiProgram}
+                    value={formData.snehTithiProgram === null ? "" : formData.snehTithiProgram}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -728,7 +697,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="snehTithiProgramDetails">
-                    ३१.१ असल्यास वर्षनिहाय तपशील नमूद करण्यात यावा
+                    ३१.१ स्नेह तिथी कार्यक्रम तपशील
                   </label>
                   <textarea
                     name="snehTithiProgramDetails"
@@ -741,7 +710,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="corruptionDetails">
-                    ३२. योजनेत काही भ्रष्टाचार/अनियमितता/अपहार आढळला असल्यास सविस्तर माहिती द्या?:-
+                    ३२. भ्रष्टाचार तपशील
                   </label>
                   <textarea
                     name="corruptionDetails"
@@ -754,7 +723,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="corruptionActionDetails">
-                    ३२.१ याबाबत कोणत्या प्रकारची कारवाई करण्यात आली त्याब‌द्दल थोडक्यात माहिती नमूद करावी.:-
+                    ३२.१ भ्रष्टाचार कारवाई तपशील
                   </label>
                   <textarea
                     name="corruptionActionDetails"
@@ -777,9 +746,8 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                     name="fieldOfficerVisits"
                     id="fieldOfficerVisits"
                     className="form-control"
-                    value={formData.fieldOfficerVisits}
+                    value={formData.fieldOfficerVisits === null ? "" : formData.fieldOfficerVisits}
                     onChange={handleBinaryChange}
-                    required
                   >
                     <option value="">निवडा</option>
                     <option value="1">होय</option>
@@ -788,7 +756,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="fieldOfficerVisitDetails">
-                    ३३.१ असल्यास वर्षनिहाय तपशील देण्यात यावा. (२०२२ ते २०२४):-
+                    ३३.१ फील्ड अधिकारी भेट तपशील
                   </label>
                   <textarea
                     name="fieldOfficerVisitDetails"
@@ -801,7 +769,7 @@ const SchoolFormPage2 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
                 <div className="col-md-3 form-group">
                   <label className="d-block text-start" style={{ marginBottom: "8px" }} htmlFor="schemeSuggestions">
-                    ३४. योजनेच्या अंमलबजावणी/सनियंत्रणाबाबत सूचना अथवा शिफारशी याबाबत थोडक्यात तपशील नमूद करण्यात यावा
+                    ३४. योजनेच्या सूचना
                   </label>
                   <textarea
                     name="schemeSuggestions"
