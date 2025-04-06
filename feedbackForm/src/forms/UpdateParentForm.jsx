@@ -118,7 +118,7 @@ const UpdateParentForm = () => {
         setFormData(docSnap.data()); // Populate form with fetched data
       } else {
         toast.error("अशी कोणतीही पालक फॉर्म सापडली नाही!");
-        navigate("/admin_dashboard"); // Redirect if doc doesn’t exist
+        navigate("/parent-feedback"); // Redirect if doc doesn’t exist
       }
     } catch (error) {
       toast.error("पालक डेटा आणताना त्रुटी: " + error.message);
@@ -155,7 +155,7 @@ const UpdateParentForm = () => {
       const docRef = doc(db, "Parent_Form", id);
       await updateDoc(docRef, formData);
       toast.success("फॉर्म यशस्वीरित्या अपडेट झाला!");
-      navigate("/admin_dashboard"); // Redirect to admin dashboard
+      navigate("/parent-feedback"); // Redirect to admin dashboard
     } catch (error) {
       toast.error("फॉर्म अपडेट करताना त्रुटी: " + error.message);
       console.error("फॉर्म अपडेट करताना त्रुटी: ", error);
@@ -967,7 +967,7 @@ const UpdateParentForm = () => {
               <button
                 type="button"
                 className="btn btn-secondary"
-                onClick={() => navigate("/admin_dashboard")}
+                onClick={() => navigate("/parent-feedback")}
                 disabled={loading}
               >
                 रद्द करा

@@ -179,7 +179,7 @@ const UpdateSchoolForm = () => {
           }));
         } else {
           toast.error("No such school form exists!");
-          navigate("/admin_dashboard");
+          navigate("/school-feedback");
         }
       } catch (error) {
         toast.error("Error fetching school data: " + error.message);
@@ -236,7 +236,7 @@ const UpdateSchoolForm = () => {
         submissionDate: new Date().toISOString(),
       });
       toast.success("School Form updated successfully!");
-      navigate("/admin_dashboard");
+      navigate("/school-feedback");
     } catch (error) {
       console.error("Error updating form data:", error);
       toast.error("Error updating school form: " + error.message);

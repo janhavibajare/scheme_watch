@@ -97,7 +97,7 @@ const UpdateObservationForm = () => {
         setFormData(docSnap.data());
       } else {
         toast.error("अशी कोणतीही निरीक्षणे सापडली नाही!");
-        navigate("/admin_dashboard");
+        navigate("/observation-feedback");
       }
     } catch (error) {
       toast.error("निरीक्षणे आणताना त्रुटी: " + error.message);
@@ -158,7 +158,7 @@ const UpdateObservationForm = () => {
         timestamp: new Date().toISOString(),
       });
       toast.success("निरीक्षण यशस्वीरित्या अपडेट झाले!");
-      setTimeout(() => navigate("/admin_dashboard"), 1500);
+      setTimeout(() => navigate("/observation-feedback"), 1500);
     } catch (error) {
       toast.error("निरीक्षण अपडेट करताना त्रुटी: " + error.message);
       console.error("Update error:", error);
@@ -338,7 +338,7 @@ const UpdateObservationForm = () => {
           <button
             type="button"
             className="btn btn-secondary"
-            onClick={() => navigate("/admin_dashboard")}
+            onClick={() => navigate("/observation-feedback")}
             disabled={loading}
           >
             रद्द करा
