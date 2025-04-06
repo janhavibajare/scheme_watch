@@ -45,29 +45,32 @@ function ParentFormTable() {
   const displayValue = (value) => (value != null ? value : "N/A");
 
   const fieldMappings = [
-    { label: "District", key: "district" },
-    { label: "Taluka", key: "taluka" },
-    { label: "School UDISE Number", key: "schoolUdiseNumber" },
-    { label: "पालकाचे संपूर्ण नाव", key: "parentName" },
-    { label: "शाळेचे नाव", key: "schoolName" },
-    { label: "Child 1", key: "child1" },
-    { label: "इयत्ता व तुकडी (Child 1)", key: "child1Sec" },
-    { label: "Child 2", key: "child2" },
-    { label: "इयत्ता व तुकडी (Child 2)", key: "child2Sec" },
-    { label: "पालकाची शैक्षणिक पात्रता", key: "parentEducation" },
-    { label: "पालकाचा निवासाचा संपूर्ण पत्ता", key: "address" },
-    { label: "मुलांना दररोज शाळेत पाठवतात का?", key: "sendChildDaily" },
-    { label: "नसल्यास कारण नमूद करयायात यावेः", key: "reason" },
-    { label: "मुलांचे/ मुलींचे वजन वाढले का?", key: "weightGain" },
-    { label: "वारंवार आजारी पडयायाचे प्रमाण कमी झाले का?", key: "sickFrequency" },
-    { label: "अभ्यासातील प्रगती चागंली झाली का?", key: "studyProgress" },
-    { label: "अभ्यासातील एकाग्रता वाढली का?", key: "concentration" },
-    { label: "मुला-मुलींचे पोषण चागंले होत आहे का?", key: "nutrition" },
-    { label: "नियमित शाळेत जाण्यामध्ये सुधारणा झाली का?", key: "attendence" },
-    { label: "वि‌द्यार्थ्यांना शालेय नियमित जाण्यासाठी शालेय पोषण आहार योजनेचा प्रभाव", key: "impactOfNutritionScheme" },
-    { label: "दुपारच्या उपस्थितीवर जेवणाचा प्रभाव", key: "effectOnAfternoonAttendence" },
-    { label: "मुलांच्या सामाजिकीकरण प्रक्रियेवर पोषण आहार योजनेचा प्रभाव", key: "effectOfNutritionDietPlan" },
-    { label: "योजनेमध्ये सुधारणा करण्यासाठी सूचना", key: "improvementSuggestions" },
+    //{ label: "प्रदेश", key: "region" },
+    { label: "A", key: "district" },
+    { label: "B", key: "taluka" },
+    { label: "C", key: "schoolUdiseNumber" },
+
+   // { label: "पालकाचे संपूर्ण नाव", key: "parentName" },
+    //{ label: "शाळेचे नाव", key: "schoolName" },
+    //{ label: "Child 1", key: "child1" },
+    //{ label: "इयत्ता व तुकडी (Child 1)", key: "child1Sec" },
+    //{ label: "Child 2", key: "child2" },
+    //{ label: "इयत्ता व तुकडी (Child 2)", key: "child2Sec" },
+    //{ label: "पालकाची शैक्षणिक पात्रता", key: "parentEducation" },
+    //{ label: "पालकाचा निवासाचा संपूर्ण पत्ता", key: "address" },
+
+    { label: "D", key: "sendChildDaily" },
+   // { label: "नसल्यास कारण नमूद करयायात यावेः", key: "reason" },
+    { label: "E1", key: "weightGain" },
+    { label: "E2", key: "sickFrequency" },
+    { label: "E3", key: "studyProgress" },
+  //  { label: "अभ्यासातील एकाग्रता वाढली का?", key: "concentration" },
+    { label: "E4", key: "nutrition" },
+    { label: "E5", key: "attendance" },
+    { label: "E6", key: "impactOfNutritionScheme" },
+    { label: "E7", key: "effectOnAfternoonAttendance" },
+    { label: "E8", key: "effectOfNutritionDietPlan" },
+   // { label: "योजनेमध्ये सुधारणा करण्यासाठी सूचना", key: "improvementSuggestions" },
   ];
 
   const downloadParentExcel = () => {
@@ -134,7 +137,7 @@ function ParentFormTable() {
             <input
               type="text"
               className="form-control w-25"
-              placeholder="Search by parent name, school name, or UDISE number..."
+              placeholder="UDISE क्रमांक शोधा..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />

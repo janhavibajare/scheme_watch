@@ -11,7 +11,158 @@ import UpdateSchoolFormPage4 from "./UpdateSchoolFormPage4.jsx";
 const UpdateSchoolForm = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({});
+  
+  // Initialize formData with the same structure as SchoolForm
+  const [formData, setFormData] = useState({
+    region: "",
+    district: "",
+    taluka: "",
+    schoolName: "",
+    inspectionDate: "",
+    inspectionTime: "",
+    inspectorName: "",
+    schoolFullName: "",
+    headmasterName: "",
+    headmasterPhone: "",
+    headmasterAddress: "",
+    assistantTeacherName: "",
+    assistantTeacherPhone: "",
+    udiseCode: "",
+    teacherMale: "",
+    teacherFemale: "",
+    totalTeachers: "",
+    totalBoys: "",
+    totalGirls: "",
+    totalStudents: "",
+    gradeStudents: {
+      grade1to4: { female: "", male: "", total: "" },
+      grade5to7: { female: "", male: "", total: "" },
+      grade8to10: { female: "", male: "", total: "" },
+    },
+    hasMiddayMealBoard: null,
+    hasMiddayMealMenu: null,
+    hasManagementBoard: null,
+    hasPrincipalContact: null,
+    hasOfficerContact: null,
+    hasComplaintBox: null,
+    hasEmergencyNumber: null,
+    hasKitchenShed: null,
+    hasFirstAidBox: null,
+    hasWaterSource: null,
+    waterSourceType: "",
+    hasRegularWaterSupply: null,
+    hasFireExtinguisher: null,
+    hasFireExtinguisherCheck: null,
+    hasFireExtinguisherRefill: null,
+    hasKitchenGarden: null,
+    usesGardenProduce: null,
+    innovativeInitiatives: "",
+    hasDietCommittee: null,
+    hasCommitteeBoard: null,
+    cookingAgency: "",
+    hasAgreementCopy: null,
+    hasCookTraining: null,
+    cookHelperCount: "",
+    isCookedAtSchool: null,
+    fuelType: "",
+    hasWeighingScale: null,
+    hasRiceWeighed: null,
+    hasStorageUnits: null,
+    hasPlates: null,
+    teacherPresentDuringDistribution: null,
+    mdmPortalUpdated: null,
+    supplementaryDiet: null,
+    sampleStored: null,
+    cleaningDone: null,
+    thirdPartySupport: null,
+    basicFacilitiesAvailable: null,
+    diningArrangement: "",
+    followsGovtRecipe: null,
+    eggsBananasRegular: null,
+    usesSproutedGrains: null,
+    labTestMonthly: null,
+    tasteTestBeforeDistribution: null,
+    smcParentVisits: null,
+    hasTasteRegister: null,
+    dailyTasteEntries: null,
+    stockMatchesRegister: null,
+    recipesDisplayed: null,
+    monitoringCommitteeMeetings: null,
+    meetingCount2024_25: "",
+    emptySacksReturned: null,
+    sackTransferRecorded: null,
+    sackTransferCount: "",
+    snehTithiProgram: null,
+    fieldOfficerVisits: null,
+    healthCheckupDone: null,
+    healthCheckupStudentCount: "",
+    bmiRecorded: null,
+    weightHeightMeasured: null,
+    cookHealthCheck: null,
+    hasSmcResolution: null,
+    hasHealthCertificate: null,
+    helper1Name: "",
+    helper2Name: "",
+    beneficiaries: {
+      "2022-23": { boys: 0, girls: 0, total: 0 },
+      "2023-24": { boys: 0, girls: 0, total: 0 },
+      "2024-25": { boys: 0, girls: 0, total: 0 },
+    },
+    grantReceived: {
+      "2022-23": 0,
+      "2023-24": 0,
+      "2024-25": 0,
+    },
+    grantExpenditure: {
+      "2022-23": 0,
+      "2023-24": 0,
+      "2024-25": 0,
+    },
+    grantBalance: {
+      "2022-23": 0,
+      "2023-24": 0,
+      "2024-25": 0,
+    },
+    basicFacilities: {
+      hasKitchen: null,
+      hasStorageRoom: null,
+      hasDiningHall: null,
+      hasUtensils: null,
+      hasGrainSafety: null,
+      hasHandwashSoap: null,
+      hasSeparateToilets: null,
+      hasCctv: null,
+    },
+    quality: {
+      kitchenCleanliness: null,
+      diningHallCleanliness: null,
+      storageCleanliness: null,
+      servingAreaCleanliness: null,
+      utensilCondition: null,
+      waterSupply: null,
+      handwashFacility: null,
+      toiletCleanliness: null,
+    },
+    repairing: {
+      cashBookUpdated: null,
+      stockRegisterUpdated: null,
+      attendanceRegisterUpdated: null,
+      bankAccountUpdated: null,
+      honorariumRegisterUpdated: null,
+      tasteRegisterUpdated: null,
+      snehTithiRegisterUpdated: null,
+    },
+    profitFromScheme: {
+      enrollmentImprovement: null,
+      attendanceIncrease: null,
+      nutritionHealthImprovement: null,
+      weightHeightIncrease: null,
+      malnutritionReduction: null,
+      junkFoodPrevention: null,
+      unityBonding: null,
+    },
+  });
+
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(true);
 
@@ -21,7 +172,11 @@ const UpdateSchoolForm = () => {
         const docRef = doc(db, "School_Forms", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
-          setFormData(docSnap.data());
+          // Merge fetched data with default structure
+          setFormData((prev) => ({
+            ...prev,
+            ...docSnap.data(),
+          }));
         } else {
           toast.error("No such school form exists!");
           navigate("/admin_dashboard");
@@ -35,7 +190,6 @@ const UpdateSchoolForm = () => {
     fetchSchoolData();
   }, [id, navigate]);
 
-  // Handlers for UpdateSchoolFormPage3
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({
@@ -44,106 +198,27 @@ const UpdateSchoolForm = () => {
     }));
   };
 
-  const handleBinaryChange = (name, value) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: Number(value),
-    }));
+  // Helper function to update nested objects (from SchoolFormPage4)
+  const updateNestedObject = (obj, path, value) => {
+    const [head, ...rest] = path.split(".");
+    if (rest.length === 0) {
+      return { ...obj, [head]: value };
+    }
+    return {
+      ...obj,
+      [head]: updateNestedObject(obj[head] || {}, rest.join("."), value),
+    };
   };
 
-  const handleNumberChange = (e) => {
-    const { name, value } = e.target;
-    const numericValue = value === "" ? "" : Number(value);
-    setFormData((prev) => ({
-      ...prev,
-      [name]: numericValue,
-    }));
+  const handleBinaryChange = (field, value) => {
+    const newValue = value === "होय" ? 1 : value === "नाही" ? 0 : null;
+    setFormData((prev) => updateNestedObject(prev, field, newValue));
   };
 
-  const handleBeneficiaryChange = (year, field, value) => {
-    const numericValue = value === "" ? "" : Number(value);
-    setFormData((prev) => {
-      const updatedBeneficiaries = {
-        ...prev.beneficiariesYearly,
-        [year]: {
-          ...prev.beneficiariesYearly?.[year] || {},
-          [field]: numericValue,
-        },
-      };
-      
-      // Calculate total
-      const boys = field === "boys" ? numericValue : updatedBeneficiaries[year].boys || 0;
-      const girls = field === "girls" ? numericValue : updatedBeneficiaries[year].girls || 0;
-      updatedBeneficiaries[year].total = (boys || 0) + (girls || 0);
-
-      return {
-        ...prev,
-        beneficiariesYearly: updatedBeneficiaries,
-      };
-    });
-  };
-
-  const handleFinancialChange = (year, field, value) => {
-    const numericValue = value === "" ? "" : Number(value);
-    setFormData((prev) => {
-      const key = field === "deposited" ? "grantReceived" : "grantExpenditure";
-      const updatedFinancial = {
-        ...prev[key],
-        [year]: numericValue,
-      };
-
-      const received = field === "deposited" ? numericValue : prev.grantReceived?.[year] || 0;
-      const spent = field === "spent" ? numericValue : prev.grantExpenditure?.[year] || 0;
-      const updatedBalance = {
-        ...prev.grantBalance,
-        [year]: (received || 0) - (spent || 0),
-      };
-
-      return {
-        ...prev,
-        [key]: updatedFinancial,
-        grantBalance: updatedBalance,
-      };
-    });
-  };
-
-  // Handlers for other pages
-  const handleTeacherChange = (name, value) => {
-    const numericValue = value === "" ? "" : Number(value) || "";
-    setFormData((prev) => ({
-      ...prev,
-      [name]: numericValue,
-    }));
-  };
-
-  const handleStudentChange = (gradeKey, field, value) => {
-    const numericValue = value === "" ? "" : Number(value) || "";
-    setFormData((prev) => {
-      const updatedGrade = {
-        ...prev.beneficiaries?.[gradeKey] || {},
-        [field]: numericValue,
-      };
-      updatedGrade.total =
-        (updatedGrade.boys === "" ? 0 : updatedGrade.boys) +
-        (updatedGrade.girls === "" ? 0 : updatedGrade.girls);
-
-      const allGrades = { ...prev.beneficiaries, [gradeKey]: updatedGrade };
-      const totalBoys = Object.values(allGrades).reduce(
-        (sum, grade) => sum + (grade.boys === "" ? 0 : grade.boys),
-        0
-      );
-      const totalGirls = Object.values(allGrades).reduce(
-        (sum, grade) => sum + (grade.girls === "" ? 0 : grade.girls),
-        0
-      );
-
-      return {
-        ...prev,
-        beneficiaries: allGrades,
-        totalBoys,
-        totalGirls,
-      };
-    });
+  const handleQualityChange = (field, value) => {
+    const qualityMap = { "निकृष्ट": "1", "बऱ्यापैकी": "2", "अतिउत्तम": "3" };
+    const newValue = qualityMap[value] || "";
+    setFormData((prev) => updateNestedObject(prev, field, newValue));
   };
 
   const nextStep = () => setStep((prev) => Math.min(prev + 1, 4));
@@ -163,6 +238,7 @@ const UpdateSchoolForm = () => {
       toast.success("School Form updated successfully!");
       navigate("/admin_dashboard");
     } catch (error) {
+      console.error("Error updating form data:", error);
       toast.error("Error updating school form: " + error.message);
     }
   };
@@ -171,13 +247,10 @@ const UpdateSchoolForm = () => {
 
   const pageProps = {
     formData,
+    setFormData,
     handleChange,
     handleBinaryChange,
-    handleNumberChange,
-    handleBeneficiaryChange,
-    handleFinancialChange,
-    handleTeacherChange,
-    handleStudentChange,
+    handleQualityChange,
     nextStep,
     prevStep,
   };

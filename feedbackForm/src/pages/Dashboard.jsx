@@ -49,26 +49,124 @@ const Dashboard = () => {
 
   const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
+  const renderStats = () => (
+    <div className="container mt-5">
+      {/* First Row: Total Mid Day Meal Schools */}
+      <div className="row justify-content-center mb-4">
+        <div className="col-md-8 col-12">
+          <div
+            className="card shadow-lg p-4 text-center"
+            style={{
+              borderRadius: "15px",
+              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
+            }}
+          >
+            <h4 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
+              Total Mid Day Meal Schools
+            </h4>
+            <p style={{ fontSize: "24px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
+              4000+
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Second Row: District and Taluka */}
+      <div className="row justify-content-center">
+        <div className="col-md-4 col-6 mb-4">
+          <div
+            className="card shadow-lg p-4 text-center"
+            style={{
+              borderRadius: "15px",
+              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
+            }}
+          >
+            <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
+              District
+            </h5>
+            <p style={{ fontSize: "20px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
+              36
+            </p>
+          </div>
+        </div>
+        <div className="col-md-4 col-6 mb-4">
+          <div
+            className="card shadow-lg p-4 text-center"
+            style={{
+              borderRadius: "15px",
+              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
+            }}
+          >
+            <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
+              Taluka
+            </h5>
+            <p style={{ fontSize: "20px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
+              82
+            </p>
+          </div>
+        </div>
+      </div>
+      {/* Third Row: Region */}
+      <div className="row justify-content-center mb-4">
+        <div className="col-md-8 col-12">
+          <div
+            className="card shadow-lg p-4 text-center"
+            style={{
+              borderRadius: "15px",
+              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
+            }}
+          >
+            <h4 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
+              Region
+            </h4>
+            <p style={{ fontSize: "24px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
+              6
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderAboutUs = () => (
     <div className="container mt-5 mb-5" ref={aboutUsRef}>
-      <div className="card shadow-lg p-4" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
-        <h2 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}>
+      <div
+        className="card shadow-lg p-4"
+        style={{
+          borderRadius: "15px",
+          backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
+        }}
+      >
+        <h2
+          className="text-center mb-4"
+          style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}
+        >
           About Us
         </h2>
         <div className="card-body">
-          <h3 className="text-center" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Mid Day Meal Scheme (PM-POSHAN)</h3>
+          <h3 className="text-center" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
+            Mid Day Meal Scheme (PM-POSHAN)
+          </h3>
           <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            The Mid Day Meal Scheme is a school meal programme in India designed to better the nutritional status of school-age children nationwide. Renamed <strong>PM-POSHAN</strong>, it serves <strong>120 million children</strong> across <strong>1.27 million schools</strong>.
+            The Mid Day Meal Scheme is a school meal programme in India designed to better the
+            nutritional status of school-age children nationwide. Renamed <strong>PM-POSHAN</strong>,
+            it serves <strong>120 million children</strong> across <strong>1.27 million schools</strong>.
           </p>
           <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 History</h5>
           <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            Launched in Puducherry in <strong>1930</strong>, it was pioneered in Tamil Nadu in the 1960s by <strong>K. Kamaraj</strong>. It became nationwide in 2002 via Supreme Court orders.
+            Launched in Puducherry in <strong>1930</strong>, it was pioneered in Tamil Nadu in the
+            1960s by <strong>K. Kamaraj</strong>. It became nationwide in 2002 via Supreme Court
+            orders.
           </p>
           <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 Recent Updates</h5>
           <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            Renamed <strong>PM-POSHAN</strong> in <strong>September 2021</strong>, it added <strong>24 lakh pre-primary students</strong> in 2022.
+            Renamed <strong>PM-POSHAN</strong> in <strong>September 2021</strong>, it added{" "}
+            <strong>24 lakh pre-primary students</strong> in 2022.
           </p>
-          <p className="text-muted text-end" style={{ color: isDarkMode ? "#adb5bd" : "#6c757d" }}>
+          <p
+            className="text-muted text-end"
+            style={{ color: isDarkMode ? "#adb5bd" : "#6c757d" }}
+          >
             Source: Government Reports & Supreme Court Orders
           </p>
         </div>
@@ -78,31 +176,43 @@ const Dashboard = () => {
 
   return (
     <div style={{ backgroundColor: isDarkMode ? "#212529" : "#f4f7fa", minHeight: "100vh" }}>
-      <nav className="navbar navbar-expand-lg navbar-dark bg-dark px-3 sticky-top">
+      <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3 sticky-top">
         <div className="container-fluid d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
             <Link className="navbar-brand d-flex align-items-center" to="/">
-              <img src={Mid_day_logo} alt="Mid Day Meal Logo" style={{ height: "40px", marginRight: "10px" }} />
-              Home
+              <img
+                src={Mid_day_logo}
+                alt="Mid Day Meal Logo"
+                style={{ height: "40px", marginRight: "10px" }}
+              />
+              <span className="fs-4 fw-bold">Home</span>
             </Link>
             <ul className="navbar-nav d-flex flex-row">
               <li className="nav-item mx-2">
-                <Link className="nav-link" to="/admin_dashboard">Admin</Link>
+                <Link className="nav-link text-white" to="/admin_dashboard">
+                  Admin
+                </Link>
               </li>
               <li className="nav-item mx-2">
-                <Link className="nav-link" to="/officer_dashboard">Research Officer</Link>
+                <Link className="nav-link text-white" to="/officer_dashboard">
+                  Research Officer
+                </Link>
               </li>
               <li className="nav-item mx-2">
-                <span className="nav-link" style={{ cursor: "pointer" }} onClick={scrollToAboutUs}>About Us</span>
+                <span className="nav-link text-white" style={{ cursor: "pointer" }} onClick={scrollToAboutUs}>
+                  About Us
+                </span>
               </li>
             </ul>
           </div>
           <div className="d-flex align-items-center">
-            <button className="btn btn-outline-light me-2" onClick={toggleDarkMode}>
-              {isDarkMode ? "Light Mode" : "Dark Mode"}
-            </button>
-            <button className="btn btn-outline-danger" onClick={handleLogout} disabled={loading}>
-              {loading ? <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> : "Logout"}
+          
+            <button className="btn btn-outline-light" onClick={handleLogout} disabled={loading}>
+              {loading ? (
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+              ) : (
+                "Logout"
+              )}
             </button>
           </div>
         </div>
@@ -115,32 +225,62 @@ const Dashboard = () => {
 
         <div className="row justify-content-center align-items-center">
           <div className="col-md-7 col-12">
-            <div id="dashboardCarousel" className="carousel slide shadow" data-bs-ride="carousel" data-bs-interval="3000">
+            <div
+              id="dashboardCarousel"
+              className="carousel slide shadow"
+              data-bs-ride="carousel"
+              data-bs-interval="3000"
+            >
               <div className="carousel-inner">
                 <div className="carousel-item active">
-                  <img src={slider1} className="d-block w-100" alt="Children enjoying meals" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <img
+                    src={slider1}
+                    className="d-block w-100"
+                    alt="Children enjoying meals"
+                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
+                  />
                   <div className="carousel-caption d-none d-md-block">
                     <h5>Nutritious Meals for All</h5>
                   </div>
                 </div>
                 <div className="carousel-item">
-                  <img src={slider2} className="d-block w-100" alt="School lunch distribution" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <img
+                    src={slider2}
+                    className="d-block w-100"
+                    alt="School lunch distribution"
+                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
+                  />
                   <div className="carousel-caption d-none d-md-block">
                     <h5>Supporting Education</h5>
                   </div>
                 </div>
                 <div className="carousel-item">
-                  <img src={slider3} className="d-block w-100" alt="Healthy kids in school" style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }} />
+                  <img
+                    src={slider3}
+                    className="d-block w-100"
+                    alt="Healthy kids in school"
+                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
+                  />
                   <div className="carousel-caption d-none d-md-block">
                     <h5>Growth & Learning</h5>
                   </div>
                 </div>
               </div>
-              <button className="carousel-control-prev" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="prev">
+              <button
+                className="carousel-control-prev"
+                type="button"
+                data-bs-target="#dashboardCarousel"
+                data-bs-slide="prev"
+              >
                 <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Previous</span>
               </button>
-              <button className="carousel-control-next" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="next">
+              <button
+                className="carousel-control-next"
+                type="button"
+                data-bs-target="#dashboardCarousel"
+                data-bs-slide="next"
+              >
                 <span className="carousel-control-next-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Next</span>
               </button>
@@ -148,8 +288,16 @@ const Dashboard = () => {
           </div>
 
           <div className="col-md-5 col-12 mt-4 mt-md-0">
-            <div className="card shadow-lg p-4" style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}>
-              <h2 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}>Forms</h2>
+            <div
+              className="card shadow-lg p-4"
+              style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}
+            >
+              <h2
+                className="text-center mb-4"
+                style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}
+              >
+                Forms
+              </h2>
               <div className="list-group">
                 {[
                   { to: "/parent_form", text: "पालकांचा अभिप्राय प्रश्नावली" },
@@ -192,17 +340,28 @@ const Dashboard = () => {
               maxWidth: "1400px",
               width: "100%",
               borderRadius: "12px",
-              background: isDarkMode ? "linear-gradient(135deg, #343a40, #495057)" : "linear-gradient(135deg, #f8f9fa, #e9ecef)",
+              background: isDarkMode
+                ? "linear-gradient(135deg, #343a40, #495057)"
+                : "linear-gradient(135deg, #f8f9fa, #e9ecef)",
               padding: "30px",
               textAlign: "center",
             }}
           >
-            <p style={{ fontSize: "26px", fontStyle: "italic", color: isDarkMode ? "#f8f9fa" : "#495057", fontWeight: "bold", lineHeight: "1.6" }}>
+            <p
+              style={{
+                fontSize: "26px",
+                fontStyle: "italic",
+                color: isDarkMode ? "#f8f9fa" : "#495057",
+                fontWeight: "bold",
+                lineHeight: "1.6",
+              }}
+            >
               "The Mid Day Meal Scheme nourishes both body and mind, empowering India's future."
             </p>
           </div>
         </div>
 
+        {renderStats()}
         {renderAboutUs()}
       </div>
 

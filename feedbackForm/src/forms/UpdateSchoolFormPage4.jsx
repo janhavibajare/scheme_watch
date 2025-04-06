@@ -2,78 +2,51 @@ import React from "react";
 
 const UpdateSchoolFormPage4 = ({
   formData,
-  handleBinaryChange,
-  handleQualityChange,
+  setFormData,
   prevStep,
   handleSubmit,
 }) => {
-  const handleFormSubmit = () => {
-    const requiredFields = [
-      "hasKitchen",
-      "hasStorageRoom",
-      "hasDiningHall",
-      "hasUtensils",
-      "hasGrainSafety",
-      "hasHandwashSoap",
-      "hasSeparateToilets",
-      "hasCctv",
-      "kitchenCleanliness",
-      "diningHallCleanliness",
-      "storageCleanliness",
-      "servingAreaCleanliness",
-      "utensilCondition",
-      "waterSupply",
-      "handwashFacility",
-      "toiletCleanliness",
-      "cashBookUpdated",
-      "stockRegisterUpdated",
-      "attendanceRegisterUpdated",
-      "bankAccountUpdated",
-      "honorariumRegisterUpdated",
-      "tasteRegisterUpdated",
-      "snehTithiRegisterUpdated",
-      "enrollmentImprovement",
-      "attendanceIncrease",
-      "nutritionHealthImprovement",
-      "weightHeightIncrease",
-      "malnutritionReduction",
-      "junkFoodPrevention",
-      "unityBonding",
-    ];
-
-    const missingFields = requiredFields.filter((field) => {
-      const value = formData[field];
-      return value === "" || value === undefined; // Exclude null to allow unchecked boxes
-    });
-
-    console.log("Form data before submission:", formData);
-    console.log("Missing fields (excluding null):", missingFields);
-
-    if (missingFields.length > 0) {
-      alert(`Please fill in all required fields: ${missingFields.join(", ")}`);
-      return;
+  // Helper function to update nested objects
+  const updateNestedObject = (obj, path, value) => {
+    const [head, ...rest] = path.split(".");
+    if (rest.length === 0) {
+      return { ...obj, [head]: value };
     }
-
-    console.log("Calling handleSubmit...");
-    handleSubmit();
+    return {
+      ...obj,
+      [head]: updateNestedObject(obj[head] || {}, rest.join("."), value),
+    };
   };
 
-  // Toggle binary field between 1 and 0
-  const toggleBinary = (field) => {
-    const currentValue = formData[field];
-    const newValue = currentValue === 1 ? 0 : 1;
-    handleBinaryChange(field, newValue.toString());
+  // Handler for binary (yes/no) fields
+  const handleBinaryChange = (field, value) => {
+    const newValue = value === "होय" ? 1 : value === "नाही" ? 0 : null;
+    setFormData((prev) => updateNestedObject(prev, field, newValue));
   };
 
-  // Toggle quality field, unchecking others if one is selected
-  const toggleQuality = (field, value) => {
-    const currentValue = formData[field];
-    const newValue = currentValue === value ? "" : value; // Uncheck if same value clicked
-    handleQualityChange(field, newValue);
+  // Handler for quality fields
+  const handleQualityChange = (field, value) => {
+    const qualityMap = { "निकृष्ट": "1", "बऱ्यापैकी": "2", "अतिउत्तम": "3" };
+    const newValue = qualityMap[value] || "";
+    setFormData((prev) => updateNestedObject(prev, field, newValue));
+  };
+
+  // Form submission handler
+  const handleFormSubmit = async () => {
+    try {
+      console.log("Form data before submission:", formData);
+      console.log("Calling handleSubmit...");
+      await handleSubmit(formData);
+      console.log("Form submission successful!");
+    } catch (error) {
+      console.error("Error during form submission:", error);
+      alert("Form submission failed. Please check the console for details.");
+    }
   };
 
   return (
     <div className="container mt-4">
+      {/* Basic Facilities */}
       <div className="card p-4 shadow-lg w-80 mx-auto">
         <div className="card-header bg-primary text-white">
           <h3>पायाभूत सुविधा (होय/नाही)</h3>
@@ -89,154 +62,226 @@ const UpdateSchoolFormPage4 = ({
           </thead>
           <tbody>
             <tr>
-              <td className="text-start">1</td>
+              <td className="text-start">BS-1</td>
               <td className="text-start">स्वयंपाकगृह</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasKitchen === 1}
-                  onChange={() => toggleBinary("hasKitchen")}
+                  checked={formData.basicFacilities?.hasKitchen === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasKitchen",
+                      formData.basicFacilities?.hasKitchen === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasKitchen === 0}
-                  onChange={() => toggleBinary("hasKitchen")}
-                  disabled // Disabled to show state, but only one checkbox is needed
+                  checked={formData.basicFacilities?.hasKitchen === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasKitchen",
+                      formData.basicFacilities?.hasKitchen === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td className="text-start">2</td>
+              <td className="text-start">BS-2</td>
               <td className="text-start">धान्यासाठी खोली</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasStorageRoom === 1}
-                  onChange={() => toggleBinary("hasStorageRoom")}
+                  checked={formData.basicFacilities?.hasStorageRoom === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasStorageRoom",
+                      formData.basicFacilities?.hasStorageRoom === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasStorageRoom === 0}
-                  onChange={() => toggleBinary("hasStorageRoom")}
-                  disabled
+                  checked={formData.basicFacilities?.hasStorageRoom === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasStorageRoom",
+                      formData.basicFacilities?.hasStorageRoom === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td className="text-start">3</td>
+              <td className="text-start">BS-3</td>
               <td className="text-start">भोजन हॉल</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasDiningHall === 1}
-                  onChange={() => toggleBinary("hasDiningHall")}
+                  checked={formData.basicFacilities?.hasDiningHall === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasDiningHall",
+                      formData.basicFacilities?.hasDiningHall === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasDiningHall === 0}
-                  onChange={() => toggleBinary("hasDiningHall")}
-                  disabled
+                  checked={formData.basicFacilities?.hasDiningHall === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasDiningHall",
+                      formData.basicFacilities?.hasDiningHall === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td className="text-start">4</td>
+              <td className="text-start">BS-4</td>
               <td className="text-start">भांड्याची उपलब्धता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasUtensils === 1}
-                  onChange={() => toggleBinary("hasUtensils")}
+                  checked={formData.basicFacilities?.hasUtensils === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasUtensils",
+                      formData.basicFacilities?.hasUtensils === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasUtensils === 0}
-                  onChange={() => toggleBinary("hasUtensils")}
-                  disabled
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="text-start">5</td>
-              <td className="text-start">धान्याची मालाची सुरक्षितता (कोठ्या)</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.hasGrainSafety === 1}
-                  onChange={() => toggleBinary("hasGrainSafety")}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.hasGrainSafety === 0}
-                  onChange={() => toggleBinary("hasGrainSafety")}
-                  disabled
+                  checked={formData.basicFacilities?.hasUtensils === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasUtensils",
+                      formData.basicFacilities?.hasUtensils === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td className="text-start">6</td>
-              <td className="text-start">हात स्वच्छ करण्यासाठी हँडवॉश, साबण उपलब्धता</td>
+              <td className="text-start">BS-5</td>
+              <td className="text-start">धान्याची मालाची सुरक्षितता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasHandwashSoap === 1}
-                  onChange={() => toggleBinary("hasHandwashSoap")}
+                  checked={formData.basicFacilities?.hasGrainSafety === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasGrainSafety",
+                      formData.basicFacilities?.hasGrainSafety === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasHandwashSoap === 0}
-                  onChange={() => toggleBinary("hasHandwashSoap")}
-                  disabled
-                />
-              </td>
-            </tr>
-            <tr>
-              <td className="text-start">7</td>
-              <td className="text-start">मुले आणि मुली यांना स्वतंत्र शौचालय</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.hasSeparateToilets === 1}
-                  onChange={() => toggleBinary("hasSeparateToilets")}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.hasSeparateToilets === 0}
-                  onChange={() => toggleBinary("hasSeparateToilets")}
-                  disabled
+                  checked={formData.basicFacilities?.hasGrainSafety === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasGrainSafety",
+                      formData.basicFacilities?.hasGrainSafety === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td className="text-start">8</td>
-              <td className="text-start">विद्यार्थ्यांच्या सुरक्षिततेच्या अनुषंगाने CCTV उपलब्धता</td>
+              <td className="text-start">BS-6</td>
+              <td className="text-start">हात स्वच्छ करण्यासाठी हँडवॉश, साबण</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasCctv === 1}
-                  onChange={() => toggleBinary("hasCctv")}
+                  checked={formData.basicFacilities?.hasHandwashSoap === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasHandwashSoap",
+                      formData.basicFacilities?.hasHandwashSoap === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.hasCctv === 0}
-                  onChange={() => toggleBinary("hasCctv")}
-                  disabled
+                  checked={formData.basicFacilities?.hasHandwashSoap === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasHandwashSoap",
+                      formData.basicFacilities?.hasHandwashSoap === 0 ? "होय" : "नाही"
+                    )
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="text-start">BS-7</td>
+              <td className="text-start">स्वतंत्र शौचालय</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.basicFacilities?.hasSeparateToilets === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasSeparateToilets",
+                      formData.basicFacilities?.hasSeparateToilets === 1 ? "नाही" : "होय"
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.basicFacilities?.hasSeparateToilets === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasSeparateToilets",
+                      formData.basicFacilities?.hasSeparateToilets === 0 ? "होय" : "नाही"
+                    )
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="text-start">BS-8</td>
+              <td className="text-start">CCTV उपलब्धता</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.basicFacilities?.hasCctv === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasCctv",
+                      formData.basicFacilities?.hasCctv === 1 ? "नाही" : "होय"
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.basicFacilities?.hasCctv === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "basicFacilities.hasCctv",
+                      formData.basicFacilities?.hasCctv === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
@@ -244,6 +289,7 @@ const UpdateSchoolFormPage4 = ({
         </table>
       </div>
 
+      {/* Quality Section */}
       <div className="card p-4 shadow-lg w-80 mx-auto mt-4">
         <div className="card-header bg-primary text-white">
           <h3>शाळा गुणवत्ता, स्वच्छता व इत्यादी :- निकृष्ट, बऱ्यापैकी, अतिउत्तम</h3>
@@ -254,208 +300,271 @@ const UpdateSchoolFormPage4 = ({
               <th className="text-start">अ.क्र.</th>
               <th className="text-start">तपशील</th>
               <th className="text-start">निकृष्ट</th>
-              <th className="text-start">बरीचशी</th>
-              <th className="text-start">अतिशय</th>
+              <th className="text-start">बऱ्यापैकी</th>
+              <th className="text-start">अतिउत्तम</th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td>1</td>
+              <td>Q1</td>
               <td>स्वयंपाकगृहाची स्वच्छता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.kitchenCleanliness === "निकृष्ट"}
-                  onChange={() => toggleQuality("kitchenCleanliness", "निकृष्ट")}
+                  checked={formData.quality?.kitchenCleanliness === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.kitchenCleanliness", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.kitchenCleanliness === "बरीचशी"}
-                  onChange={() => toggleQuality("kitchenCleanliness", "बरीचशी")}
+                  checked={formData.quality?.kitchenCleanliness === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.kitchenCleanliness", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.kitchenCleanliness === "अतिशय"}
-                  onChange={() => toggleQuality("kitchenCleanliness", "अतिशय")}
+                  checked={formData.quality?.kitchenCleanliness === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.kitchenCleanliness", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>2</td>
+              <td>Q2</td>
               <td>भोजन हॉल स्वच्छता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.diningHallCleanliness === "निकृष्ट"}
-                  onChange={() => toggleQuality("diningHallCleanliness", "निकृष्ट")}
+                  checked={formData.quality?.diningHallCleanliness === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.diningHallCleanliness", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.diningHallCleanliness === "बरीचशी"}
-                  onChange={() => toggleQuality("diningHallCleanliness", "बरीचशी")}
+                  checked={formData.quality?.diningHallCleanliness === "2"}
+                  onChange={() =>
+                    handleQualityChange(
+                      "quality.diningHallCleanliness",
+                      "बऱ्यापैकी"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.diningHallCleanliness === "अतिशय"}
-                  onChange={() => toggleQuality("diningHallCleanliness", "अतिशय")}
+                  checked={formData.quality?.diningHallCleanliness === "3"}
+                  onChange={() =>
+                    handleQualityChange(
+                      "quality.diningHallCleanliness",
+                      "अतिउत्तम"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>3</td>
+              <td>Q3</td>
               <td>धान्यादी साठा खोलीची स्वच्छता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.storageCleanliness === "निकृष्ट"}
-                  onChange={() => toggleQuality("storageCleanliness", "निकृष्ट")}
+                  checked={formData.quality?.storageCleanliness === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.storageCleanliness", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.storageCleanliness === "बरीचशी"}
-                  onChange={() => toggleQuality("storageCleanliness", "बरीचशी")}
+                  checked={formData.quality?.storageCleanliness === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.storageCleanliness", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.storageCleanliness === "अतिशय"}
-                  onChange={() => toggleQuality("storageCleanliness", "अतिशय")}
+                  checked={formData.quality?.storageCleanliness === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.storageCleanliness", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>4</td>
+              <td>Q4</td>
               <td>शिजवलेला आहार वितरित करण्याची जागा</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.servingAreaCleanliness === "निकृष्ट"}
-                  onChange={() => toggleQuality("servingAreaCleanliness", "निकृष्ट")}
+                  checked={formData.quality?.servingAreaCleanliness === "1"}
+                  onChange={() =>
+                    handleQualityChange(
+                      "quality.servingAreaCleanliness",
+                      "निकृष्ट"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.servingAreaCleanliness === "बरीचशी"}
-                  onChange={() => toggleQuality("servingAreaCleanliness", "बरीचशी")}
+                  checked={formData.quality?.servingAreaCleanliness === "2"}
+                  onChange={() =>
+                    handleQualityChange(
+                      "quality.servingAreaCleanliness",
+                      "बऱ्यापैकी"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.servingAreaCleanliness === "अतिशय"}
-                  onChange={() => toggleQuality("servingAreaCleanliness", "अतिशय")}
+                  checked={formData.quality?.servingAreaCleanliness === "3"}
+                  onChange={() =>
+                    handleQualityChange(
+                      "quality.servingAreaCleanliness",
+                      "अतिउत्तम"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>5</td>
+              <td>Q5</td>
               <td>भांड्यांची स्थिती आणि स्वच्छता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.utensilCondition === "निकृष्ट"}
-                  onChange={() => toggleQuality("utensilCondition", "निकृष्ट")}
+                  checked={formData.quality?.utensilCondition === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.utensilCondition", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.utensilCondition === "बरीचशी"}
-                  onChange={() => toggleQuality("utensilCondition", "बरीचशी")}
+                  checked={formData.quality?.utensilCondition === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.utensilCondition", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.utensilCondition === "अतिशय"}
-                  onChange={() => toggleQuality("utensilCondition", "अतिशय")}
+                  checked={formData.quality?.utensilCondition === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.utensilCondition", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>6</td>
+              <td>Q6</td>
               <td>पिण्याच्या शुद्ध पाण्याचा नियमित पुरवठा</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.waterSupply === "निकृष्ट"}
-                  onChange={() => toggleQuality("waterSupply", "निकृष्ट")}
+                  checked={formData.quality?.waterSupply === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.waterSupply", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.waterSupply === "बरीचशी"}
-                  onChange={() => toggleQuality("waterSupply", "बरीचशी")}
+                  checked={formData.quality?.waterSupply === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.waterSupply", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.waterSupply === "अतिशय"}
-                  onChange={() => toggleQuality("waterSupply", "अतिशय")}
+                  checked={formData.quality?.waterSupply === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.waterSupply", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>7</td>
+              <td>Q7</td>
               <td>विद्यार्थ्यांसाठी हात धुण्याची सुविधा</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.handwashFacility === "निकृष्ट"}
-                  onChange={() => toggleQuality("handwashFacility", "निकृष्ट")}
+                  checked={formData.quality?.handwashFacility === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.handwashFacility", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.handwashFacility === "बरीचशी"}
-                  onChange={() => toggleQuality("handwashFacility", "बरीचशी")}
+                  checked={formData.quality?.handwashFacility === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.handwashFacility", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.handwashFacility === "अतिशय"}
-                  onChange={() => toggleQuality("handwashFacility", "अतिशय")}
+                  checked={formData.quality?.handwashFacility === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.handwashFacility", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>8</td>
-              <td>मुले आणि मुली यासाठी स्वतंत्र शौचालय स्वच्छता</td>
+              <td>Q8</td>
+              <td>स्वतंत्र शौचालय स्वच्छता</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.toiletCleanliness === "निकृष्ट"}
-                  onChange={() => toggleQuality("toiletCleanliness", "निकृष्ट")}
+                  checked={formData.quality?.toiletCleanliness === "1"}
+                  onChange={() =>
+                    handleQualityChange("quality.toiletCleanliness", "निकृष्ट")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.toiletCleanliness === "बरीचशी"}
-                  onChange={() => toggleQuality("toiletCleanliness", "बरीचशी")}
+                  checked={formData.quality?.toiletCleanliness === "2"}
+                  onChange={() =>
+                    handleQualityChange("quality.toiletCleanliness", "बऱ्यापैकी")
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.toiletCleanliness === "अतिशय"}
-                  onChange={() => toggleQuality("toiletCleanliness", "अतिशय")}
+                  checked={formData.quality?.toiletCleanliness === "3"}
+                  onChange={() =>
+                    handleQualityChange("quality.toiletCleanliness", "अतिउत्तम")
+                  }
                 />
               </td>
             </tr>
@@ -463,6 +572,7 @@ const UpdateSchoolFormPage4 = ({
         </table>
       </div>
 
+      {/* Repairing Section */}
       <div className="card p-4 shadow-lg w-80 mx-auto mt-4">
         <div className="card-header bg-primary text-white">
           <h3>पुस्तके नोंदवहया रजिस्टर वापर आणि दुरुस्ती</h3>
@@ -478,135 +588,210 @@ const UpdateSchoolFormPage4 = ({
           </thead>
           <tbody>
             <tr>
-              <td>1</td>
-              <td>कॅशबुक आणि इतर आर्थिक बाबींच्या नोंदवया अद्ययावत आहेत काय?</td>
+              <td>R-1</td>
+              <td>कॅशबुक अद्ययावत</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.cashBookUpdated === 1}
-                  onChange={() => toggleBinary("cashBookUpdated")}
+                  checked={formData.repairing?.cashBookUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.cashBookUpdated",
+                      formData.repairing?.cashBookUpdated === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.cashBookUpdated === 0}
-                  onChange={() => toggleBinary("cashBookUpdated")}
-                  disabled
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>तांदूळ व धान्यादी माल तसेच इतर माल साठा नोंदवही अद्ययावत आहेत काय?</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.stockRegisterUpdated === 1}
-                  onChange={() => toggleBinary("stockRegisterUpdated")}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.stockRegisterUpdated === 0}
-                  onChange={() => toggleBinary("stockRegisterUpdated")}
-                  disabled
+                  checked={formData.repairing?.cashBookUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.cashBookUpdated",
+                      formData.repairing?.cashBookUpdated === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>3</td>
-              <td>उपस्थित नोंदणी लाभार्थी संख्या पोषण आहार रजिस्टर अद्ययावत आहेत काय?</td>
+              <td>R-2</td>
+              <td>साठा नोंदवही अद्ययावत</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.attendanceRegisterUpdated === 1}
-                  onChange={() => toggleBinary("attendanceRegisterUpdated")}
+                  checked={formData.repairing?.stockRegisterUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.stockRegisterUpdated",
+                      formData.repairing?.stockRegisterUpdated === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.attendanceRegisterUpdated === 0}
-                  onChange={() => toggleBinary("attendanceRegisterUpdated")}
-                  disabled
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>4</td>
-              <td>पोषण आहार योजना बँक खाते अद्ययावत आहे काय?</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.bankAccountUpdated === 1}
-                  onChange={() => toggleBinary("bankAccountUpdated")}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.bankAccountUpdated === 0}
-                  onChange={() => toggleBinary("bankAccountUpdated")}
-                  disabled
+                  checked={formData.repairing?.stockRegisterUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.stockRegisterUpdated",
+                      formData.repairing?.stockRegisterUpdated === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>5</td>
-              <td>स्वयंपाकी/मदतनीस मानधन नोंदवही अद्ययावत आहे काय?</td>
+              <td>R-3</td>
+              <td>उपस्थिती रजिस्टर अद्ययावत</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.honorariumRegisterUpdated === 1}
-                  onChange={() => toggleBinary("honorariumRegisterUpdated")}
+                  checked={formData.repairing?.attendanceRegisterUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.attendanceRegisterUpdated",
+                      formData.repairing?.attendanceRegisterUpdated === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.honorariumRegisterUpdated === 0}
-                  onChange={() => toggleBinary("honorariumRegisterUpdated")}
-                  disabled
-                />
-              </td>
-            </tr>
-            <tr>
-              <td>6</td>
-              <td>चव नोंदवही अद्यावत आहे काय?</td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.tasteRegisterUpdated === 1}
-                  onChange={() => toggleBinary("tasteRegisterUpdated")}
-                />
-              </td>
-              <td>
-                <input
-                  type="checkbox"
-                  checked={formData.tasteRegisterUpdated === 0}
-                  onChange={() => toggleBinary("tasteRegisterUpdated")}
-                  disabled
+                  checked={formData.repairing?.attendanceRegisterUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.attendanceRegisterUpdated",
+                      formData.repairing?.attendanceRegisterUpdated === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>7</td>
-              <td>स्नेह भोजन/तिथी भोजन कार्यक्रम नोंदवही</td>
+              <td>R-4</td>
+              <td>बँक खाते अद्ययावत</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.snehTithiRegisterUpdated === 1}
-                  onChange={() => toggleBinary("snehTithiRegisterUpdated")}
+                  checked={formData.repairing?.bankAccountUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.bankAccountUpdated",
+                      formData.repairing?.bankAccountUpdated === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.snehTithiRegisterUpdated === 0}
-                  onChange={() => toggleBinary("snehTithiRegisterUpdated")}
-                  disabled
+                  checked={formData.repairing?.bankAccountUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.bankAccountUpdated",
+                      formData.repairing?.bankAccountUpdated === 0 ? "होय" : "नाही"
+                    )
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>R-5</td>
+              <td>मानधन नोंदवही अद्ययावत</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.honorariumRegisterUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.honorariumRegisterUpdated",
+                      formData.repairing?.honorariumRegisterUpdated === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.honorariumRegisterUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.honorariumRegisterUpdated",
+                      formData.repairing?.honorariumRegisterUpdated === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>R-6</td>
+              <td>चव नोंदवही अद्ययावत</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.tasteRegisterUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.tasteRegisterUpdated",
+                      formData.repairing?.tasteRegisterUpdated === 1 ? "नाही" : "होय"
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.tasteRegisterUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.tasteRegisterUpdated",
+                      formData.repairing?.tasteRegisterUpdated === 0 ? "होय" : "नाही"
+                    )
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td>R-7</td>
+              <td>स्नेह भोजन/तिथी भोजन नोंदवही</td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.snehTithiRegisterUpdated === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.snehTithiRegisterUpdated",
+                      formData.repairing?.snehTithiRegisterUpdated === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
+                />
+              </td>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={formData.repairing?.snehTithiRegisterUpdated === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "repairing.snehTithiRegisterUpdated",
+                      formData.repairing?.snehTithiRegisterUpdated === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
@@ -614,6 +799,7 @@ const UpdateSchoolFormPage4 = ({
         </table>
       </div>
 
+      {/* Profit From Scheme */}
       <div className="card p-4 shadow-lg w-80 mx-auto mt-4">
         <div className="card-header bg-primary text-white">
           <h3>योजनांची फलनिष्पत्ती (होय/नाही)</h3>
@@ -629,135 +815,238 @@ const UpdateSchoolFormPage4 = ({
           </thead>
           <tbody>
             <tr>
-              <td>1</td>
-              <td>शाळेच्या पटनोंदणी मध्ये सुधारणा</td>
+              <td>PS-1</td>
+              <td>पटनोंदणी मध्ये सुधारणा</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.enrollmentImprovement === 1}
-                  onChange={() => toggleBinary("enrollmentImprovement")}
+                  checked={
+                    formData.profitFromScheme?.enrollmentImprovement === 1
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.enrollmentImprovement",
+                      formData.profitFromScheme?.enrollmentImprovement === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.enrollmentImprovement === 0}
-                  onChange={() => toggleBinary("enrollmentImprovement")}
-                  disabled
+                  checked={
+                    formData.profitFromScheme?.enrollmentImprovement === 0
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.enrollmentImprovement",
+                      formData.profitFromScheme?.enrollmentImprovement === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>2</td>
+              <td>PS-2</td>
               <td>दैनंदिन उपस्थितीमध्ये वाढ</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.attendanceIncrease === 1}
-                  onChange={() => toggleBinary("attendanceIncrease")}
+                  checked={formData.profitFromScheme?.attendanceIncrease === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.attendanceIncrease",
+                      formData.profitFromScheme?.attendanceIncrease === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.attendanceIncrease === 0}
-                  onChange={() => toggleBinary("attendanceIncrease")}
-                  disabled
+                  checked={formData.profitFromScheme?.attendanceIncrease === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.attendanceIncrease",
+                      formData.profitFromScheme?.attendanceIncrease === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>3</td>
-              <td>मुलांचे पोषण आणि आरोग्य सुधारणा होण्यामध्ये वाढ</td>
+              <td>PS-3</td>
+              <td>पोषण आणि आरोग्य सुधारणा</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.nutritionHealthImprovement === 1}
-                  onChange={() => toggleBinary("nutritionHealthImprovement")}
+                  checked={
+                    formData.profitFromScheme?.nutritionHealthImprovement === 1
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.nutritionHealthImprovement",
+                      formData.profitFromScheme?.nutritionHealthImprovement === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.nutritionHealthImprovement === 0}
-                  onChange={() => toggleBinary("nutritionHealthImprovement")}
-                  disabled
+                  checked={
+                    formData.profitFromScheme?.nutritionHealthImprovement === 0
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.nutritionHealthImprovement",
+                      formData.profitFromScheme?.nutritionHealthImprovement === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>4</td>
-              <td>विद्यार्थ्यांच्या वजन उंची यामध्ये वाढ</td>
+              <td>PS-4</td>
+              <td>वजन उंची यामध्ये वाढ</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.weightHeightIncrease === 1}
-                  onChange={() => toggleBinary("weightHeightIncrease")}
+                  checked={
+                    formData.profitFromScheme?.weightHeightIncrease === 1
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.weightHeightIncrease",
+                      formData.profitFromScheme?.weightHeightIncrease === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.weightHeightIncrease === 0}
-                  onChange={() => toggleBinary("weightHeightIncrease")}
-                  disabled
+                  checked={
+                    formData.profitFromScheme?.weightHeightIncrease === 0
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.weightHeightIncrease",
+                      formData.profitFromScheme?.weightHeightIncrease === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>5</td>
+              <td>PS-5</td>
               <td>कुपोषण मुक्त होण्यासाठी मदत</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.malnutritionReduction === 1}
-                  onChange={() => toggleBinary("malnutritionReduction")}
+                  checked={
+                    formData.profitFromScheme?.malnutritionReduction === 1
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.malnutritionReduction",
+                      formData.profitFromScheme?.malnutritionReduction === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.malnutritionReduction === 0}
-                  onChange={() => toggleBinary("malnutritionReduction")}
-                  disabled
+                  checked={
+                    formData.profitFromScheme?.malnutritionReduction === 0
+                  }
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.malnutritionReduction",
+                      formData.profitFromScheme?.malnutritionReduction === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>6</td>
-              <td>फेरीवाले यांच्याकडील जंक फूड घेणे खाणे यास प्रतिबंध</td>
+              <td>PS-6</td>
+              <td>जंक फूड प्रतिबंध</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.junkFoodPrevention === 1}
-                  onChange={() => toggleBinary("junkFoodPrevention")}
+                  checked={formData.profitFromScheme?.junkFoodPrevention === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.junkFoodPrevention",
+                      formData.profitFromScheme?.junkFoodPrevention === 1
+                        ? "नाही"
+                        : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.junkFoodPrevention === 0}
-                  onChange={() => toggleBinary("junkFoodPrevention")}
-                  disabled
+                  checked={formData.profitFromScheme?.junkFoodPrevention === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.junkFoodPrevention",
+                      formData.profitFromScheme?.junkFoodPrevention === 0
+                        ? "होय"
+                        : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
             <tr>
-              <td>7</td>
+              <td>PS-7</td>
               <td>एकता आणि बंधुभाव जोपासना</td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.unityBonding === 1}
-                  onChange={() => toggleBinary("unityBonding")}
+                  checked={formData.profitFromScheme?.unityBonding === 1}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.unityBonding",
+                      formData.profitFromScheme?.unityBonding === 1 ? "नाही" : "होय"
+                    )
+                  }
                 />
               </td>
               <td>
                 <input
                   type="checkbox"
-                  checked={formData.unityBonding === 0}
-                  onChange={() => toggleBinary("unityBonding")}
-                  disabled
+                  checked={formData.profitFromScheme?.unityBonding === 0}
+                  onChange={() =>
+                    handleBinaryChange(
+                      "profitFromScheme.unityBonding",
+                      formData.profitFromScheme?.unityBonding === 0 ? "होय" : "नाही"
+                    )
+                  }
                 />
               </td>
             </tr>
@@ -765,11 +1054,20 @@ const UpdateSchoolFormPage4 = ({
         </table>
       </div>
 
+      {/* Navigation Buttons */}
       <div className="text-center mt-4">
-        <button type="button" className="btn btn-primary btn-lg me-2" onClick={prevStep}>
+        <button
+          type="button"
+          className="btn btn-primary btn-lg me-2"
+          onClick={prevStep}
+        >
           मागे जा
         </button>
-        <button type="button" className="btn btn-primary btn-lg" onClick={handleFormSubmit}>
+        <button
+          type="button"
+          className="btn btn-primary btn-lg"
+          onClick={handleFormSubmit}
+        >
           सबमिट करा
         </button>
       </div>

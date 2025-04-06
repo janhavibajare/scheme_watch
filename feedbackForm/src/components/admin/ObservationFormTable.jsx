@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { db } from "../Firebase";
-import { getDocs, collection, deleteDoc, doc } from "firebase/firestore"; // Added 'doc' import
+import { getDocs, collection, deleteDoc, doc } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
-import "bootstrap/dist/css/bootstrap.min.css"; // Added Bootstrap CSS for styling
+import "bootstrap/dist/css/bootstrap.min.css";
 
 function ObservationFormTable() {
   const [observeData, setObserveData] = useState([]);
@@ -19,7 +19,7 @@ function ObservationFormTable() {
       const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setObserveData(data);
     } catch (error) {
-      toast.error("Error fetching observation data: " + error.message);
+      toast.error("निरीक्षण डेटा आणण्यात त्रुटी: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -32,29 +32,30 @@ function ObservationFormTable() {
   const handleObservationDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "Observation_Form", id));
-      toast.success("Observation entry deleted successfully!");
+      toast.success("निरीक्षण नोंद यशस्वीरित्या हटवली!");
       fetchObserveData();
     } catch (error) {
-      toast.error("Error deleting observation entry: " + error.message);
+      toast.error("निरीक्षण नोंद हटवण्यात त्रुटी: " + error.message);
     }
   };
 
   const updateObservationForm = (id) => navigate(`/update_observation_form/${id}`);
   const addObservationEntry = () => navigate("/observation_form");
 
-  const displayValue = (value) => (value != null ? value : "N/A");
+  const displayValue = (value) => (value != null ? value : "उपलब्ध नाही");
 
   const fieldMappings = [
-    { label: "School Name", key: "schoolName" },
-    { label: "UDISE No", key: "udiseNo" },
-    { label: "Taluka", key: "taluka" },
-    { label: "District", key: "district" },
-    { label: "Feedback", key: "voiceInput" },
+    
+   // { label: "प्रदेश", key: "region" },
+    { label: "A", key: "district" },
+    { label: "B", key: "taluka" },
+    { label: "C", key: "schoolUdiseNumber" },
+    { label: "अभिप्राय", key: "remarks" },
   ];
 
   const downloadObservationExcel = () => {
     if (observeData.length === 0)
-      return toast.warn("No observation data available to download!");
+      return toast.warn("डाउनलोड करण्यासाठी निरीक्षण डेटा उपलब्ध नाही!");
     const excelData = [];
     observeData.forEach((record, index) => {
       fieldMappings.forEach(({ label, key }, fieldIndex) => {
@@ -74,13 +75,13 @@ function ObservationFormTable() {
     ws["!cols"] = [{ wch: 25 }, { wch: 30 }];
     ws["!rows"] = fieldMappings.map(() => ({ hpx: 25 }));
     const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Observation Data");
+    XLSX.utils.book_append_sheet(wb, ws, "निरीक्षण डेटा");
     XLSX.writeFile(wb, "observation_data.xlsx");
   };
 
   const downloadObservationCSV = () => {
     if (observeData.length === 0)
-      return toast.warn("No observation data available to download!");
+      return toast.warn("डाउनलोड करण्यासाठी निरीक्षण डेटा उपलब्ध नाही!");
     const csvRows = [];
     const headers = fieldMappings.map((field) => field.label);
     csvRows.push(headers.join(","));
@@ -88,7 +89,7 @@ function ObservationFormTable() {
     observeData.forEach((record) => {
       const values = fieldMappings.map((field) => {
         const value = record[field.key] || "";
-        return `"${value.toString().replace(/"/g, '""')}"`; // Escape quotes
+        return `"${value.toString().replace(/"/g, '""')}"`;
       });
       csvRows.push(values.join(","));
     });
@@ -104,38 +105,41 @@ function ObservationFormTable() {
   };
 
   const filteredData = observeData.filter((observe) =>
-    (observe.schoolName?.toLowerCase().includes(search.toLowerCase()) ||
-     observe.udiseNo?.toLowerCase().includes(search.toLowerCase()))
+    (observe.schoolUdiseNumber?.toLowerCase().includes(search.toLowerCase()) ||
+     observe.region?.toLowerCase().includes(search.toLowerCase()) ||
+     observe.district?.toLowerCase().includes(search.toLowerCase()) ||
+     observe.taluka?.toLowerCase().includes(search.toLowerCase()) ||
+     observe.remarks?.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
     <div className="container mt-4">
       <div className="card shadow">
         <div className="card-body">
-          <h5 className="card-title">Observation Feedback Form</h5>
+          <h5 className="card-title">निरीक्षण अभिप्राय फॉर्म</h5>
           <div className="d-flex justify-content-between mb-3">
             <input
               type="text"
               className="form-control w-25"
-              placeholder="Search by school name or UDISE number..."
+              placeholder="UDISE क्रमांक शोधा..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
             <div>
               <button className="btn btn-outline-success me-2" onClick={addObservationEntry}>
-                Add Entry
+                नवीन नोंद जोडा
               </button>
               <button className="btn btn-outline-success me-2" onClick={downloadObservationExcel}>
-                Download Excel
+                Excel डाउनलोड करा
               </button>
-              <button className="btn btn-outline-success" onClick={downloadObservationCSV}>
-                Download CSV
-              </button>
+              {/*<button className="btn btn-outline-success" onClick={downloadObservationCSV}>
+                CSV डाउनलोड करा
+              </button>*/}
             </div>
           </div>
           <div className="table-responsive" style={{ maxHeight: "500px", overflowY: "auto" }}>
             {loading ? (
-              <p className="text-center">Loading...</p>
+              <p className="text-center">लोड होत आहे...</p>
             ) : (
               <table className="table table-striped text-center">
                 <thead style={{ position: "sticky", top: 0, background: "#f8f9fa", zIndex: 1 }}>
@@ -144,7 +148,7 @@ function ObservationFormTable() {
                     {fieldMappings.map((field, index) => (
                       <th key={index}>{field.label}</th>
                     ))}
-                    <th>Actions</th>
+                    <th>Action</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -174,7 +178,7 @@ function ObservationFormTable() {
                   ) : (
                     <tr>
                       <td colSpan={fieldMappings.length + 2} className="text-center">
-                        No data available
+                        डेटा उपलब्ध नाही
                       </td>
                     </tr>
                   )}

@@ -6,14 +6,14 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
     const { name, value } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: Number(value),
+      [name]: value === "" ? null : Number(value),
     }));
   };
 
   // Handler for numeric fields
   const handleNumberChange = (e) => {
     const { name, value } = e.target;
-    const numericValue = value === "" ? 0 : Number(value) || 0;
+    const numericValue = value === "" ? "" : Number(value) || "";
     setFormData((prev) => ({
       ...prev,
       [name]: numericValue,
@@ -31,30 +31,30 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
 
   // Handler for beneficiaries table
   const handleBeneficiaryChange = (year, field, value) => {
-    const numericValue = value === "" ? 0 : Number(value) || 0;
+    const numericValue = value === "" ? "" : Number(value) || "";
     setFormData((prev) => {
       const updatedBeneficiaries = {
-        ...prev.beneficiariesYearly,
+        ...prev.beneficiaries,
         [year]: {
-          ...prev.beneficiariesYearly[year],
+          ...prev.beneficiaries[year],
           [field]: numericValue,
           total:
-            (field === "boys" ? numericValue : prev.beneficiariesYearly[year]?.boys || 0) +
-            (field === "girls" ? numericValue : prev.beneficiariesYearly[year]?.girls || 0),
+            (field === "boys" ? numericValue : prev.beneficiaries[year]?.boys || 0) +
+            (field === "girls" ? numericValue : prev.beneficiaries[year]?.girls || 0),
         },
       };
       return {
         ...prev,
-        beneficiariesYearly: updatedBeneficiaries,
+        beneficiaries: updatedBeneficiaries,
       };
     });
   };
 
   // Handler for financial data table
   const handleFinancialChange = (year, field, value) => {
-    const numericValue = value === "" ? 0 : Number(value) || 0;
+    const numericValue = value === "" ? "" : Number(value) || "";
     setFormData((prev) => {
-      const updatedField = field === "deposited" ? "grantReceived" : field === "spent" ? "grantExpenditure" : "grantBalance";
+      const updatedField = field === "spent" ? "grantExpenditure" : field === "received" ? "grantReceived" : "grantBalance";
       return {
         ...prev,
         [updatedField]: {
@@ -64,20 +64,25 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
         grantBalance: {
           ...prev.grantBalance,
           [year]:
-            (field === "deposited" ? numericValue : prev.grantReceived[year] || 0) -
-            (field === "spent" ? numericValue : prev.grantExpenditure[year] || 0),
+            (field === "received" ? numericValue : prev.grantReceived?.[year] || 0) -
+            (field === "spent" ? numericValue : prev.grantExpenditure?.[year] || 0),
         },
       };
     });
   };
 
-  const displayValue = (value) => (value === undefined || value === 0 ? "" : value);
+  const displayValue = (value) => (value === "" || value === undefined ? "" : value);
 
   // CSS to hide number input arrows
   const inputStyle = {
     WebkitAppearance: "none",
     MozAppearance: "textfield",
     appearance: "textfield",
+  };
+
+  // Next step handler without validation
+  const handleNext = () => {
+    nextStep();
   };
 
   return (
@@ -118,7 +123,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
                 </div>
               </div>
               <div className="col-md-6 form-group">
-                <label className="mb-2 d-block text-start">१.१. असलयास विद्यार्थ्यांची संख्या नमूद करा:</label>
+                <label className="mb-2 d-block text-start">१.१. विद्यार्थ्यांची संख्या </label>
                 <input
                   type="number"
                   name="healthCheckupStudentCount"
@@ -132,7 +137,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
 
             <div className="row mt-3">
               <div className="col-md-4 form-group">
-                <label className="mb-2 d-block text-start">२. दर तीन महिन्याला विद्यार्थ्यांचा BMI काढून नोंदवहीमध्ये नोंद घेतली जाते काय?</label>
+                <label className="mb-2 d-block text-start">२. दर तीन महिन्याला BMI नोंद घेतली जाते काय? </label>
                 <div className="d-flex align-items-center text-start">
                   <div className="form-check me-3">
                     <input
@@ -160,7 +165,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
               </div>
 
               <div className="col-md-4 form-group">
-                <label className="mb-2 d-block text-start">३. विद्यार्थ्यांचे वजन/उंची याचे मोजमाप करण्यात येते का?</label>
+                <label className="mb-2 d-block text-start">३. वजन/उंची मोजमाप होते का? </label>
                 <div className="d-flex align-items-center text-start">
                   <div className="form-check me-3">
                     <input
@@ -188,7 +193,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
               </div>
 
               <div className="col-md-4 form-group">
-                <label className="mb-2 d-block text-start">४. आहार शिजविणाऱ्या स्वयंपाकी मदतनीस यांची दर सहा महिन्यास आरोग्य तपासणी होते काय?</label>
+                <label className="mb-2 d-block text-start">४. स्वयंपाकी मदतनीस यांची आरोग्य तपासणी होते काय?</label>
                 <div className="d-flex align-items-center text-start">
                   <div className="form-check me-3">
                     <input
@@ -227,19 +232,18 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
         <div className="card-body">
           <div className="row mb-3">
             <div className="col-md-6 form-group">
-              <label className="mb-2 d-block text-start">स्वयंपाकी/मदतनीस नाव १ (आवश्यक)</label>
+              <label className="mb-2 d-block text-start">१.सहाय्यक १ नाव</label>
               <input
                 type="text"
                 name="helper1Name"
                 className="form-control"
-                placeholder="नाव टाका (आवश्यक)"
+                placeholder="नाव टाका"
                 value={formData.helper1Name || ""}
                 onChange={handleTextChange}
-                required
               />
             </div>
             <div className="col-md-6 form-group">
-              <label className="mb-2 d-block text-start">स्वयंपाकी/मदतनीस नाव २</label>
+              <label className="mb-2 d-block text-start">२.सहाय्यक २ नाव</label>
               <input
                 type="text"
                 name="helper2Name"
@@ -252,7 +256,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
           </div>
           <div className="row">
             <div className="col-md-6 form-group">
-              <label className="mb-2 d-block text-start">शालेय व्यवस्थापन समिती ठराव (आहे/नाही)</label>
+              <label className="mb-2 d-block text-start">३.शालेय व्यवस्थापन समिती ठराव </label>
               <div className="d-flex align-items-center text-start">
                 <div className="form-check me-3">
                   <input
@@ -279,7 +283,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
               </div>
             </div>
             <div className="col-md-6 form-group">
-              <label className="mb-2 d-block text-start">दर सहा महिन्यास तपासणीचे आरोग्य प्रमाणपत्र (आहे/नाही)</label>
+              <label className="mb-2 d-block text-start">४.दर सहा महिन्यास आरोग्य प्रमाणपत्र </label>
               <div className="d-flex align-items-center text-start">
                 <div className="form-check me-3">
                   <input
@@ -325,32 +329,78 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
               </tr>
             </thead>
             <tbody>
-              {["2022-23", "2023-24", "2024-25"].map((year) => (
-                <tr key={year}>
-                  <td>{year}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="मुले"
-                      value={displayValue(formData.beneficiariesYearly?.[year]?.boys)}
-                      onChange={(e) => handleBeneficiaryChange(year, "boys", e.target.value)}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="मुली"
-                      value={displayValue(formData.beneficiariesYearly?.[year]?.girls)}
-                      onChange={(e) => handleBeneficiaryChange(year, "girls", e.target.value)}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td>{displayValue(formData.beneficiariesYearly?.[year]?.total)}</td>
-                </tr>
-              ))}
+              <tr>
+                <td>2022-23</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुले (SB-1)"
+                    value={displayValue(formData.beneficiaries?.["2022-23"]?.boys)}
+                    onChange={(e) => handleBeneficiaryChange("2022-23", "boys", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुली "
+                    value={displayValue(formData.beneficiaries?.["2022-23"]?.girls)}
+                    onChange={(e) => handleBeneficiaryChange("2022-23", "girls", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.beneficiaries?.["2022-23"]?.total)} </td>
+              </tr>
+              <tr>
+                <td>2023-24</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुले "
+                    value={displayValue(formData.beneficiaries?.["2023-24"]?.boys)}
+                    onChange={(e) => handleBeneficiaryChange("2023-24", "boys", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुली "
+                    value={displayValue(formData.beneficiaries?.["2023-24"]?.girls)}
+                    onChange={(e) => handleBeneficiaryChange("2023-24", "girls", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.beneficiaries?.["2023-24"]?.total)} </td>
+              </tr>
+              <tr>
+                <td>2024-25</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुले "
+                    value={displayValue(formData.beneficiaries?.["2024-25"]?.boys)}
+                    onChange={(e) => handleBeneficiaryChange("2024-25", "boys", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="मुली "
+                    value={displayValue(formData.beneficiaries?.["2024-25"]?.girls)}
+                    onChange={(e) => handleBeneficiaryChange("2024-25", "girls", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.beneficiaries?.["2024-25"]?.total)} </td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -372,32 +422,78 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
               </tr>
             </thead>
             <tbody>
-              {["2022-23", "2023-24", "2024-25"].map((year) => (
-                <tr key={year}>
-                  <td>{year}</td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="रक्कम"
-                      value={displayValue(formData.grantReceived?.[year])}
-                      onChange={(e) => handleFinancialChange(year, "deposited", e.target.value)}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td>
-                    <input
-                      type="number"
-                      className="form-control"
-                      placeholder="रक्कम"
-                      value={displayValue(formData.grantExpenditure?.[year])}
-                      onChange={(e) => handleFinancialChange(year, "spent", e.target.value)}
-                      style={inputStyle}
-                    />
-                  </td>
-                  <td>{displayValue(formData.grantBalance?.[year])}</td>
-                </tr>
-              ))}
+              <tr>
+                <td>2022-23</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="जमा रक्कम"
+                    value={displayValue(formData.grantReceived?.["2022-23"])}
+                    onChange={(e) => handleFinancialChange("2022-23", "received", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="खर्च रक्कम"
+                    value={displayValue(formData.grantExpenditure?.["2022-23"])}
+                    onChange={(e) => handleFinancialChange("2022-23", "spent", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.grantBalance?.["2022-23"])}</td>
+              </tr>
+              <tr>
+                <td>2023-24</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="जमा रक्कम"
+                    value={displayValue(formData.grantReceived?.["2023-24"])}
+                    onChange={(e) => handleFinancialChange("2023-24", "received", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="खर्च रक्कम"
+                    value={displayValue(formData.grantExpenditure?.["2023-24"])}
+                    onChange={(e) => handleFinancialChange("2023-24", "spent", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.grantBalance?.["2023-24"])}</td>
+              </tr>
+              <tr>
+                <td>2024-25</td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="जमा रक्कम"
+                    value={displayValue(formData.grantReceived?.["2024-25"])}
+                    onChange={(e) => handleFinancialChange("2024-25", "received", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>
+                  <input
+                    type="number"
+                    className="form-control"
+                    placeholder="खर्च रक्कम"
+                    value={displayValue(formData.grantExpenditure?.["2024-25"])}
+                    onChange={(e) => handleFinancialChange("2024-25", "spent", e.target.value)}
+                    style={inputStyle}
+                  />
+                </td>
+                <td>{displayValue(formData.grantBalance?.["2024-25"])}</td>
+              </tr>
             </tbody>
           </table>
         </div>
@@ -408,7 +504,7 @@ const SchoolFormPage3 = ({ formData, setFormData, handleChange, nextStep, prevSt
         <button type="button" className="btn btn-primary btn-lg me-2" onClick={prevStep}>
           मागे जा
         </button>
-        <button type="button" className="btn btn-primary btn-lg" onClick={nextStep}>
+        <button type="button" className="btn btn-primary btn-lg" onClick={handleNext}>
           पुढे चला
         </button>
       </div>
