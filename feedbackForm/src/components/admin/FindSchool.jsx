@@ -66,7 +66,9 @@ function FindSchool() {
       // School_Forms Query (Updated to schoolUdiseNumber)
       const schoolQuery = query(
         collection(db, "School_Forms"),
+
         searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
+
       );
       const schoolSnap = await getDocs(schoolQuery);
       console.log("School_Forms - Docs found:", schoolSnap.size, "Data:", schoolSnap.docs.map((doc) => doc.data()));
@@ -568,7 +570,7 @@ function FindSchool() {
                               ))}
                               <td>
                                 <OverlayTrigger overlay={<Tooltip>Edit Entry</Tooltip>}>
-                                  <Button variant="primary" size="sm" className="me-2" onClick={() => navigate(`/update_school_form/${school.id}`)}>
+                                  <Button variant="primary" size="sm" className="me-2" onClick={() => navigate(`/update_school_forms/${school.id}`)}>
                                     Edit
                                   </Button>
                                 </OverlayTrigger>
