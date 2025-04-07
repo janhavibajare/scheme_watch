@@ -27,7 +27,7 @@ const UpdateSchoolForm = () => {
     headmasterAddress: "",
     assistantTeacherName: "",
     assistantTeacherPhone: "",
-    udiseCode: "",
+    schoolUdiseNumber: "",
     teacherMale: "",
     teacherFemale: "",
     totalTeachers: "",
@@ -169,7 +169,7 @@ const UpdateSchoolForm = () => {
   useEffect(() => {
     const fetchSchoolData = async () => {
       try {
-        const docRef = doc(db, "School_Forms", id);
+        const docRef = doc(db, "School_Form", id);
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           // Merge fetched data with default structure
@@ -230,7 +230,7 @@ const UpdateSchoolForm = () => {
       return;
     }
     try {
-      const docRef = doc(db, "School_Forms", id);
+      const docRef = doc(db, "School_Form", id);
       await updateDoc(docRef, {
         ...formData,
         submissionDate: new Date().toISOString(),

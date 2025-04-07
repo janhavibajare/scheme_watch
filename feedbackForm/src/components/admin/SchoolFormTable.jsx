@@ -15,7 +15,7 @@ function SchoolFormTable() {
 
   const fetchSchoolData = async () => {
     try {
-      const querySnapshot = await getDocs(collection(db, "School_Forms"));
+      const querySnapshot = await getDocs(collection(db, "School_Form"));
       const data = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setSchoolData(data);
     } catch (error) {
@@ -31,7 +31,7 @@ function SchoolFormTable() {
 
   const handleSchoolDelete = async (id) => {
     try {
-      await deleteDoc(doc(db, "School_Forms", id));
+      await deleteDoc(doc(db, "School_Form", id));
       toast.success("School entry deleted successfully!");
       fetchSchoolData();
     } catch (error) {
@@ -66,7 +66,7 @@ function SchoolFormTable() {
   //{ label: "मुख्याध्यापकाचा पत्ता", key: "headmasterAddress" },
   //{ label: "सहाय्यक शिक्षकाचे नाव", key: "assistantTeacherName" },
   //{ label: "सहाय्यक शिक्षकाचा फोन", key: "assistantTeacherPhone" },
-  { label: "C", key: "udiseCode" },
+  { label: "C", key: "schoolUdiseNumber" },
   { label: "D-1", key: "teacherMale" },
   { label: "D-2", key: "teacherFemale" },
   { label: "D-3", key: "totalTeachers" },

@@ -24,7 +24,7 @@ const SchoolForm = () => {
     headmasterAddress: "",
     assistantTeacherName: "",
     assistantTeacherPhone: "",
-    udiseCode: "",
+    schoolUdiseNumber: "",
     teacherMale: "",
     teacherFemale: "",
     totalTeachers: "",
@@ -184,7 +184,7 @@ const SchoolForm = () => {
       return;
     }
     try {
-      const docRef = await addDoc(collection(db, "School_Forms"), {
+      const docRef = await addDoc(collection(db, "School_Form"), {
         ...formData,
         submittedBy: auth.currentUser.uid,
       });
@@ -198,7 +198,7 @@ const SchoolForm = () => {
         draggable: true,
         theme: "colored",
       });
-      navigate("/school-feedback");
+      navigate("/dashboard");
       setFormData({
         region: "",
         district: "",
@@ -213,7 +213,7 @@ const SchoolForm = () => {
         headmasterAddress: "",
         assistantTeacherName: "",
         assistantTeacherPhone: "",
-        udiseCode: "",
+        schoolUdiseNumber: "",
         teacherMale: "",
         teacherFemale: "",
         totalTeachers: "",
