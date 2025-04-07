@@ -104,7 +104,7 @@ function OfficerDash() {
         const collections = [
           { name: "Parent_Form", setter: setParentData, type: "parent" },
           { name: "Observation_Form", setter: setObserveData, type: "observe" },
-          { name: "School_Forms", setter: setSchoolData, type: "school" },
+          { name: "School_Form", setter: setSchoolData, type: "school" },
         ];
 
         await Promise.all(
@@ -203,7 +203,7 @@ function OfficerDash() {
       //{ label: "प्रदेश", key: "region" },
       { label: "A", key: "district" },
       { label: "B", key: "taluka" },
-      { label: "C", key: "udiseCode" },
+      { label: "C", key: "schoolUdiseNumber" },
       { label: "D-1", key: "teacherMale" },
       { label: "D-2", key: "teacherFemale" },
       { label: "D-3", key: "totalTeachers" },
@@ -504,7 +504,7 @@ function OfficerDash() {
                           
                           <td>{displayValue(parent.district)}</td>
                           <td>{displayValue(parent.taluka)}</td>
-                          <td>{displayValue(parent.schoolUdiseNumber)}</td>
+                          <td>{displayValue(parent.udiseNumber)}</td>
                           <td>{displayValue(parent.sendChildDaily)}</td>
                           <td>{displayValue(parent.weightGain)}</td>
                           <td>{displayValue(parent.sickFrequency)}</td>
@@ -558,7 +558,6 @@ function OfficerDash() {
                   <thead style={{ position: "sticky", top: 0, backgroundColor: "#f8f9fa", zIndex: 1 }}>
                     <tr>
                       <th>#</th>
-                      
                       <th>A</th>
                       <th>B</th>
                       <th>C</th>
@@ -572,8 +571,8 @@ function OfficerDash() {
                         <tr key={observer.id}>
                           <td>{index + 1}</td>
                           
-                          <td>{displayValue(observer.district)}</td>
-                          <td>{displayValue(observer.taluka)}</td>
+                          <td>{displayValue(observer.districtId)}</td>
+                          <td>{displayValue(observer.talukaId)}</td>
                           <td>{displayValue(observer.schoolUdiseNumber)}</td>
                           <td>{displayValue(observer.remarks)}</td>
                           <td>
@@ -758,9 +757,9 @@ function OfficerDash() {
                         <tr key={school.id}>
                           <td>{index + 1}</td>
                           
-                          <td>{displayValue(school.district)}</td>
-                          <td>{displayValue(school.taluka)}</td>
-                          <td>{displayValue(school.udiseCode)}</td>
+                          <td>{displayValue(school.districtId)}</td>
+                          <td>{displayValue(school.talukaId)}</td>
+                          <td>{displayValue(school.udiseNumber)}</td>
                           <td>{displayValue(school.teacherMale)}</td>
                           <td>{displayValue(school.teacherFemale)}</td>
                           <td>{displayValue(school.totalTeachers)}</td>

@@ -117,7 +117,7 @@ const ObservationForm = () => {
         remarks,
       });
 
-      navigate("/observation-feedback");
+      navigate("/dashboard");
       setMessage("डेटा यशस्वीरित्या सबमिट झाला!");
       setRegion("");
       setDistrict("");
