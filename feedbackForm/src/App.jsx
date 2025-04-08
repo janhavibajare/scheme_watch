@@ -14,7 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { auth, db } from "./components/Firebase";
 import { doc, getDoc } from "firebase/firestore";
-import AdminDashboard from "./pages/AdminDashboard.jsx"; // Updated AdminDashboard (new slim version)
+import AdminDashboard from "./pages/AdminDashboard.jsx";
 import Profile from "./pages/Profile";
 import AboutUs from "./pages/AboutUs";
 import { AuthProvider } from "./hooks/useAuth";
@@ -27,10 +27,10 @@ import Dashboard from "./pages/Dashboard";
 import UpdateParentForm from "./forms/UpdateParentForm";
 import UpdateObserveForm from "./forms/UpdateObserveForm";
 import UpdateSchoolForm from "./forms/UpdateSchoolForm";
-import ParentFeedback from "./components/admin/ParentFormTable"; // New component
-import SchoolFeedback from "./components/admin/SchoolFormTable"; // New component
-import ObservationFeedback from "./components/admin/ObservationFormTable"; // New component
-import FindSchool from "./components/admin/FindSchool"; // New component
+import ParentFeedback from "./components/admin/ParentFormTable";
+import SchoolFeedback from "./components/admin/SchoolFormTable";
+import ObservationFeedback from "./components/admin/ObservationFormTable";
+import FindSchool from "./components/admin/FindSchool";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -168,7 +168,7 @@ function App() {
                 role={role}
                 allowedRoles={["Research Officer", "admin"]}
               >
-                <Dashboard />
+                <Dashboard role={role} /> {/* Pass role prop here */}
               </ProtectedRoute>
             }
           />
