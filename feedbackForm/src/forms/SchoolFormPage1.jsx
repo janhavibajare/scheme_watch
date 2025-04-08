@@ -261,11 +261,12 @@ const SchoolFormPage1 = ({ formData, setFormData, handleChange, nextStep }) => {
                   <input
                     type="text"
                     className="form-control"
-                    name="udiseCode"
-                    value={formData.udiseCode || ""}
+                    name="schoolUdiseNumber"
+                    value={formData.schoolUdiseNumber || ""}
                     onChange={handleChange}
                   />
                 </div>
+                
                 <div className="col-md-4 mb-3">
                   <label className="form-label">तपासणी करणाऱ्याचे नाव</label>
                   <input

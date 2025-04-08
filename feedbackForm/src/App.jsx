@@ -67,28 +67,40 @@ function App() {
           <Route path="/observation_form" element={<ObservationForm />} />
           <Route path="/school_form" element={<SchoolForm />} />
 
-          {/* Update Form Routes (Protected for Admin) */}
+          {/* Update Form Routes (Protected for Admin and Research Officer) */}
           <Route
             path="/update_parent_form/:id"
             element={
-              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
-                <UpdateParentForm />
+              <ProtectedRoute
+                user={user}
+                role={role}
+                allowedRoles={["admin", "Research Officer"]}
+              >
+                <UpdateParentForm role={role} />
               </ProtectedRoute>
             }
           />
           <Route
             path="/update_observation_form/:id"
             element={
-              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
-                <UpdateObserveForm />
+              <ProtectedRoute
+                user={user}
+                role={role}
+                allowedRoles={["admin", "Research Officer"]}
+              >
+                <UpdateObserveForm role={role} />
               </ProtectedRoute>
             }
           />
           <Route
             path="/update_school_form/:id"
             element={
-              <ProtectedRoute user={user} role={role} allowedRoles={["admin"]}>
-                <UpdateSchoolForm />
+              <ProtectedRoute
+                user={user}
+                role={role}
+                allowedRoles={["admin", "Research Officer"]}
+              >
+                <UpdateSchoolForm role={role} />
               </ProtectedRoute>
             }
           />

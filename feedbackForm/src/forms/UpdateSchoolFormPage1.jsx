@@ -255,8 +255,8 @@ const UpdateSchoolFormPage1 = ({
                   <input
                     type="text"
                     className="form-control"
-                    name="udiseCode"
-                    value={formData.udiseCode || ""}
+                    name="schoolUdiseNumber"
+                    value={formData.schoolUdiseNumber || ""}
                     onChange={handleChange}
                   />
                 </div>

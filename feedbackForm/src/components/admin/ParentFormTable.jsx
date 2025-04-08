@@ -48,7 +48,7 @@ function ParentFormTable() {
     //{ label: "प्रदेश", key: "region" },
     { label: "A", key: "district" },
     { label: "B", key: "taluka" },
-    { label: "C", key: "schoolUdiseNumber" },
+    { label: "C", key: "udiseNumber" },
 
    // { label: "पालकाचे संपूर्ण नाव", key: "parentName" },
     //{ label: "शाळेचे नाव", key: "schoolName" },

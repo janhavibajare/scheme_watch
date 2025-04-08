@@ -1,15 +1,24 @@
 import React, { useState, useEffect } from "react";
+<<<<<<< HEAD
 import { db, auth } from "../Firebase"; // Ensure auth is imported from your Firebase config
 import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore"; // Added doc import
+=======
+import { db, auth } from "../Firebase";
+import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore";
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
 import { Accordion, Button, Form, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+<<<<<<< HEAD
 import { onAuthStateChanged } from "firebase/auth"; // Import to monitor auth state
+=======
+import { onAuthStateChanged } from "firebase/auth";
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
 
 function FindSchool() {
-  const [searchType, setSearchType] = useState("udise"); // "udise" or "name"
+  const [searchType, setSearchType] = useState("udise");
   const [searchValue, setSearchValue] = useState("");
   const [parentData, setParentData] = useState([]);
   const [schoolData, setSchoolData] = useState([]);
@@ -21,17 +30,40 @@ function FindSchool() {
   const [parentPage, setParentPage] = useState(1);
   const [schoolPage, setSchoolPage] = useState(1);
   const [observePage, setObservePage] = useState(1);
+<<<<<<< HEAD
   const [user, setUser] = useState(null); // Track authenticated user
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
+=======
+  const [user, setUser] = useState(null);
+  const itemsPerPage = 5;
+  const navigate = useNavigate();
+
+  // Safe nested property accessor
+  const getNestedValue = (obj, path) => {
+    try {
+      return path.split(/\.|\[|\]/).reduce((acc, part) => {
+        if (!part) return acc;
+        return acc && acc[part] !== undefined ? acc[part] : null;
+      }, obj) || "N/A";
+    } catch {
+      return "N/A";
+    }
+  };
+
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
   // Monitor authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
         toast.error("Please log in to access school data.");
+<<<<<<< HEAD
         navigate("/login"); // Redirect to your login page
+=======
+        navigate("/login");
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
       }
     });
     return () => unsubscribe();
@@ -40,7 +72,11 @@ function FindSchool() {
   const displayValue = (value) => (value != null ? value : "N/A");
 
   const handleSearch = async () => {
+<<<<<<< HEAD
     const trimmedSearchValue = searchValue.trim(); // Remove leading/trailing spaces
+=======
+    const trimmedSearchValue = searchValue.trim();
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
     if (!trimmedSearchValue) {
       toast.warn("Please enter a value to search!");
       return;
@@ -48,7 +84,11 @@ function FindSchool() {
 
     if (!user) {
       toast.error("You must be logged in to search for school data.");
+<<<<<<< HEAD
       navigate("/login"); // Redirect to login if not authenticated
+=======
+      navigate("/login");
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
       return;
     }
 
@@ -63,6 +103,7 @@ function FindSchool() {
       console.log("Parent_Form - Docs found:", parentSnap.size, "Data:", parentSnap.docs.map((doc) => doc.data()));
       setParentData(parentSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
+<<<<<<< HEAD
       // School_Forms Query (Updated to schoolUdiseNumber)
       const schoolQuery = query(
         collection(db, "School_Forms"),
@@ -73,6 +114,19 @@ function FindSchool() {
       setSchoolData(schoolSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
       // Observation_Form Query (Updated to schoolUdiseNumber)
+=======
+      // School_Forms Query
+      const schoolQuery = query(
+        collection(db, "School_Form"),
+        searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
+      );
+      const schoolSnap = await getDocs(schoolQuery);
+      const schoolDocs = schoolSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+      console.log("School_Form - Docs found:", schoolSnap.size, "Raw Data:", schoolDocs);
+      setSchoolData(schoolDocs);
+
+      // Observation_Form Query
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
       const observeQuery = query(
         collection(db, "Observation_Form"),
         searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
@@ -85,7 +139,11 @@ function FindSchool() {
         toast.info("No records found for this school!");
       }
     } catch (error) {
+<<<<<<< HEAD
       console.error("Error:", error);
+=======
+      console.error("Error fetching school data:", error);
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
       toast.error("Error fetching school data: " + error.message);
     } finally {
       setLoading(false);
@@ -147,7 +205,11 @@ function FindSchool() {
     { label: "मुख्याध्यापकाचा पत्ता", key: "headmasterAddress" },
     { label: "सहाय्यक शिक्षकाचे नाव", key: "assistantTeacherName" },
     { label: "सहाय्यक शिक्षकाचा फोन", key: "assistantTeacherPhone" },
+<<<<<<< HEAD
     { label: "UDISE कोड", key: "schoolUdiseNumber" }, // Updated from udiseCode
+=======
+    { label: "UDISE कोड", key: "schoolUdiseNumber" },
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
     { label: "पुरुष शिक्षक", key: "teacherMale" },
     { label: "महिला शिक्षक", key: "teacherFemale" },
     { label: "एकूण मुले", key: "totalBoys" },
@@ -161,136 +223,16 @@ function FindSchool() {
     { label: "लाभार्थी इयत्ता ८-१० मुले", key: "beneficiaries.grade8to10.boys" },
     { label: "लाभार्थी इयत्ता ८-१० मुली", key: "beneficiaries.grade8to10.girls" },
     { label: "लाभार्थी इयत्ता ८-१० एकूण", key: "beneficiaries.grade8to10.total" },
-    { label: "मध्यान्ह भोजन फलक आहे का?", key: "hasMiddayMealBoard" },
-    { label: "मध्यान्ह भोजन मेनू आहे का?", key: "hasMiddayMealMenu" },
-    { label: "व्यवस्थापन मंडळ आहे का?", key: "hasManagementBoard" },
-    { label: "मुख्याध्यापक संपर्क आहे का?", key: "hasPrincipalContact" },
-    { label: "अधिकारी संपर्क आहे का?", key: "hasOfficerContact" },
-    { label: "तक्रार पेटी आहे का?", key: "hasComplaintBox" },
-    { label: "आपत्कालीन क्रमांक आहे का?", key: "hasEmergencyNumber" },
-    { label: "स्वयंपाक शेड आहे का?", key: "hasKitchenShed" },
-    { label: "प्रथमोपचार पेटी आहे का?", key: "hasFirstAidBox" },
-    { label: "पाण्याचा स्रोत आहे का?", key: "hasWaterSource" },
-    { label: "पाण्याचा स्रोत प्रकार", key: "waterSourceType" },
-    { label: "नियमित पाणीपुरवठा आहे का?", key: "hasRegularWaterSupply" },
-    { label: "अग्निशामक यंत्र आहे का?", key: "hasFireExtinguisher" },
-    { label: "अग्निशामक तपासणी आहे का?", key: "hasFireExtinguisherCheck" },
-    { label: "अग्निशामक पुनर्भरण आहे का?", key: "hasFireExtinguisherRefill" },
-    { label: "अग्निशामक तपशील", key: "fireExtinguisherDetails" },
-    { label: "स्वयंपाक बाग आहे का?", key: "hasKitchenGarden" },
-    { label: "बागेची उत्पादने वापरली का?", key: "usesGardenProduce" },
-    { label: "स्वयंपाक बाग तपशील", key: "kitchenGardenDetails" },
-    { label: "नाविन्यपूर्ण उपक्रम", key: "innovativeInitiatives" },
-    { label: "आहार समिती आहे का?", key: "hasDietCommittee" },
-    { label: "समिती फलक आहे का?", key: "hasCommitteeBoard" },
-    { label: "स्वयंपाक एजन्सी", key: "cookingAgency" },
-    { label: "कराराची प्रत आहे का?", key: "hasAgreementCopy" },
-    { label: "स्वयंपाकी प्रशिक्षण आहे का?", key: "hasCookTraining" },
-    { label: "स्वयंपाकी सहाय्यक संख्या", key: "cookHelperCount" },
-    { label: "शाळेत स्वयंपाक होतो का?", key: "isCookedAtSchool" },
-    { label: "इंधन प्रकार", key: "fuelType" },
-    { label: "वजन काटा आहे का?", key: "hasWeighingScale" },
-    { label: "तांदूळ वजन केले का?", key: "hasRiceWeighed" },
-    { label: "साठवण युनिट्स आहेत का?", key: "hasStorageUnits" },
-    { label: "ताटे आहेत का?", key: "hasPlates" },
-    { label: "वितरणादरम्यान शिक्षक उपस्थित आहे का?", key: "teacherPresentDuringDistribution" },
-    { label: "MDM पोर्टल अद्ययावत आहे का?", key: "mdmPortalUpdated" },
-    { label: "पूरक आहार आहे का?", key: "supplementaryDiet" },
-    { label: "पूरक आहार तपशील", key: "supplementaryDietDetails" },
-    { label: "नमुना साठवला आहे का?", key: "sampleStored" },
-    { label: "साफसफाई झाली का?", key: "cleaningDone" },
-    { label: "मुख्याध्यापकाचे अन्न मत", key: "headmasterFoodOpinion" },
-    { label: "तृतीय पक्ष समर्थन आहे का?", key: "thirdPartySupport" },
-    { label: "मूलभूत सुविधा उपलब्ध आहेत का?", key: "basicFacilitiesAvailable" },
-    { label: "मूलभूत सुविधा तपशील", key: "basicFacilitiesDetails" },
-    { label: "जेवणाची व्यवस्था", key: "diningArrangement" },
-    { label: "सरकारी रेसिपी पाळली का?", key: "followsGovtRecipe" },
-    { label: "अंडी-केळी नियमित आहेत का?", key: "eggsBananasRegular" },
-    { label: "अंकुरित धान्य वापरले का?", key: "usesSproutedGrains" },
-    { label: "मासिक प्रयोगशाळा चाचणी आहे का?", key: "labTestMonthly" },
-    { label: "वितरणापूर्वी चव चाचणी आहे का?", key: "tasteTestBeforeDistribution" },
-    { label: "SMC पालक भेटी आहेत का?", key: "smcParentVisits" },
-    { label: "चव नोंदवही आहे का?", key: "hasTasteRegister" },
-    { label: "दैनंदिन चव नोंदी आहेत का?", key: "dailyTasteEntries" },
-    { label: "साठा नोंदवहीशी जुळतो का?", key: "stockMatchesRegister" },
-    { label: "साठा विसंगती तपशील", key: "stockDiscrepancyDetails" },
-    { label: "रेसिपी प्रदर्शित आहेत का?", key: "recipesDisplayed" },
-    { label: "निरीक्षण समिती बैठका आहेत का?", key: "monitoringCommitteeMeetings" },
-    { label: "२०२४-२५ बैठक संख्या", key: "meetingCount2024_25" },
-    { label: "रिकाम्या पोत्यांचे परतावा झाले का?", key: "emptySacksReturned" },
-    { label: "पोत्यांचे हस्तांतरण नोंदवले का?", key: "sackTransferRecorded" },
-    { label: "पोत्यांचे हस्तांतरण संख्या", key: "sackTransferCount" },
-    { label: "सध्याचे अन्न साहित्य", key: "currentFoodMaterials" },
-    { label: "स्नेह तिथी कार्यक्रम आहे का?", key: "snehTithiProgram" },
-    { label: "स्नेह तिथी कार्यक्रम तपशील", key: "snehTithiProgramDetails" },
-    { label: "भ्रष्टाचार तपशील", key: "corruptionDetails" },
-    { label: "भ्रष्टाचार कारवाई तपशील", key: "corruptionActionDetails" },
-    { label: "फील्ड अधिकारी भेटी आहेत का?", key: "fieldOfficerVisits" },
-    { label: "फील्ड अधिकारी भेट तपशील", key: "fieldOfficerVisitDetails" },
-    { label: "योजनेच्या सूचना", key: "schemeSuggestions" },
-    { label: "आरोग्य तपासणी झाली का?", key: "healthCheckupDone" },
-    { label: "आरोग्य तपासणी विद्यार्थी संख्या", key: "healthCheckupStudentCount" },
-    { label: "BMI नोंदवले आहे का?", key: "bmiRecorded" },
-    { label: "वजन-उंची मोजली का?", key: "weightHeightMeasured" },
-    { label: "स्वयंपाकी आरोग्य तपासणी आहे का?", key: "cookHealthCheck" },
-    { label: "SMC ठराव आहे का?", key: "hasSmcResolution" },
-    { label: "आरोग्य प्रमाणपत्र आहे का?", key: "hasHealthCertificate" },
-    { label: "सहाय्यक १ नाव", key: "helper1Name" },
-    { label: "सहाय्यक २ नाव", key: "helper2Name" },
-    { label: "लाभार्थी २०२२-२३ मुले", key: "beneficiariesYearly['2022-23'].boys" },
-    { label: "लाभार्थी २०२२-२३ मुली", key: "beneficiariesYearly['2022-23'].girls" },
-    { label: "लाभार्थी २०२२-२३ एकूण", key: "beneficiariesYearly['2022-23'].total" },
-    { label: "लाभार्थी २०२३-२४ मुले", key: "beneficiariesYearly['2023-24'].boys" },
-    { label: "लाभार्थी २०२३-२४ मुली", key: "beneficiariesYearly['2023-24'].girls" },
-    { label: "लाभार्थी २०२३-२४ एकूण", key: "beneficiariesYearly['2023-24'].total" },
-    { label: "लाभार्थी २०२४-२५ मुले", key: "beneficiariesYearly['2024-25'].boys" },
-    { label: "लाभार्थी २०२४-२५ मुली", key: "beneficiariesYearly['2024-25'].girls" },
-    { label: "लाभार्थी २०२४-२५ एकूण", key: "beneficiariesYearly['2024-25'].total" },
-    { label: "अनुदान प्राप्त २०२२-२३", key: "grantReceived['2022-23']" },
-    { label: "अनुदान प्राप्त २०२३-२४", key: "grantReceived['2023-24']" },
-    { label: "अनुदान प्राप्त २०२४-२५", key: "grantReceived['2024-25']" },
-    { label: "अनुदान खर्च २०२२-२३", key: "grantExpenditure['2022-23']" },
-    { label: "अनुदान खर्च २०२३-२४", key: "grantExpenditure['2023-24']" },
-    { label: "अनुदान खर्च २०२४-२५", key: "grantExpenditure['2024-25']" },
-    { label: "अनुदान शिल्लक २०२२-२३", key: "grantBalance['2022-23']" },
-    { label: "अनुदान शिल्लक २०२३-२४", key: "grantBalance['2023-24']" },
-    { label: "अनुदान शिल्लक २०२४-२५", key: "grantBalance['2024-25']" },
-    { label: "स्वयंपाकघर आहे का?", key: "hasKitchen" },
-    { label: "साठवण खोली आहे का?", key: "hasStorageRoom" },
-    { label: "जेवण कक्ष आहे का?", key: "hasDiningHall" },
-    { label: "भांडी आहेत का?", key: "hasUtensils" },
-    { label: "धान्य सुरक्षित आहे का?", key: "hasGrainSafety" },
-    { label: "हात धुण्याचा साबण आहे का?", key: "hasHandwashSoap" },
-    { label: "स्वतंत्र शौचालये आहेत का?", key: "hasSeparateToilets" },
-    { label: "CCTV आहे का?", key: "hasCctv" },
-    { label: "स्वयंपाकघर स्वच्छता", key: "kitchenCleanliness" },
-    { label: "जेवण कक्ष स्वच्छता", key: "diningHallCleanliness" },
-    { label: "साठवण स्वच्छता", key: "storageCleanliness" },
-    { label: "सर्व्हिंग क्षेत्र स्वच्छता", key: "servingAreaCleanliness" },
-    { label: "भांडीची स्थिती", key: "utensilCondition" },
-    { label: "पाणीपुरवठा", key: "waterSupply" },
-    { label: "हात धुण्याची सुविधा", key: "handwashFacility" },
-    { label: "शौचालय स्वच्छता", key: "toiletCleanliness" },
-    { label: "रोख नोंदवही अद्ययावत आहे का?", key: "cashBookUpdated" },
-    { label: "साठा नोंदवही अद्ययावत आहे का?", key: "stockRegisterUpdated" },
-    { label: "उपस्थिती नोंदवही अद्ययावत आहे का?", key: "attendanceRegisterUpdated" },
-    { label: "बँक खाते अद्ययावत आहे का?", key: "bankAccountUpdated" },
-    { label: "मानधन नोंदवही अद्ययावत आहे का?", key: "honorariumRegisterUpdated" },
-    { label: "चव नोंदवही अद्ययावत आहे का?", key: "tasteRegisterUpdated" },
-    { label: "स्नेह तिथी नोंदवही अद्ययावत आहे का?", key: "snehTithiRegisterUpdated" },
-    { label: "नावनोंदणी सुधारणा आहे का?", key: "enrollmentImprovement" },
-    { label: "उपस्थिती वाढ आहे का?", key: "attendanceIncrease" },
-    { label: "पोषण आरोग्य सुधारणा आहे का?", key: "nutritionHealthImprovement" },
-    { label: "वजन-उंची वाढ आहे का?", key: "weightHeightIncrease" },
-    { label: "कुपोषण कमी झाले का?", key: "malnutritionReduction" },
-    { label: "जंक फूड प्रतिबंध आहे का?", key: "junkFoodPrevention" },
-    { label: "एकता बंधन आहे का?", key: "unityBonding" },
-    { label: "सादर करण्याची तारीख", key: "submissionDate" },
+    // Add other fields as needed, but ensure they match your Firestore data
   ];
 
   const observeFieldMappings = [
     { label: "School Name", key: "schoolName" },
+<<<<<<< HEAD
     { label: "UDISE No", key: "schoolUdiseNumber" }, // Updated from udiseNo
+=======
+    { label: "UDISE No", key: "schoolUdiseNumber" },
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
     { label: "Taluka", key: "taluka" },
     { label: "District", key: "district" },
     { label: "Feedback", key: "voiceInput" },
@@ -302,8 +244,8 @@ function FindSchool() {
     data.forEach((record, index) => {
       fieldMappings.forEach(({ label, key }, fieldIndex) => {
         const value = key.includes(".") || key.includes("[")
-          ? eval(`record.${key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
-          : record[key] || "";
+          ? getNestedValue(record, key)
+          : record[key] || "N/A";
         if (index === 0) excelData.push([label, value]);
         else excelData[fieldIndex].push(value);
       });
@@ -322,8 +264,8 @@ function FindSchool() {
     data.forEach((record) => {
       const values = fieldMappings.map((field) => {
         const value = field.key.includes(".") || field.key.includes("[")
-          ? eval(`record.${field.key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
-          : record[field.key] || "";
+          ? getNestedValue(record, field.key)
+          : record[field.key] || "N/A";
         return `"${value.toString().replace(/"/g, '""')}"`;
       });
       csvRows.push(values.join(","));
@@ -353,8 +295,9 @@ function FindSchool() {
       const parentExcelData = [];
       parentData.forEach((record, index) => {
         parentFieldMappings.forEach(({ label, key }, fieldIndex) => {
-          if (index === 0) parentExcelData.push([label, record[key] || ""]);
-          else parentExcelData[fieldIndex].push(record[key] || "");
+          const value = record[key] || "N/A";
+          if (index === 0) parentExcelData.push([label, value]);
+          else parentExcelData[fieldIndex].push(value);
         });
       });
       const parentWs = XLSX.utils.aoa_to_sheet(parentExcelData);
@@ -366,8 +309,8 @@ function FindSchool() {
       schoolData.forEach((record, index) => {
         schoolFieldMappings.forEach(({ label, key }, fieldIndex) => {
           const value = key.includes(".") || key.includes("[")
-            ? eval(`record.${key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
-            : record[key] || "";
+            ? getNestedValue(record, key)
+            : record[key] || "N/A";
           if (index === 0) schoolExcelData.push([label, value]);
           else schoolExcelData[fieldIndex].push(value);
         });
@@ -380,8 +323,9 @@ function FindSchool() {
       const observeExcelData = [];
       observeData.forEach((record, index) => {
         observeFieldMappings.forEach(({ label, key }, fieldIndex) => {
-          if (index === 0) observeExcelData.push([label, record[key] || ""]);
-          else observeExcelData[fieldIndex].push(record[key] || "");
+          const value = record[key] || "N/A";
+          if (index === 0) observeExcelData.push([label, value]);
+          else observeExcelData[fieldIndex].push(value);
         });
       });
       const observeWs = XLSX.utils.aoa_to_sheet(observeExcelData);
@@ -397,16 +341,25 @@ function FindSchool() {
   };
 
   const filteredParentData = parentData.filter((parent) =>
-    parent.parentName?.toLowerCase().includes(parentFilter.toLowerCase()) ||
-    parent.schoolName?.toLowerCase().includes(parentFilter.toLowerCase())
+    (parent.parentName?.toLowerCase() || "").includes(parentFilter.toLowerCase()) ||
+    (parent.schoolName?.toLowerCase() || "").includes(parentFilter.toLowerCase())
   );
   const filteredSchoolData = schoolData.filter((school) =>
+<<<<<<< HEAD
     school.schoolName?.toLowerCase().includes(schoolFilter.toLowerCase()) ||
     school.schoolUdiseNumber?.toLowerCase().includes(schoolFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
   const filteredObserveData = observeData.filter((observe) =>
     observe.schoolName?.toLowerCase().includes(observeFilter.toLowerCase()) ||
     observe.schoolUdiseNumber?.toLowerCase().includes(observeFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
+=======
+    (school.schoolName?.toLowerCase() || "").includes(schoolFilter.toLowerCase()) ||
+    (school.schoolUdiseNumber?.toLowerCase() || "").includes(schoolFilter.toLowerCase())
+  );
+  const filteredObserveData = observeData.filter((observe) =>
+    (observe.schoolName?.toLowerCase() || "").includes(observeFilter.toLowerCase()) ||
+    (observe.schoolUdiseNumber?.toLowerCase() || "").includes(observeFilter.toLowerCase())
+>>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
   );
 
   return (
@@ -561,7 +514,7 @@ function FindSchool() {
                                 <td key={idx}>
                                   {displayValue(
                                     field.key.includes(".") || field.key.includes("[")
-                                      ? eval(`school.${field.key.replace(/\[(\w+)\]/g, "['$1']")}`) || ""
+                                      ? getNestedValue(school, field.key)
                                       : school[field.key]
                                   )}
                                 </td>

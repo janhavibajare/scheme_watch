@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const UpdateParentForm = () => {
+const UpdateParentForm = ({ role }) => { // Added role prop
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -23,22 +23,21 @@ const UpdateParentForm = () => {
     child2Sec: "",
     parentEducation: "",
     address: "",
-    sendChildDaily: "",
+    sendChildDaily: null,
     reason: "",
-    weightGain: "",
-    sickFrequency: "",
-    studyProgress: "",
-    concentration: "",
-    nutrition: "",
-    attendance: "",
+    weightGain: null,
+    sickFrequency: null,
+    studyProgress: null,
+    concentration: null,
+    nutrition: null,
+    attendance: null,
     impactOfNutritionScheme: "",
     effectOnAfternoonAttendance: "",
     effectOfNutritionDietPlan: "",
     improvementSuggestions: "",
-    phone: "", // Added phone field to match ParentFeedbackForm
+    phone: "",
   });
 
-  // Data structure based on your document
   const regionsData = {
     "कोकण विभाग": {
       code: "KR",
@@ -108,17 +107,16 @@ const UpdateParentForm = () => {
     },
   };
 
-  // Fetch parent data from Firestore
   const fetchParent = async () => {
     try {
       setLoading(true);
       const docRef = doc(db, "Parent_Form", id);
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
-        setFormData(docSnap.data()); // Populate form with fetched data
+        setFormData(docSnap.data());
       } else {
         toast.error("अशी कोणतीही पालक फॉर्म सापडली नाही!");
-        navigate("/parent-feedback"); // Redirect if doc doesn’t exist
+        navigate("/parent-feedback"); // Updated to parent-feedback as fallback
       }
     } catch (error) {
       toast.error("पालक डेटा आणताना त्रुटी: " + error.message);
@@ -132,7 +130,6 @@ const UpdateParentForm = () => {
     fetchParent();
   }, [id]);
 
-  // Handle input changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     if (name === "region") {
@@ -147,7 +144,6 @@ const UpdateParentForm = () => {
     }
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -155,7 +151,17 @@ const UpdateParentForm = () => {
       const docRef = doc(db, "Parent_Form", id);
       await updateDoc(docRef, formData);
       toast.success("फॉर्म यशस्वीरित्या अपडेट झाला!");
-      navigate("/parent-feedback"); // Redirect to admin dashboard
+      
+      // Dynamic redirect based on role with a delay
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/admin_dashboard");
+        } else if (role === "Research Officer") {
+          navigate("/officer_dashboard"); // Adjust to "/dashboard" if needed
+        } else {
+          navigate("/parent-feedback"); // Fallback if role is undefined
+        }
+      }, 1500); // 1.5s delay to show toast
     } catch (error) {
       toast.error("फॉर्म अपडेट करताना त्रुटी: " + error.message);
       console.error("फॉर्म अपडेट करताना त्रुटी: ", error);
@@ -178,7 +184,6 @@ const UpdateParentForm = () => {
     <>
       <style>
         {`
-          /* Remove dropdown arrow */
           .no-arrow {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -422,10 +427,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="sendChildDailyYes"
-                    >
+                    <label className="form-check-label" htmlFor="sendChildDailyYes">
                       होय
                     </label>
                   </div>
@@ -440,10 +442,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="sendChildDailyNo"
-                    >
+                    <label className="form-check-label" htmlFor="sendChildDailyNo">
                       नाही
                     </label>
                   </div>
@@ -462,8 +461,9 @@ const UpdateParentForm = () => {
                 id="reason"
                 rows="1"
                 name="reason"
-                value={formData.reason}
+                value={formData.reason || ""}
                 onChange={handleChange}
+                disabled={formData.sendChildDaily !== "0"}
               />
             </div>
           </div>
@@ -526,10 +526,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="sickFrequencyYes"
-                    >
+                    <label className="form-check-label" htmlFor="sickFrequencyYes">
                       होय
                     </label>
                   </div>
@@ -544,10 +541,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="sickFrequencyNo"
-                    >
+                    <label className="form-check-label" htmlFor="sickFrequencyNo">
                       नाही
                     </label>
                   </div>
@@ -571,10 +565,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="studyProgressYes"
-                    >
+                    <label className="form-check-label" htmlFor="studyProgressYes">
                       होय
                     </label>
                   </div>
@@ -589,10 +580,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="studyProgressNo"
-                    >
+                    <label className="form-check-label" htmlFor="studyProgressNo">
                       नाही
                     </label>
                   </div>
@@ -619,10 +607,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="concentrationYes"
-                    >
+                    <label className="form-check-label" htmlFor="concentrationYes">
                       होय
                     </label>
                   </div>
@@ -637,10 +622,7 @@ const UpdateParentForm = () => {
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="concentrationNo"
-                    >
+                    <label className="form-check-label" htmlFor="concentrationNo">
                       नाही
                     </label>
                   </div>
@@ -741,15 +723,12 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="impactOfNutritionScheme"
                       id="attendSchoolRegularly"
-                      value="नियमितपणे शाळेत जाणे"
-                      checked={formData.impactOfNutritionScheme === "नियमितपणे शाळेत जाणे"}
+                      value="1"
+                      checked={formData.impactOfNutritionScheme === "1"}
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="attendSchoolRegularly"
-                    >
+                    <label className="form-check-label" htmlFor="attendSchoolRegularly">
                       नियमितपणे शाळेत जाणे
                     </label>
                   </div>
@@ -759,15 +738,12 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="impactOfNutritionScheme"
                       id="sometimesGoing"
-                      value="कधीकधी जाणे"
-                      checked={formData.impactOfNutritionScheme === "कधीकधी जाणे"}
+                      value="2"
+                      checked={formData.impactOfNutritionScheme === "2"}
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="sometimesGoing"
-                    >
+                    <label className="form-check-label" htmlFor="sometimesGoing">
                       कधीकधी जाणे
                     </label>
                   </div>
@@ -777,15 +753,12 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="impactOfNutritionScheme"
                       id="justGoForTheDiet"
-                      value="फक्त आहारासाठी जाणे"
-                      checked={formData.impactOfNutritionScheme === "फक्त आहारासाठी जाणे"}
+                      value="3"
+                      checked={formData.impactOfNutritionScheme === "3"}
                       onChange={handleChange}
                       required
                     />
-                    <label
-                      className="form-check-label"
-                      htmlFor="justGoForTheDiet"
-                    >
+                    <label className="form-check-label" htmlFor="justGoForTheDiet">
                       फक्त आहारासाठी जाणे
                     </label>
                   </div>
@@ -795,8 +768,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="impactOfNutritionScheme"
                       id="notGoing"
-                      value="जात नाही"
-                      checked={formData.impactOfNutritionScheme === "जात नाही"}
+                      value="4"
+                      checked={formData.impactOfNutritionScheme === "4"}
                       onChange={handleChange}
                       required
                     />
@@ -819,8 +792,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOnAfternoonAttendance"
                       id="increase1"
-                      value="वाढलेली"
-                      checked={formData.effectOnAfternoonAttendance === "वाढलेली"}
+                      value="1"
+                      checked={formData.effectOnAfternoonAttendance === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -834,8 +807,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOnAfternoonAttendance"
                       id="noEffect1"
-                      value="कोणताही परिणाम नाही"
-                      checked={formData.effectOnAfternoonAttendence === "कोणताही परिणाम नाही"}
+                      value="2"
+                      checked={formData.effectOnAfternoonAttendance === "2"}
                       onChange={handleChange}
                       required
                     />
@@ -849,8 +822,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOnAfternoonAttendance"
                       id="decrease1"
-                      value="कमी"
-                      checked={formData.effectOnAfternoonAttendance === "कमी"}
+                      value="3"
+                      checked={formData.effectOnAfternoonAttendance === "3"}
                       onChange={handleChange}
                       required
                     />
@@ -874,8 +847,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOfNutritionDietPlan"
                       id="increase2"
-                      value="वाढलेली"
-                      checked={formData.effectOfNutritionDietPlan === "वाढलेली"}
+                      value="1"
+                      checked={formData.effectOfNutritionDietPlan === "1"}
                       onChange={handleChange}
                       required
                     />
@@ -889,8 +862,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOfNutritionDietPlan"
                       id="noEffect2"
-                      value="कोणताही परिणाम नाही"
-                      checked={formData.effectOfNutritionDietPlan === "कोणताही परिणाम नाही"}
+                      value="2"
+                      checked={formData.effectOfNutritionDietPlan === "2"}
                       onChange={handleChange}
                       required
                     />
@@ -904,8 +877,8 @@ const UpdateParentForm = () => {
                       type="radio"
                       name="effectOfNutritionDietPlan"
                       id="decrease2"
-                      value="कमी"
-                      checked={formData.effectOfNutritionDietPlan === "कमी"}
+                      value="3"
+                      checked={formData.effectOfNutritionDietPlan === "3"}
                       onChange={handleChange}
                       required
                     />
