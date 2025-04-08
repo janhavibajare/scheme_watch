@@ -8,7 +8,7 @@ import slider2 from "../images/slider2.png";
 import slider3 from "../images/slider3.png";
 import Mid_day_logo from "../images/Mid_day_logo.png";
 
-const Dashboard = () => {
+const Dashboard = ({ role }) => { // Added role prop
   const navigate = useNavigate();
   const aboutUsRef = useRef(null);
   const [userName, setUserName] = useState("");
@@ -188,11 +188,13 @@ const Dashboard = () => {
               <span className="fs-4 fw-bold">Home</span>
             </Link>
             <ul className="navbar-nav d-flex flex-row">
-              <li className="nav-item mx-2">
-                <Link className="nav-link text-white" to="/admin_dashboard">
-                  Admin
-                </Link>
-              </li>
+              {role === "admin" && ( // Conditionally render Admin button
+                <li className="nav-item mx-2">
+                  <Link className="nav-link text-white" to="/admin_dashboard">
+                    Admin
+                  </Link>
+                </li>
+              )}
               <li className="nav-item mx-2">
                 <Link className="nav-link text-white" to="/officer_dashboard">
                   Research Officer
@@ -206,7 +208,6 @@ const Dashboard = () => {
             </ul>
           </div>
           <div className="d-flex align-items-center">
-          
             <button className="btn btn-outline-light" onClick={handleLogout} disabled={loading}>
               {loading ? (
                 <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
