@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const UpdateParentForm = () => {
+const UpdateParentForm = ({ role }) => { // Added role prop
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
@@ -117,7 +117,7 @@ const UpdateParentForm = () => {
       } else {
         toast.error("अशी कोणतीही पालक फॉर्म सापडली नाही!");
 
-        navigate("/parent-feedback"); // Redirect if doc doesn’t exist
+        navigate("/parent-feedback"); // Updated to parent-feedback as fallback
 
       }
     } catch (error) {
@@ -154,7 +154,17 @@ const UpdateParentForm = () => {
       await updateDoc(docRef, formData);
       toast.success("फॉर्म यशस्वीरित्या अपडेट झाला!");
 
-      navigate("/parent-feedback"); // Redirect to admin dashboard
+      
+      // Dynamic redirect based on role with a delay
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/admin_dashboard");
+        } else if (role === "Research Officer") {
+          navigate("/officer_dashboard"); // Adjust to "/dashboard" if needed
+        } else {
+          navigate("/parent-feedback"); // Fallback if role is undefined
+        }
+      }, 1500); // 1.5s delay to show toast
 
     } catch (error) {
       toast.error("फॉर्म अपडेट करताना त्रुटी: " + error.message);

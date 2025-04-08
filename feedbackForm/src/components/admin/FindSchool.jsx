@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
+
 import { db, auth } from "../Firebase";
 import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore";
+
+
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
 import { Accordion, Button, Form, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
+
 import { onAuthStateChanged } from "firebase/auth";
+
 
 function FindSchool() {
   const [searchType, setSearchType] = useState("udise");
@@ -21,9 +26,11 @@ function FindSchool() {
   const [parentPage, setParentPage] = useState(1);
   const [schoolPage, setSchoolPage] = useState(1);
   const [observePage, setObservePage] = useState(1);
-  const [user, setUser] = useState(null);
+
+  const [user, setUser] = useState(null); // Track authenticated user
   const itemsPerPage = 5;
   const navigate = useNavigate();
+
 
   // Safe nested property accessor
   const getNestedValue = (obj, path) => {
@@ -37,13 +44,16 @@ function FindSchool() {
     }
   };
 
+
   // Monitor authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
         toast.error("Please log in to access school data.");
-        navigate("/login");
+
+        navigate("/login"); // Redirect to your login page
+
       }
     });
     return () => unsubscribe();
@@ -52,7 +62,9 @@ function FindSchool() {
   const displayValue = (value) => (value != null ? value : "N/A");
 
   const handleSearch = async () => {
-    const trimmedSearchValue = searchValue.trim();
+
+    const trimmedSearchValue = searchValue.trim(); // Remove leading/trailing spaces
+
     if (!trimmedSearchValue) {
       toast.warn("Please enter a value to search!");
       return;
@@ -60,7 +72,9 @@ function FindSchool() {
 
     if (!user) {
       toast.error("You must be logged in to search for school data.");
-      navigate("/login");
+
+      navigate("/login"); // Redirect to login if not authenticated
+
       return;
     }
 
@@ -75,6 +89,10 @@ function FindSchool() {
       console.log("Parent_Form - Docs found:", parentSnap.size, "Data:", parentSnap.docs.map((doc) => doc.data()));
       setParentData(parentSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
+
+     
+
+
       // School_Forms Query
       const schoolQuery = query(
         collection(db, "School_Form"),
@@ -85,7 +103,7 @@ function FindSchool() {
       console.log("School_Form - Docs found:", schoolSnap.size, "Raw Data:", schoolDocs);
       setSchoolData(schoolDocs);
 
-      // Observation_Form Query
+
       const observeQuery = query(
         collection(db, "Observation_Form"),
         searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
@@ -98,8 +116,10 @@ function FindSchool() {
         toast.info("No records found for this school!");
       }
     } catch (error) {
+
+
       console.error("Error fetching school data:", error);
-      toast.error("Error fetching school data: " + error.message);
+     toast.error("Error fetching school data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -160,7 +180,9 @@ function FindSchool() {
     { label: "मुख्याध्यापकाचा पत्ता", key: "headmasterAddress" },
     { label: "सहाय्यक शिक्षकाचे नाव", key: "assistantTeacherName" },
     { label: "सहाय्यक शिक्षकाचा फोन", key: "assistantTeacherPhone" },
-    { label: "UDISE कोड", key: "schoolUdiseNumber" },
+
+    { label: "UDISE कोड", key: "schoolUdiseNumber" }, // Updated from udiseCode
+
     { label: "पुरुष शिक्षक", key: "teacherMale" },
     { label: "महिला शिक्षक", key: "teacherFemale" },
     { label: "एकूण मुले", key: "totalBoys" },
@@ -179,7 +201,9 @@ function FindSchool() {
 
   const observeFieldMappings = [
     { label: "School Name", key: "schoolName" },
-    { label: "UDISE No", key: "schoolUdiseNumber" },
+
+    { label: "UDISE No", key: "schoolUdiseNumber" }, // Updated from udiseNo
+
     { label: "Taluka", key: "taluka" },
     { label: "District", key: "district" },
     { label: "Feedback", key: "voiceInput" },
@@ -292,12 +316,13 @@ function FindSchool() {
     (parent.schoolName?.toLowerCase() || "").includes(parentFilter.toLowerCase())
   );
   const filteredSchoolData = schoolData.filter((school) =>
-    (school.schoolName?.toLowerCase() || "").includes(schoolFilter.toLowerCase()) ||
-    (school.schoolUdiseNumber?.toLowerCase() || "").includes(schoolFilter.toLowerCase())
+
+    school.schoolName?.toLowerCase().includes(schoolFilter.toLowerCase()) ||
+    school.schoolUdiseNumber?.toLowerCase().includes(schoolFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
   const filteredObserveData = observeData.filter((observe) =>
-    (observe.schoolName?.toLowerCase() || "").includes(observeFilter.toLowerCase()) ||
-    (observe.schoolUdiseNumber?.toLowerCase() || "").includes(observeFilter.toLowerCase())
+    observe.schoolName?.toLowerCase().includes(observeFilter.toLowerCase()) ||
+    observe.schoolUdiseNumber?.toLowerCase().includes(observeFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
 
   return (

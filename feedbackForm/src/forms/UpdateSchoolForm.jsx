@@ -8,10 +8,10 @@ import UpdateSchoolFormPage2 from "./UpdateSchoolFormPage2.jsx";
 import UpdateSchoolFormPage3 from "./UpdateSchoolFormPage3.jsx";
 import UpdateSchoolFormPage4 from "./UpdateSchoolFormPage4.jsx";
 
-const UpdateSchoolForm = () => {
+const UpdateSchoolForm = ({ role }) => { // Added role prop
   const { id } = useParams();
   const navigate = useNavigate();
-  
+
   // Initialize formData with the same structure as SchoolForm
   const [formData, setFormData] = useState({
     region: "",
@@ -236,7 +236,17 @@ const UpdateSchoolForm = () => {
         submissionDate: new Date().toISOString(),
       });
       toast.success("School Form updated successfully!");
-      navigate("/school-feedback");
+      
+      // Dynamic redirect based on role with a delay
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/admin_dashboard");
+        } else if (role === "Research Officer") {
+          navigate("/officer_dashboard"); // Adjust to "/dashboard" if needed
+        } else {
+          navigate("/school-feedback"); // Fallback if role is undefined
+        }
+      }, 1500); // 1.5s delay to show toast
     } catch (error) {
       console.error("Error updating form data:", error);
       toast.error("Error updating school form: " + error.message);

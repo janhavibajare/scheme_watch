@@ -5,7 +5,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-const UpdateObservationForm = () => {
+const UpdateObservationForm = ({ role }) => { // Added role prop
   const { id } = useParams();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -158,7 +158,17 @@ const UpdateObservationForm = () => {
         timestamp: new Date().toISOString(),
       });
       toast.success("निरीक्षण यशस्वीरित्या अपडेट झाले!");
-      setTimeout(() => navigate("/observation-feedback"), 1500);
+
+      // Dynamic redirect based on role
+      setTimeout(() => {
+        if (role === "admin") {
+          navigate("/admin_dashboard");
+        } else if (role === "Research Officer") {
+          navigate("/officer_dashboard"); // Adjust to "/dashboard" if needed
+        } else {
+          navigate("/observation-feedback"); // Fallback in case role is undefined
+        }
+      }, 1500);
     } catch (error) {
       toast.error("निरीक्षण अपडेट करताना त्रुटी: " + error.message);
       console.error("Update error:", error);
@@ -270,7 +280,7 @@ const UpdateObservationForm = () => {
             <input
               type="text"
               id="schoolUdiseNumber"
-              name="udiseNo"
+              name="schoolUdiseNumber" // Fixed name mismatch
               className="form-control"
               value={formData.schoolUdiseNumber}
               onChange={handleChange}
@@ -306,7 +316,7 @@ const UpdateObservationForm = () => {
           </label>
           <textarea
             id="remarks"
-            name="voiceInput"
+            name="remarks" // Fixed name mismatch (was voiceInput)
             className="form-control"
             rows="4"
             placeholder="व्हॉईस इनपुट येथे दिसेल..."
