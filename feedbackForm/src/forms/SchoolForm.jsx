@@ -198,7 +198,7 @@ const SchoolForm = () => {
         draggable: true,
         theme: "colored",
       });
-      navigate("/school-feedback");
+      navigate("/dashboard");
       setFormData({
         region: "",
         district: "",

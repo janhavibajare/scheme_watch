@@ -1,21 +1,17 @@
 import React, { useState, useEffect } from "react";
-<<<<<<< HEAD
-import { db, auth } from "../Firebase"; // Ensure auth is imported from your Firebase config
-import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore"; // Added doc import
-=======
+
 import { db, auth } from "../Firebase";
 import { getDocs, collection, deleteDoc, query, where, doc } from "firebase/firestore";
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
+
 import { useNavigate } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import * as XLSX from "xlsx";
 import "react-toastify/dist/ReactToastify.css";
 import { Accordion, Button, Form, Spinner, OverlayTrigger, Tooltip } from "react-bootstrap";
-<<<<<<< HEAD
-import { onAuthStateChanged } from "firebase/auth"; // Import to monitor auth state
-=======
+
 import { onAuthStateChanged } from "firebase/auth";
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
 
 function FindSchool() {
   const [searchType, setSearchType] = useState("udise");
@@ -30,15 +26,11 @@ function FindSchool() {
   const [parentPage, setParentPage] = useState(1);
   const [schoolPage, setSchoolPage] = useState(1);
   const [observePage, setObservePage] = useState(1);
-<<<<<<< HEAD
+
   const [user, setUser] = useState(null); // Track authenticated user
   const itemsPerPage = 5;
   const navigate = useNavigate();
 
-=======
-  const [user, setUser] = useState(null);
-  const itemsPerPage = 5;
-  const navigate = useNavigate();
 
   // Safe nested property accessor
   const getNestedValue = (obj, path) => {
@@ -52,18 +44,16 @@ function FindSchool() {
     }
   };
 
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
   // Monitor authentication state
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       if (!currentUser) {
         toast.error("Please log in to access school data.");
-<<<<<<< HEAD
+
         navigate("/login"); // Redirect to your login page
-=======
-        navigate("/login");
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
       }
     });
     return () => unsubscribe();
@@ -72,11 +62,9 @@ function FindSchool() {
   const displayValue = (value) => (value != null ? value : "N/A");
 
   const handleSearch = async () => {
-<<<<<<< HEAD
+
     const trimmedSearchValue = searchValue.trim(); // Remove leading/trailing spaces
-=======
-    const trimmedSearchValue = searchValue.trim();
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
     if (!trimmedSearchValue) {
       toast.warn("Please enter a value to search!");
       return;
@@ -84,11 +72,9 @@ function FindSchool() {
 
     if (!user) {
       toast.error("You must be logged in to search for school data.");
-<<<<<<< HEAD
+
       navigate("/login"); // Redirect to login if not authenticated
-=======
-      navigate("/login");
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
       return;
     }
 
@@ -103,18 +89,10 @@ function FindSchool() {
       console.log("Parent_Form - Docs found:", parentSnap.size, "Data:", parentSnap.docs.map((doc) => doc.data()));
       setParentData(parentSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
-<<<<<<< HEAD
-      // School_Forms Query (Updated to schoolUdiseNumber)
-      const schoolQuery = query(
-        collection(db, "School_Forms"),
-        searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
-      );
-      const schoolSnap = await getDocs(schoolQuery);
-      console.log("School_Forms - Docs found:", schoolSnap.size, "Data:", schoolSnap.docs.map((doc) => doc.data()));
-      setSchoolData(schoolSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() })));
 
-      // Observation_Form Query (Updated to schoolUdiseNumber)
-=======
+     
+
+
       // School_Forms Query
       const schoolQuery = query(
         collection(db, "School_Form"),
@@ -125,8 +103,7 @@ function FindSchool() {
       console.log("School_Form - Docs found:", schoolSnap.size, "Raw Data:", schoolDocs);
       setSchoolData(schoolDocs);
 
-      // Observation_Form Query
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
       const observeQuery = query(
         collection(db, "Observation_Form"),
         searchType === "udise" ? where("schoolUdiseNumber", "==", trimmedSearchValue) : where("schoolName", "==", trimmedSearchValue)
@@ -139,12 +116,10 @@ function FindSchool() {
         toast.info("No records found for this school!");
       }
     } catch (error) {
-<<<<<<< HEAD
-      console.error("Error:", error);
-=======
+
+
       console.error("Error fetching school data:", error);
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
-      toast.error("Error fetching school data: " + error.message);
+     toast.error("Error fetching school data: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -158,7 +133,7 @@ function FindSchool() {
     }
 
     try {
-      await deleteDoc(doc(db, collectionName, id)); // Use doc() for reference
+      await deleteDoc(doc(db, collectionName, id));
       toast.success(successMessage);
       handleSearch();
     } catch (error) {
@@ -205,11 +180,9 @@ function FindSchool() {
     { label: "मुख्याध्यापकाचा पत्ता", key: "headmasterAddress" },
     { label: "सहाय्यक शिक्षकाचे नाव", key: "assistantTeacherName" },
     { label: "सहाय्यक शिक्षकाचा फोन", key: "assistantTeacherPhone" },
-<<<<<<< HEAD
+
     { label: "UDISE कोड", key: "schoolUdiseNumber" }, // Updated from udiseCode
-=======
-    { label: "UDISE कोड", key: "schoolUdiseNumber" },
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
     { label: "पुरुष शिक्षक", key: "teacherMale" },
     { label: "महिला शिक्षक", key: "teacherFemale" },
     { label: "एकूण मुले", key: "totalBoys" },
@@ -228,11 +201,9 @@ function FindSchool() {
 
   const observeFieldMappings = [
     { label: "School Name", key: "schoolName" },
-<<<<<<< HEAD
+
     { label: "UDISE No", key: "schoolUdiseNumber" }, // Updated from udiseNo
-=======
-    { label: "UDISE No", key: "schoolUdiseNumber" },
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
+
     { label: "Taluka", key: "taluka" },
     { label: "District", key: "district" },
     { label: "Feedback", key: "voiceInput" },
@@ -345,21 +316,13 @@ function FindSchool() {
     (parent.schoolName?.toLowerCase() || "").includes(parentFilter.toLowerCase())
   );
   const filteredSchoolData = schoolData.filter((school) =>
-<<<<<<< HEAD
+
     school.schoolName?.toLowerCase().includes(schoolFilter.toLowerCase()) ||
     school.schoolUdiseNumber?.toLowerCase().includes(schoolFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
   );
   const filteredObserveData = observeData.filter((observe) =>
     observe.schoolName?.toLowerCase().includes(observeFilter.toLowerCase()) ||
     observe.schoolUdiseNumber?.toLowerCase().includes(observeFilter.toLowerCase()) // Updated filter to schoolUdiseNumber
-=======
-    (school.schoolName?.toLowerCase() || "").includes(schoolFilter.toLowerCase()) ||
-    (school.schoolUdiseNumber?.toLowerCase() || "").includes(schoolFilter.toLowerCase())
-  );
-  const filteredObserveData = observeData.filter((observe) =>
-    (observe.schoolName?.toLowerCase() || "").includes(observeFilter.toLowerCase()) ||
-    (observe.schoolUdiseNumber?.toLowerCase() || "").includes(observeFilter.toLowerCase())
->>>>>>> 9dbe6a7 (Make the updations in the routes for the Admin and Officer Dashboard)
   );
 
   return (
@@ -526,7 +489,7 @@ function FindSchool() {
                                   </Button>
                                 </OverlayTrigger>
                                 <OverlayTrigger overlay={<Tooltip>Delete Entry</Tooltip>}>
-                                  <Button variant="danger" size="sm" onClick={() => handleDelete("School_Forms", school.id, "School entry deleted successfully!")}>
+                                  <Button variant="danger" size="sm" onClick={() => handleDelete("School_Form", school.id, "School entry deleted successfully!")}>
                                     Delete
                                   </Button>
                                 </OverlayTrigger>

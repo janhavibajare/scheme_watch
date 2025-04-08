@@ -116,7 +116,9 @@ const UpdateParentForm = ({ role }) => { // Added role prop
         setFormData(docSnap.data());
       } else {
         toast.error("अशी कोणतीही पालक फॉर्म सापडली नाही!");
+
         navigate("/parent-feedback"); // Updated to parent-feedback as fallback
+
       }
     } catch (error) {
       toast.error("पालक डेटा आणताना त्रुटी: " + error.message);
@@ -151,6 +153,7 @@ const UpdateParentForm = ({ role }) => { // Added role prop
       const docRef = doc(db, "Parent_Form", id);
       await updateDoc(docRef, formData);
       toast.success("फॉर्म यशस्वीरित्या अपडेट झाला!");
+
       
       // Dynamic redirect based on role with a delay
       setTimeout(() => {
@@ -162,6 +165,7 @@ const UpdateParentForm = ({ role }) => { // Added role prop
           navigate("/parent-feedback"); // Fallback if role is undefined
         }
       }, 1500); // 1.5s delay to show toast
+
     } catch (error) {
       toast.error("फॉर्म अपडेट करताना त्रुटी: " + error.message);
       console.error("फॉर्म अपडेट करताना त्रुटी: ", error);
