@@ -1,87 +1,137 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { useForm } from "react-hook-form";
+import { createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { auth, db } from "../components/Firebase";
-import { setDoc, doc } from "firebase/firestore";
+import { setDoc, doc, runTransaction, collection, getDocs, deleteDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 
 function Register() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [fname, setFname] = useState("");
-  const [lname, setLname] = useState("");
-  const [role] = useState("Research Officer");
-  const [phoneNumber, setPhoneNumber] = useState("");
-  const [age, setAge] = useState("");
-  const [qualification, setQualification] = useState("");
-  const [workExperience, setWorkExperience] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-
   const navigate = useNavigate();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegister = async (e) => {
-    e.preventDefault();
-    console.log("Form submitted with:", { 
-      fname, 
-      email, 
-      password, 
-      phoneNumber, 
-      role, 
-      age, 
-      qualification, 
-      workExperience 
-    });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm();
 
-    if (!fname.trim() || !email.trim() || !password || !phoneNumber || !age || 
-        !lname.trim() || !qualification.trim() || !workExperience.trim()) {
-      toast.error("Please fill all required fields!", { position: "top-center" });
-      console.log("Validation failed");
-      return;
+  const sanitizeInput = (input) => input.replace(/<[^>]*>/g, "");
+
+  const generateEmployeeIdAndSaveUser = async (user, userData) => {
+    try {
+      const usersRef = collection(db, "Users");
+      const usersSnapshot = await getDocs(usersRef);
+
+      const existingIds = usersSnapshot.docs
+        .map((doc) => {
+          const id = doc.data().employeeId;
+          if (id && id.startsWith("SEVA")) {
+            const number = parseInt(id.replace("SEVA", ""), 10);
+            return isNaN(number) ? null : number;
+          }
+          return null;
+        })
+        .filter((num) => num !== null)
+        .sort((a, b) => a - b);
+
+      let nextNumber = 1;
+      for (const id of existingIds) {
+        if (id === nextNumber) {
+          nextNumber++;
+        } else if (id > nextNumber) {
+          break;
+        }
+      }
+
+      userData.employeeId = `SEVA${nextNumber.toString().padStart(5, "0")}`;
+
+      await runTransaction(db, async (transaction) => {
+        const userDocRef = doc(db, "Users", user.uid);
+        const userDoc = await transaction.get(userDocRef);
+
+        if (userDoc.exists()) return;
+
+        transaction.set(userDocRef, {
+          ...userData,
+          createdAt: new Date().toISOString(),
+          status: "active", // Set initial status to inactive
+          // Remove lastLogin since user has not logged in yet
+        });
+      });
+      return true;
+    } catch (error) {
+      toast.error(`Failed to save user data: ${error.message}`);
+      throw error;
     }
+  };
+
+  const onSubmit = async (data) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    const { fname, lname, email, password, phoneNumber, age, qualification, workExperience } = data;
 
     try {
-      console.log("Attempting to create user...");
       const userCredential = await createUserWithEmailAndPassword(auth, email.trim(), password);
       const user = userCredential.user;
-      console.log("User created:", user.uid);
 
-      if (user) {
-        console.log("Writing user data to Firestore...");
-        await setDoc(doc(db, "Users", user.uid), {
-          email: user.email,
-          firstName: fname.trim(),
-          lastName: lname.trim(),
-          role: "Research Officer",
-          phoneNumber,
-          age: Number(age),
-          qualification: qualification.trim(),
-          workExperience: workExperience.trim(),
-        });
-        console.log("User data written successfully");
-        toast.success("User registered successfully!", { position: "top-center" });
-        navigate("/login");
+      const userData = {
+        email: user.email,
+        firstName: sanitizeInput(fname.trim()).toUpperCase(),
+        lastName: sanitizeInput(lname.trim()).toUpperCase(),
+        role: "Research Officer",
+        phoneNumber: phoneNumber.toString(),
+        age: Number(age),
+        qualification: sanitizeInput(qualification.trim()),
+        workExperience: Number(workExperience),
+      };
+
+      const saved = await generateEmployeeIdAndSaveUser(user, userData);
+
+      if (saved) {
+        console.log("✅ User data saved successfully. Proceeding to sign out.");
+        await signOut(auth);
+      } else {
+        console.warn("⚠ User data not saved properly. Aborting sign out.");
       }
+
+      toast.success("User registered successfully! Please log in.", {
+        position: "top-center",
+      });
+
+      reset();
+      navigate("/login");
     } catch (error) {
-      console.error("Registration error:", error.code, error.message);
-      toast.error(`Registration failed: ${error.message}`, { position: "bottom-center" });
+      console.error("Registration error:", error);
+
+      if (auth.currentUser) {
+        try {
+          await deleteDoc(doc(db, "Users", auth.currentUser.uid));
+        } catch (deleteError) {
+          console.error("Failed cleanup:", deleteError);
+        }
+      }
+
+      toast.error(`Registration failed: ${error.message}`, {
+        position: "bottom-center",
+      });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
     <div className="container d-flex flex-column justify-content-center align-items-center min-vh-100 p-3">
-      <div className="card shadow-lg p-3 p-md-4 w-100" style={{ maxWidth: "500px", transform: 'none', transition: 'none' }}>
-        <form onSubmit={handleRegister}>
+      <div className="card shadow-lg p-3 p-md-4 w-100" style={{ maxWidth: "500px" }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <h3 className="text-center mb-4">Sign Up</h3>
 
           <div className="mb-3">
             <label className="form-label">Role</label>
-            <input
-              type="text"
-              className="form-control"
-              value="Research Officer"
-              readOnly
-              required
-            />
+            <input type="text" className="form-control" value="Research Officer" readOnly />
           </div>
 
           <div className="row">
@@ -89,24 +139,36 @@ function Register() {
               <label className="form-label">First Name</label>
               <input
                 type="text"
-                className="form-control"
                 placeholder="Enter first name"
-                value={fname}
-                onChange={(e) => setFname(e.target.value)}
-                required
+                className="form-control"
+                {...register("fname", {
+                  required: true,
+                  pattern: /^[A-Za-z]+$/,
+                  onChange: (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    return e;
+                  },
+                })}
               />
+              {errors.fname && <small className="text-danger">Only letters allowed.</small>}
             </div>
 
             <div className="col-md-6 mb-3">
               <label className="form-label">Last Name</label>
               <input
                 type="text"
-                className="form-control"
                 placeholder="Enter last name"
-                value={lname}
-                onChange={(e) => setLname(e.target.value)}
-                required
+                className="form-control"
+                {...register("lname", {
+                  required: true,
+                  pattern: /^[A-Za-z]+$/,
+                  onChange: (e) => {
+                    e.target.value = e.target.value.toUpperCase();
+                    return e;
+                  },
+                })}
               />
+              {errors.lname && <small className="text-danger">Only letters allowed.</small>}
             </div>
           </div>
 
@@ -114,12 +176,14 @@ function Register() {
             <label className="form-label">Email Address</label>
             <input
               type="email"
-              className="form-control"
               placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
+              className="form-control"
+              {...register("email", {
+                required: true,
+                pattern: /^[a-zA-Z0-9._%+-]+@gmail\.com$/,
+              })}
             />
+            {errors.email && <small className="text-danger">Use a valid Gmail address.</small>}
           </div>
 
           <div className="mb-3">
@@ -127,11 +191,9 @@ function Register() {
             <div className="input-group">
               <input
                 type={showPassword ? "text" : "password"}
-                className="form-control"
                 placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
+                className="form-control"
+                {...register("password", { required: true, minLength: 6 })}
               />
               <button
                 type="button"
@@ -141,70 +203,66 @@ function Register() {
                 {showPassword ? "🔓" : "🔒"}
               </button>
             </div>
+            {errors.password && <small className="text-danger">Minimum 6 characters.</small>}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Phone Number</label>
             <input
               type="text"
+              placeholder="Enter phone number(10 digits)"
               className="form-control"
-              placeholder="Enter phone number (e.g., +1234567890)"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
-              required
+              {...register("phoneNumber", {
+                required: true,
+                pattern: /^\d{10}$/,
+              })}
             />
+            {errors.phoneNumber && <small className="text-danger">Must be 10 digits.</small>}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Age</label>
             <input
               type="number"
-              className="form-control"
               placeholder="Enter your age"
-              value={age}
-              onChange={(e) => setAge(e.target.value)}
-              min="18"
-              max="100"
-              required
+              className="form-control"
+              {...register("age", {
+                required: true,
+                min: 18,
+                max: 99,
+              })}
             />
+            {errors.age && <small className="text-danger">Enter age between 18–99.</small>}
           </div>
 
           <div className="mb-3">
             <label className="form-label">Qualification</label>
             <input
               type="text"
+              placeholder="Enter your qualification"
               className="form-control"
-              placeholder="Enter your highest qualification"
-              value={qualification}
-              onChange={(e) => setQualification(e.target.value)}
-              required
+              {...register("qualification", { required: true })}
             />
+            {errors.qualification && <small className="text-danger">Qualification required.</small>}
           </div>
 
           <div className="mb-3">
-            <label className="form-label">Work Experience</label>
-            <textarea
+            <label className="form-label">Work Experience (years)</label>
+            <input
+              type="number"
+              placeholder="Enter your work experience"
               className="form-control"
-              placeholder="Describe your work experience"
-              value={workExperience}
-              onChange={(e) => setWorkExperience(e.target.value)}
-              rows="3"
-              required
+              {...register("workExperience", {
+                required: true,
+                min: 0,
+              })}
             />
+            {errors.workExperience && <small className="text-danger">Enter valid number.</small>}
           </div>
 
-          <div className="d-grid">
-            <button type="submit" className="btn btn-primary btn-block">
-              Sign Up
-            </button>
-          </div>
-
-          <p className="text-center text-muted mt-3">
-            Already registered?{" "}
-            <a href="/login" className="text-decoration-none">
-              Login here
-            </a>
-          </p>
+          <button className="btn btn-primary w-100" type="submit" disabled={isLoading}>
+            {isLoading ? "Registering..." : "Sign Up"}
+          </button>
         </form>
       </div>
     </div>

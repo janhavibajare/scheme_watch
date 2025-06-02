@@ -1,45 +1,116 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { auth } from "../components/Firebase";
-import { ToastContainer, toast } from "react-toastify";
+import { Link, useNavigate, Navigate } from "react-router-dom";
+import { auth, db } from "../components/Firebase";
+import {
+  doc,
+  getDoc,
+  setDoc,
+  deleteDoc,
+  serverTimestamp,
+} from "firebase/firestore";
+import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import slider1 from "../images/slider1.jpeg";
-import slider2 from "../images/slider2.png";
-import slider3 from "../images/slider3.png";
+import slider1 from "../images/slider1.jpg";
+import slider2 from "../images/slider2.jpg";
+import slider3 from "../images/slider3.jpg";
+import slider4 from "../images/slider4.jpg";
 import Mid_day_logo from "../images/Mid_day_logo.png";
+import { useAuth } from "../hooks/useAuth";
 
-const Dashboard = ({ role }) => { // Added role prop
+const Dashboard = () => {
   const navigate = useNavigate();
   const aboutUsRef = useRef(null);
   const [userName, setUserName] = useState("");
   const [isDarkMode, setIsDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        setUserName(user.displayName || user.email.split("@")[0]);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  const { user, role, userData, loading: authLoading } = useAuth();
 
   useEffect(() => {
-    document.body.classList.toggle("dark-mode", isDarkMode);
+    if (user && userData) {
+      console.log("Dashboard userData:", userData);
+      setUserName(userData.firstName || user.displayName || "User");
+    }
+  }, [user, userData]);
+
+  useEffect(() => {
+    document.body.style.backgroundColor = isDarkMode ? "#212529" : "#f4f7fa";
+    return () => {
+      document.body.style.backgroundColor = ""; // Clean up on unmount
+    };
   }, [isDarkMode]);
 
   async function handleLogout() {
-    if (window.confirm("Are you sure you want to logout?")) {
-      setLoading(true);
-      try {
-        await auth.signOut();
-        toast.success("Logged out successfully!");
-        setTimeout(() => navigate("/login"), 1500);
-      } catch (error) {
-        toast.error("Error logging out: " + error.message);
-      } finally {
-        setLoading(false);
+    if (!window.confirm("Are you sure you want to logout?")) return;
+
+    setLoading(true);
+    try {
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        throw new Error("No authenticated user found");
       }
+
+      let userData = {
+        email: currentUser.email || "N/A",
+        firstName: "N/A",
+        lastName: "N/A",
+        role: "Unknown",
+      };
+      const userDocRef = doc(db, "Users", currentUser.uid);
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        userData = { ...userData, ...userDocSnap.data() };
+      } else {
+        console.warn("Users document missing for UID:", currentUser.uid);
+      }
+
+      const inactiveDocRef = doc(db, "inactiveUsers", currentUser.uid);
+      const inactiveDocSnap = await getDoc(inactiveDocRef);
+
+      if (!inactiveDocSnap.exists()) {
+        await setDoc(inactiveDocRef, {
+          ...userData,
+          lastInactive: serverTimestamp(), // **Change**: Corrected to lastInactive
+        });
+        console.log("User added to inactiveUsers");
+      } else {
+        await setDoc(
+          inactiveDocRef,
+          { lastInactive: serverTimestamp() },
+          { merge: true }
+        );
+        console.log("Updated lastInactive in inactiveUsers");
+      }
+
+      const activeDocRef = doc(db, "activeUsers", currentUser.uid);
+      const activeDocSnap = await getDoc(activeDocRef);
+      if (activeDocSnap.exists()) {
+        await deleteDoc(activeDocRef);
+        console.log("User removed from activeUsers");
+      } else {
+        console.log("No activeUsers document to delete");
+      }
+
+      await setDoc(
+        doc(db, "Users", currentUser.uid),
+        {
+          lastLogout: serverTimestamp(),
+          lastInactive: serverTimestamp(),
+        },
+        { merge: true }
+      );
+
+      await auth.signOut();
+      toast.success("Logged out successfully!", { position: "top-right" });
+      setTimeout(() => navigate("/login"), 1500);
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error(`Error logging out: ${error.message}`, {
+        position: "top-right",
+      });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -49,146 +120,174 @@ const Dashboard = ({ role }) => { // Added role prop
 
   const toggleDarkMode = () => setIsDarkMode((prev) => !prev);
 
-  const renderStats = () => (
-    <div className="container mt-5">
-      {/* First Row: Total Mid Day Meal Schools */}
-      <div className="row justify-content-center mb-4">
-        <div className="col-md-8 col-12">
-          <div
-            className="card shadow-lg p-4 text-center"
-            style={{
-              borderRadius: "15px",
-              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
-            }}
-          >
-            <h4 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
-              Total Mid Day Meal Schools
-            </h4>
-            <p style={{ fontSize: "24px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
-              4000+
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Second Row: District and Taluka */}
-      <div className="row justify-content-center">
-        <div className="col-md-4 col-6 mb-4">
-          <div
-            className="card shadow-lg p-4 text-center"
-            style={{
-              borderRadius: "15px",
-              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
-            }}
-          >
-            <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
-              District
-            </h5>
-            <p style={{ fontSize: "20px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
-              36
-            </p>
-          </div>
-        </div>
-        <div className="col-md-4 col-6 mb-4">
-          <div
-            className="card shadow-lg p-4 text-center"
-            style={{
-              borderRadius: "15px",
-              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
-            }}
-          >
-            <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
-              Taluka
-            </h5>
-            <p style={{ fontSize: "20px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
-              82
-            </p>
-          </div>
-        </div>
-      </div>
-      {/* Third Row: Region */}
-      <div className="row justify-content-center mb-4">
-        <div className="col-md-8 col-12">
-          <div
-            className="card shadow-lg p-4 text-center"
-            style={{
-              borderRadius: "15px",
-              backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
-            }}
-          >
-            <h4 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40", fontWeight: "600" }}>
-              Region
-            </h4>
-            <p style={{ fontSize: "24px", color: isDarkMode ? "#ced4da" : "#495057", fontWeight: "bold" }}>
-              6
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
   const renderAboutUs = () => (
-    <div className="container mt-5 mb-5" ref={aboutUsRef}>
-      <div
-        className="card shadow-lg p-4"
-        style={{
-          borderRadius: "15px",
-          backgroundColor: isDarkMode ? "#343a40" : "#ffffff",
-        }}
-      >
-        <h2
-          className="text-center mb-4"
-          style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}
-        >
-          About Us
-        </h2>
-        <div className="card-body">
-          <h3 className="text-center" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
-            Mid Day Meal Scheme (PM-POSHAN)
-          </h3>
-          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            The Mid Day Meal Scheme is a school meal programme in India designed to better the
-            nutritional status of school-age children nationwide. Renamed <strong>PM-POSHAN</strong>,
-            it serves <strong>120 million children</strong> across <strong>1.27 million schools</strong>.
-          </p>
-          <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 History</h5>
-          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            Launched in Puducherry in <strong>1930</strong>, it was pioneered in Tamil Nadu in the
-            1960s by <strong>K. Kamaraj</strong>. It became nationwide in 2002 via Supreme Court
-            orders.
-          </p>
-          <h5 style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d" }}>📌 Recent Updates</h5>
-          <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
-            Renamed <strong>PM-POSHAN</strong> in <strong>September 2021</strong>, it added{" "}
-            <strong>24 lakh pre-primary students</strong> in 2022.
-          </p>
-          <p
-            className="text-muted text-end"
-            style={{ color: isDarkMode ? "#adb5bd" : "#6c757d" }}
-          >
-            Source: Government Reports & Supreme Court Orders
-          </p>
+    <section ref={aboutUsRef} style={{ padding: "3rem 0", backgroundColor: isDarkMode ? "#2c3e50" : "#f8f9fa" }}>
+      <div style={{ padding: "0 15px" }}>
+        <div style={{ display: "flex", flexWrap: "wrap", margin: "0 -15px" }}>
+          <div style={{ flex: "0 0 100%", padding: "0 15px", textAlign: "center", marginBottom: "1.5rem" }}>
+            <h2 style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>About PM-POSHAN Scheme</h2>
+            <div style={{ width: "80px", height: "4px", background: isDarkMode ? "#4dabf7" : "#339af0", margin: "0.5rem auto", borderRadius: "2px" }}></div>
+          </div>
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", margin: "0 -15px" }}>
+          <div style={{ flex: "0 0 50%", padding: "0 15px", marginBottom: "1.5rem" }}>
+            <div style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              height: "100%",
+              transition: "transform 0.3s ease",
+              background: isDarkMode ? "#343a40" : "white",
+              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 20px rgba(0,0,0,0.05)",
+            }}>
+              <div style={{
+                padding: "1.5rem",
+                display: "flex",
+                alignItems: "center",
+                borderBottom: `1px solid ${isDarkMode ? "#495057" : "#e9ecef"}`,
+              }}>
+                <i className="fas fa-history" style={{ fontSize: "1.5rem", marginRight: "1rem", color: isDarkMode ? "#4dabf7" : "#339af0" }}></i>
+                <h3 style={{ fontSize: "1.3rem", marginBottom: 0, color: isDarkMode ? "#f8f9fa" : "#343a40" }}>History</h3>
+              </div>
+              <div style={{ padding: "1.5rem" }}>
+                <p style={{ color: isDarkMode ? "#ced4da" : "#495057", marginBottom: 0 }}>
+                  The Mid Day Meal Scheme has been implemented in Puducherry since <strong>1930</strong>
+                  under French administration. In independent India, Tamil Nadu pioneered the scheme
+                  in the early 1960s under former Chief Minister <strong>K. Kamaraj</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ flex: "0 0 50%", padding: "0 15px", marginBottom: "1.5rem" }}>
+            <div style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              height: "100%",
+              transition: "transform 0.3s ease",
+              background: isDarkMode ? "#343a40" : "white",
+              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 20px rgba(0,0,0,0.05)",
+            }}>
+              <div style={{
+                padding: "1.5rem",
+                display: "flex",
+                alignItems: "center",
+                borderBottom: `1px solid ${isDarkMode ? "#495057" : "#e9ecef"}`,
+              }}>
+                <i className="fas fa-chart-line" style={{ fontSize: "1.5rem", marginRight: "1rem", color: isDarkMode ? "#4dabf7" : "#339af0" }}></i>
+                <h3 style={{ fontSize: "1.3rem", marginBottom: 0, color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Current Reach</h3>
+              </div>
+              <div style={{ padding: "1.5rem" }}>
+                <p style={{ color: isDarkMode ? "#ced4da" : "#495057", marginBottom: 0 }}>
+                  Serving <strong>120 million children</strong> in over <strong>1.27 million schools</strong>,
+                  it is the largest school meal program in the world. In 2022, <strong>24 lakh pre-primary students</strong>
+                  were included in the scheme.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ flex: "0 0 50%", padding: "0 15px", marginBottom: "1.5rem" }}>
+            <div style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              height: "100%",
+              transition: "transform 0.3s ease",
+              background: isDarkMode ? "#343a40" : "white",
+              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 20px rgba(0,0,0,0.05)",
+            }}>
+              <div style={{
+                padding: "1.5rem",
+                display: "flex",
+                alignItems: "center",
+                borderBottom: `1px solid ${isDarkMode ? "#495057" : "#e9ecef"}`,
+              }}>
+                <i className="fas fa-gavel" style={{ fontSize: "1.5rem", marginRight: "1rem", color: isDarkMode ? "#4dabf7" : "#339af0" }}></i>
+                <h3 style={{ fontSize: "1.3rem", marginBottom: 0, color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Legal Framework</h3>
+              </div>
+              <div style={{ padding: "1.5rem" }}>
+                <p style={{ color: isDarkMode ? "#ced4da" : "#495057" }}>
+                  Under <strong>Article 24 of the Convention on the Rights of the Child</strong>,
+                  India has committed to providing "adequate nutritious food" for children. The scheme is covered under the
+                  <strong>National Food Security Act, 2013</strong>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ flex: "0 0 50%", padding: "0 15px", marginBottom: "1.5rem" }}>
+            <div style={{
+              borderRadius: "12px",
+              overflow: "hidden",
+              height: "100%",
+              transition: "transform 0.3s ease",
+              background: isDarkMode ? "#343a40" : "white",
+              boxShadow: isDarkMode ? "0 4px 20px rgba(0,0,0,0.2)" : "0 4px 20px rgba(0,0,0,0.05)",
+            }}>
+              <div style={{
+                padding: "1.5rem",
+                display: "flex",
+                alignItems: "center",
+                borderBottom: `1px solid ${isDarkMode ? "#495057" : "#e9ecef"}`,
+              }}>
+                <i className="fas fa-users" style={{ fontSize: "1.5rem", marginRight: "1rem", color: isDarkMode ? "#4dabf7" : "#339af0" }}></i>
+                <h3 style={{ fontSize: "1.3rem", marginBottom: 0, color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Impact</h3>
+              </div>
+              <div style={{ padding: "1.5rem" }}>
+                <p style={{ color: isDarkMode ? "#ced4da" : "#495057", marginBottom: 0 }}>
+                  The program has shown significant improvement in school attendance,
+                  particularly among girls, and has helped reduce classroom hunger while
+                  improving nutritional status of children across India.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </section>
   );
+
+  if (authLoading) {
+    return (
+      <div style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        backgroundColor: isDarkMode ? "#212529" : "#f4f7fa",
+      }}>
+        <div style={{ textAlign: "center" }}>
+          <div style={{ border: "4px solid #007bff", borderRadius: "50%", borderTop: "4px solid transparent", width: "40px", height: "40px", animation: "spin 1s linear infinite" }}></div>
+          <p style={{ marginTop: "1rem", color: isDarkMode ? "#f8f9fa" : "#343a40" }}>Loading Dashboard...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
-    <div style={{ backgroundColor: isDarkMode ? "#212529" : "#f4f7fa", minHeight: "100vh" }}>
+    <div style={{
+      minHeight: "100vh",
+      display: "flex",
+      flexDirection: "column",
+      backgroundColor: isDarkMode ? "#212529" : "#f4f7fa",
+    }}>
       <nav className="navbar navbar-expand-lg navbar-dark bg-primary px-3 sticky-top">
         <div className="container-fluid d-flex justify-content-between align-items-center">
           <div className="d-flex align-items-center">
-            <Link className="navbar-brand d-flex align-items-center" to="/">
+            <Link className="navbar-brand d-flex align-items-center">
               <img
                 src={Mid_day_logo}
-                alt="Mid Day Meal Logo"
+                alt="Logo"
                 style={{ height: "40px", marginRight: "10px" }}
               />
-              <span className="fs-4 fw-bold">Home</span>
+              <span style={{ fontSize: "1.5rem", fontWeight: "bold" }}>Home</span>
             </Link>
             <ul className="navbar-nav d-flex flex-row">
-              {role === "admin" && ( // Conditionally render Admin button
+              {role === "admin" && (
                 <li className="nav-item mx-2">
                   <Link className="nav-link text-white" to="/admin_dashboard">
                     Admin
@@ -201,16 +300,28 @@ const Dashboard = ({ role }) => { // Added role prop
                 </Link>
               </li>
               <li className="nav-item mx-2">
-                <span className="nav-link text-white" style={{ cursor: "pointer" }} onClick={scrollToAboutUs}>
+                <span
+                  className="nav-link text-white"
+                  style={{ cursor: "pointer" }}
+                  onClick={scrollToAboutUs}
+                >
                   About Us
                 </span>
               </li>
             </ul>
           </div>
           <div className="d-flex align-items-center">
-            <button className="btn btn-outline-light" onClick={handleLogout} disabled={loading}>
+            <button
+              className="btn btn-outline-light"
+              onClick={handleLogout}
+              disabled={loading}
+            >
               {loading ? (
-                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span
+                  className="spinner-border spinner-border-sm"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
               ) : (
                 "Logout"
               )}
@@ -219,158 +330,72 @@ const Dashboard = ({ role }) => { // Added role prop
         </div>
       </nav>
 
-      <div className="container mt-4">
-        <h3 className="text-center mb-4" style={{ color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
-          Welcome, {userName || "User"}!
-        </h3>
+      <main style={{ flex: 1 }}>
+        <section style={{ padding: "3rem 0", textAlign: "center" }}>
+          <div style={{ padding: "0 15px" }}>
+            <div>
+              <h1 style={{ fontSize: "2.5rem", fontWeight: 700, marginBottom: "1rem", color: isDarkMode ? "#f8f9fa" : "#343a40" }}>
+                Welcome, {role === "admin" ? "Admin" : userData?.firstName || userName || "User"}!
+              </h1>
+              <p style={{ fontSize: "1.2rem", maxWidth: "800px", margin: "0 auto", color: isDarkMode ? "#ced4da" : "#6c757d" }}>
+                Managing the PM-POSHAN Scheme for a healthier, educated India
+              </p>
+            </div>
+          </div>
+        </section>
 
-        <div className="row justify-content-center align-items-center">
-          <div className="col-md-7 col-12">
-            <div
-              id="dashboardCarousel"
-              className="carousel slide shadow"
-              data-bs-ride="carousel"
-              data-bs-interval="3000"
-            >
+        <section style={{ padding: "2rem 0" }}>
+          <div style={{ padding: "0 15px" }}>
+            {/* CHANGE: Removed background color and adjusted container styles to avoid white background */}
+            <div id="dashboardCarousel" className="carousel slide" data-bs-ride="carousel" data-bs-interval="3000" style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}>
               <div className="carousel-inner">
-                <div className="carousel-item active">
-                  <img
-                    src={slider1}
-                    className="d-block w-100"
-                    alt="Children enjoying meals"
-                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
-                  />
-                  <div className="carousel-caption d-none d-md-block">
-                    <h5>Nutritious Meals for All</h5>
+                {[slider1, slider2, slider3, slider4].map((img, index) => (
+                  <div className={`carousel-item ${index === 0 ? "active" : ""}`} key={img}>
+                    {/* CHANGE: Set height: "auto", maxHeight: "100vh", and objectFit: "contain" to fit entire image within viewport without cropping or scrolling */}
+                    <img
+                      src={img}
+                      style={{ width: "100%", height: "auto", maxHeight: "100vh", objectFit: "contain", display: "block" }}
+                      alt={`Slide ${index + 1}`}
+                    />
+                    <div style={{ background: "rgba(0,0,0,0.6)", padding: "1rem", borderRadius: "8px", position: "absolute", bottom: "10px", left: "50%", transform: "translateX(-50%)" }}>
+                      <h5 style={{ color: "#fff" }}>
+                        {index === 0 ? "Supporting Education" :
+                         index === 1 ? "Healthy Nutrition" :
+                         index === 2 ? "Community Growth" : "Bright Futures"}
+                      </h5>
+                    </div>
                   </div>
-                </div>
-                <div className="carousel-item">
-                  <img
-                    src={slider2}
-                    className="d-block w-100"
-                    alt="School lunch distribution"
-                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
-                  />
-                  <div className="carousel-caption d-none d-md-block">
-                    <h5>Supporting Education</h5>
-                  </div>
-                </div>
-                <div className="carousel-item">
-                  <img
-                    src={slider3}
-                    className="d-block w-100"
-                    alt="Healthy kids in school"
-                    style={{ borderRadius: "10px", height: "350px", objectFit: "cover" }}
-                  />
-                  <div className="carousel-caption d-none d-md-block">
-                    <h5>Growth & Learning</h5>
-                  </div>
-                </div>
+                ))}
               </div>
-              <button
-                className="carousel-control-prev"
-                type="button"
-                data-bs-target="#dashboardCarousel"
-                data-bs-slide="prev"
-              >
+              {/* CHANGE: Added inline styles to make carousel navigation arrows black for better visibility */}
+              <button className="carousel-control-prev" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="prev" style={{ filter: "invert(100%)" }}>
                 <span className="carousel-control-prev-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Previous</span>
               </button>
-              <button
-                className="carousel-control-next"
-                type="button"
-                data-bs-target="#dashboardCarousel"
-                data-bs-slide="next"
-              >
+              <button className="carousel-control-next" type="button" data-bs-target="#dashboardCarousel" data-bs-slide="next" style={{ filter: "invert(100%)" }}>
                 <span className="carousel-control-next-icon" aria-hidden="true"></span>
                 <span className="visually-hidden">Next</span>
               </button>
             </div>
           </div>
+        </section>
 
-          <div className="col-md-5 col-12 mt-4 mt-md-0">
-            <div
-              className="card shadow-lg p-4"
-              style={{ borderRadius: "15px", backgroundColor: isDarkMode ? "#343a40" : "#ffffff" }}
-            >
-              <h2
-                className="text-center mb-4"
-                style={{ color: isDarkMode ? "#f8f9fa" : "#6c757d", fontWeight: "600" }}
-              >
-                Forms
-              </h2>
-              <div className="list-group">
-                {[
-                  { to: "/parent_form", text: "पालकांचा अभिप्राय प्रश्नावली" },
-                  { to: "/school_form", text: "School Form" },
-                  { to: "/observation_form", text: "Observation Form" },
-                ].map((form, index) => (
-                  <Link
-                    key={index}
-                    to={form.to}
-                    className="list-group-item list-group-item-action mb-2"
-                    style={{
-                      backgroundColor: isDarkMode ? "#495057" : "#f8f9fa",
-                      color: isDarkMode ? "#f8f9fa" : "#343a40",
-                      textAlign: "center",
-                      borderRadius: "8px",
-                      padding: "12px",
-                      transition: "transform 0.2s ease, background-color 0.2s ease",
-                    }}
-                    onMouseEnter={(e) => {
-                      e.target.style.backgroundColor = isDarkMode ? "#6c757d" : "#e9ecef";
-                      e.target.style.transform = "scale(1.02)";
-                    }}
-                    onMouseLeave={(e) => {
-                      e.target.style.backgroundColor = isDarkMode ? "#495057" : "#f8f9fa";
-                      e.target.style.transform = "scale(1)";
-                    }}
-                  >
-                    {form.text}
-                  </Link>
-                ))}
-              </div>
-            </div>
+        <section style={{ padding: "3rem 0", margin: "2rem 0", backgroundColor: isDarkMode ? "#343a40" : "#e9ecef" }}>
+          <div style={{ padding: "0 15px" }}>
+            <blockquote style={{ maxWidth: "800px", margin: "0 auto", textAlign: "center", fontSize: "1.5rem", fontStyle: "italic", color: isDarkMode ? "#f8f9fa" : "#495057" }}>
+              <i className="fas fa-quote-left" style={{ fontSize: "2rem", color: isDarkMode ? "#adb5bd" : "#6c757d", marginBottom: "1rem", display: "block" }}></i>
+              <p>The Mid Day Meal Scheme nourishes both body and mind, empowering India's future.</p>
+              <footer style={{ fontSize: "1rem", marginTop: "1rem", fontStyle: "normal", color: isDarkMode ? "#ced4da" : "#6c757d" }}>- Ministry of Education</footer>
+            </blockquote>
           </div>
-        </div>
+        </section>
 
-        <div className="d-flex justify-content-center mt-5">
-          <div
-            className="quote-container card shadow-lg"
-            style={{
-              maxWidth: "1400px",
-              width: "100%",
-              borderRadius: "12px",
-              background: isDarkMode
-                ? "linear-gradient(135deg, #343a40, #495057)"
-                : "linear-gradient(135deg, #f8f9fa, #e9ecef)",
-              padding: "30px",
-              textAlign: "center",
-            }}
-          >
-            <p
-              style={{
-                fontSize: "26px",
-                fontStyle: "italic",
-                color: isDarkMode ? "#f8f9fa" : "#495057",
-                fontWeight: "bold",
-                lineHeight: "1.6",
-              }}
-            >
-              "The Mid Day Meal Scheme nourishes both body and mind, empowering India's future."
-            </p>
-          </div>
-        </div>
-
-        {renderStats()}
         {renderAboutUs()}
-      </div>
+      </main>
 
-      <footer className="text-center mt-5 py-3" style={{ backgroundColor: "#6c757d", color: "#f8f9fa" }}>
-        <p className="mb-0">© 2025 PM-POSHAN Dashboard. All rights reserved.</p>
+      <footer style={{ textAlign: "center", marginTop: "5rem", padding: "1rem 0", backgroundColor: "#6c757d", color: "#f8f9fa" }}>
+        <p style={{ marginBottom: 0 }}>© 2025 PM-POSHAN Dashboard. All rights reserved.</p>
       </footer>
-
-      <ToastContainer position="top-right" autoClose={3000} />
     </div>
   );
 };
