@@ -818,7 +818,6 @@ function AdminDashboard() {
                 { to: "/school-feedback", text: "School Feedback", color: "warning" },
                 { to: "/observation-feedback", text: "Observation Feedback", color: "success" },
                 { to: "/find-school", text: "Find School", color: "primary" },
-                { to: "/location-tracking", text: "Location Tracking", color: "dark" },
               ].map((nav, idx) => (
                 <Button
                   key={idx}

@@ -30,7 +30,6 @@ import ResearchSchoolForm from "./researchofficer/SchoolForm";
 import ResearchUpdateParentForm from "./researchofficer/UpdateParentForm";
 import ResearchUpdateObserveForm from "./researchofficer/UpdateObserveForm";
 import ResearchUpdateSchoolForm from "./researchofficer/UpdateSchoolForm";
-import LocationTracking from "./components/LocationTracking";
 
 class ErrorBoundary extends React.Component {
   state = { hasError: false };
@@ -262,14 +261,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route
-              path="/location-tracking"
-              element={
-                <ProtectedRoute allowedRoles={["admin"]}>
-                  <LocationTracking />
-                </ProtectedRoute>
-              }
-            />
+
             {/* Dashboard Routes */}
             <Route
               path="/admin_dashboard"
